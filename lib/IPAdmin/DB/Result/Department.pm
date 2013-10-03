@@ -18,6 +18,11 @@ __PACKAGE__->add_columns(
         data_type => 'varchar',
         size      => '32',
     },
+    building => {
+        data_type      => 'int',
+        is_nullable    => 0,
+        is_foreign_key => 1,
+    },
     description => {
         data_type => 'varchar',
         size      => '255',

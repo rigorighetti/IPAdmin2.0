@@ -1,0 +1,14 @@
+inc
+blib
+support
+pm_to_blib
+MANIFEST
+META.yml
+Makefile
+Makefile.old
+.build
+.DS_Store
+*~
+*.bak
+log/
+ipadmin.conf
