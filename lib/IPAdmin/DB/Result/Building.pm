@@ -39,6 +39,10 @@ __PACKAGE__->add_unique_constraint( [qw/name/] );
 __PACKAGE__->has_many(map_area_dep => 'IPAdmin::DB::Result::Area','building' );
 __PACKAGE__->many_to_many( departments => 'map_area_dep', 'department' );
 
+__PACKAGE__->might_have(
+    vlan => 'IPAdmin::DB::Result::Vlan',
+    'building',
+  );
 
 1;
 
