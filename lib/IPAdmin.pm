@@ -20,6 +20,14 @@ use Catalyst qw/
     -Debug
     ConfigLoader
     Static::Simple
+    Authentication
+    Authorization::Roles
+    Authorization::ACL
+    Scheduler
+    Session
+    Session::Store::DBI
+    Session::State::Cookie
+    StackTrace
 /;
 
 extends 'Catalyst';
@@ -36,11 +44,55 @@ our $VERSION = '0.01';
 # local deployment.
 
 __PACKAGE__->config(
-    name => 'IPAdmin',
+    name         => 'IPAdmin',
+    default_view => 'TT',
+    use_request_uri_for_path => 1,
+
+    enable_catalyst_header => 1, # Send X-Catalyst header
+
     # Disable deprecated behavior needed by old applications
     disable_component_resolution_regex_fallback => 1,
-    enable_catalyst_header => 1, # Send X-Catalyst header
+    'Plugin::Authentication'                    => {
+        default_realm => 'progressive',
+        realms        => {
+            progressive => {
+                class  => 'Progressive',
+                realms => [ 'normal' ],
+            },
+            normal => {
+                credential => {
+                    class              => 'Password',
+                    password_field     => 'password',
+                    password_type      => 'hashed',
+                    password_hash_type => 'MD5'
+                },
+                store => {
+                    class         => 'DBIx::Class',
+                    user_model    => 'IPAdminDB::User',
+                    role_relation => 'roles',
+                    role_field    => 'role',
+                }
+            }
+        },
+    },
+
+    #remove stale sessions from db
+    'Plugin::Session' => {
+        expires           => 28800,
+        dbi_dbh           => 'IPAdminDB',
+        dbi_table         => 'sessions',
+        dbi_id_field      => 'id',
+        dbi_data_field    => 'session_data',
+        dbi_expires_field => 'expires',
+    }
 );
+
+
+
+
+
+
+
 
 # Start the application
 __PACKAGE__->setup();

@@ -1,4 +1,4 @@
-package IPAdmin::Model::IPDB;
+package IPAdmin::Model::IPAdminDB;
 
 use strict;
 use base 'Catalyst::Model::DBIC::Schema';

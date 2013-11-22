@@ -4,11 +4,13 @@ use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller' }
 
+#with 'IPAdmin::BackRef::Actions';
+
 #
 # Sets the actions in this controller to be registered with no prefix
 # so they function identically to actions created in MyApp.pm
 #
-__PACKAGE__->config(namespace => '');
+__PACKAGE__->config( namespace => '' );
 
 =head1 NAME
 
@@ -26,11 +28,39 @@ The root page (/)
 
 =cut
 
-sub index :Path :Args(0) {
+sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
-    # Hello World
-    $c->response->body( $c->welcome_message );
+    $c->response->redirect('/search');
+    $c->detach();
+}
+
+=head2 auto
+
+
+=cut
+
+sub auto : Private {
+  my ( $self, $c ) = @_;
+        use Data::Dumper;
+
+  if ( $c->controller eq $c->controller('Auth') ) {
+    return 1;
+  }
+  $c->log->debug($c->request->uri);
+  # If a user doesn't exist, force login
+  if ( !$c->user_in_realm('normal') ) {
+    $c->flash( backref => $c->request->uri );
+    $c->response->redirect( $c->uri_for('/auth/login') );
+    return 0;
+  }
+
+  # if ( $c->req->param('popup') ) {
+  #     $c->stash( show_popup => 1 );
+  #     delete $c->req->params->{'popup'};
+  # }
+
+  return 1;
 }
 
 =head2 default
@@ -39,10 +69,24 @@ Standard 404 error page
 
 =cut
 
-sub default :Path {
+sub default : Path {
     my ( $self, $c ) = @_;
-    $c->response->body( 'Page not found' );
+    my $url = $c->request->uri;
+    $c->response->body("Page not found $url");
+    
     $c->response->status(404);
+}
+
+=head2 message
+
+Basic minimal page for showing messages
+
+=cut
+
+sub message : Path('message') Args(0) {
+    my ( $self, $c ) = @_;
+    my $page = $c->request->param('page');
+    $c->stash( template => 'message.tt' );
 }
 
 =head2 end
@@ -51,11 +95,23 @@ Attempt to render a view, if needed.
 
 =cut
 
-sub end : ActionClass('RenderView') {}
+sub end : ActionClass('RenderView') {
+}
+
+=head2 access_denied
+
+=cut
+
+sub access_denied : Private {
+    my ( $self, $c ) = @_;
+    $c->flash( backref => $c->req->uri );
+    $c->stash( template  => 'auth/access_denied.tt' );
+    $c->stash( error_msg => "Sorry, you are not allowed to see this page!" );
+}
 
 =head1 AUTHOR
 
-Enrico Liguori
+gabriele
 
 =head1 LICENSE
 

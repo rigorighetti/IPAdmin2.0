@@ -1,0 +1,9 @@
+[% META title='Edit Device'
+   section='Asset' %]
+
+<h3>IP Address: [% object.id.address %]</h3>
+
+<div class="buttons">
+[% form.render %] 
+</div>
+

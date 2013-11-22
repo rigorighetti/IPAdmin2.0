@@ -35,10 +35,10 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key('id');
 __PACKAGE__->add_unique_constraint( [qw/name/] );
 
-__PACKAGE__->has_many(
-    department => 'IPAdmin::DB::Result::Department',
-    'building', { cascade_delete => 0 }
-);
+
+__PACKAGE__->has_many(map_area_dep => 'IPAdmin::DB::Result::Area','building' );
+__PACKAGE__->many_to_many( departments => 'map_area_dep', 'department' );
+
 
 1;
 
