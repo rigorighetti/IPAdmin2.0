@@ -57,7 +57,7 @@ __PACKAGE__->config(
         realms        => {
             progressive => {
                 class  => 'Progressive',
-                realms => [ 'normal' ],
+                realms => [ 'normal', 'ldap' ],
             },
             normal => {
                 credential => {
@@ -73,6 +73,36 @@ __PACKAGE__->config(
                     role_field    => 'role',
                 }
             }
+            ldap => {
+             credential => {
+               class => "Password",
+               password_field => "password",
+               password_type => "self_check",
+             },
+             store => {
+               binddn              => "misskappal",
+               bindpw              => "boesislac",
+               class               => "LDAP",
+               ldap_server         => "linuxhq.policlinico.org",
+               ldap_server_options => { timeout => 30 },
+               role_basedn         => "ou=Group,dc=noc,dc=policlinico,dc=org", #This should be the basedn where the LDAP Objects representing your roles are.
+               role_field          => "cn",
+               role_filter         => "(&(objectClass=posixGroup)(memberUid=%s))",
+               role_scope          => "one",
+               role_search_options => { deref => "always" },
+               role_value          => "dn",
+               role_search_as_user => 0,
+               start_tls           => 1,
+               start_tls_options   => { verify => "none" },
+               entry_class         => "Net::LDAP::Entry",
+               use_roles           => 1,
+               user_basedn         => "dc=noc,dc=policlinico,dc=org",
+               user_field          => "uid",
+               user_filter         => "(&(objectClass=User)(cn=%s))",
+               user_scope          => "one", # or "sub" for Active Directory
+               user_search_options => { deref => "always" },
+               user_results_filter => sub { return shift->pop_entry },
+             },
         },
     },
 
