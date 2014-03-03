@@ -28,6 +28,7 @@ use Catalyst qw/
     Session::Store::DBI
     Session::State::Cookie
     StackTrace
+    Authentication::Credential::Password
 /;
 
 extends 'Catalyst';
@@ -52,14 +53,14 @@ __PACKAGE__->config(
 
     # Disable deprecated behavior needed by old applications
     disable_component_resolution_regex_fallback => 1,
-    'Plugin::Authentication'                    => {
-        default_realm => 'progressive',
+    authentication  => {
+        default_realm => 'normal_then_ldap',
         realms        => {
-            progressive => {
-                class  => 'Progressive',
+           'normal_then_ldap' => {
+		class  => 'Progressive',
                 realms => [ 'normal', 'ldap' ],
             },
-            normal => {
+            'normal' => {
                 credential => {
                     class              => 'Password',
                     password_field     => 'password',
@@ -72,40 +73,41 @@ __PACKAGE__->config(
                     role_relation => 'roles',
                     role_field    => 'role',
                 }
-            },
-            ldap => {
-             credential => {
-               class => "Password",
-               password_field => "password",
-               password_type => "self_check",
              },
-             store => {
-               binddn              => "",
-               bindpw              => "",
-               class               => "LDAP",
-               ldap_server         => "",
-               ldap_server_options => { timeout => 30 },
-               role_basedn         => "", #This should be the basedn where the LDAP Objects representing your roles are.
-               role_field          => "cn",
-               role_filter         => "(&(objectClass=posixGroup)(memberUid=%s))",
-               role_scope          => "one",
-               role_search_options => { deref => "always" },
-               role_value          => "dn",
-               role_search_as_user => 0,
-               start_tls           => 1,
-               start_tls_options   => { verify => "none" },
-               entry_class         => "Net::LDAP::Entry",
-               use_roles           => 1,
-               user_basedn         => "",
-               user_field          => "uid",
-               user_filter         => "(&(objectClass=User)(cn=%s))",
-               user_scope          => "one", # or "sub" for Active Directory
-               user_search_options => { deref => "always" },
-               user_results_filter => sub { return shift->pop_entry },
-             },
-            },
-          },
-    },
+            'ldap' => {
+                credential => {
+                  class => "Password",
+                  username_field => "username",
+                  password_field => "password",
+                  password_type  => "self_check",
+                },
+                store => {
+                  binddn              => "anonymous",
+                  bindpw              => "",
+                  class               => "LDAP",
+                  ldap_server         => "",
+                  ldap_server_options => { timeout => 100 , onerror => "warn"},
+                  role_basedn         => "", #This should be the basedn where the LDAP Objects representing your roles are.
+                  role_field          => "",
+                  role_filter         => "",
+                  role_scope          => "one",
+                  role_search_options => { deref => "always" },
+                  role_value          => "dn",
+                  role_search_as_user => 0, #role disabled
+                  start_tls           => 0, #disabled
+                  start_tls_options   => { verify => "none" },
+                  entry_class         => "Net::LDAP::Entry",
+                  use_roles           => 0,
+                  user_basedn         => "",
+                  user_field          => "cn",
+                  user_filter         => "(&(objectClass=person)(cn=%s))",
+                  user_scope          => "sub", # 
+                  user_search_options => { deref => "always" },
+                  user_results_filter => sub { return shift->pop_entry },
+                },
+              },
+           }, #realms
+     },  #plugin::auth
     #remove stale sessions from db
     'Plugin::Session' => {
         expires           => 28800,
@@ -116,8 +118,6 @@ __PACKAGE__->config(
         dbi_expires_field => 'expires',
     }
 );
-
-
 
 # Start the application
 __PACKAGE__->setup();

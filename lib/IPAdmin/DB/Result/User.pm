@@ -15,7 +15,7 @@ __PACKAGE__->add_columns(
         is_nullable       => 0,
         is_auto_increment => 1,
     },
-    login => {
+    username => {
         data_type   => 'varchar',
         size        => 255,
         is_nullable => 0
@@ -62,7 +62,7 @@ __PACKAGE__->add_columns(
 
             );
 __PACKAGE__->set_primary_key(qw(id));
-__PACKAGE__->add_unique_constraint( ['login'] );
+__PACKAGE__->add_unique_constraint( ['username'] );
 
 __PACKAGE__->has_many( map_user_role => 'IPAdmin::DB::Result::UserRole', 'user_id' );
 __PACKAGE__->many_to_many( roles => 'map_user_role', 'role' );

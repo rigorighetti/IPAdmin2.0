@@ -5,6 +5,7 @@
 package IPAdmin::Controller::Auth;
 use Moose;
 use namespace::autoclean;
+use Data::Dumper;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -43,30 +44,31 @@ sub login : Local : CaptureArgs(0) {
     $c->stash( default_backref => $c->uri_for('/building/list') );
 
     if ( defined( $c->req->params->{'username'} ) ) {
-        if (
+	 if (
             $c->authenticate(
                 {
-                    login    => $c->req->params->{'username'},
+                    username => $c->req->params->{'username'},
                     password => $c->req->params->{'password'},
-                    active   => 1,
-                },
-                'normal'
+                }, 'normal_then_ldap'
             )
-            )
-        {
-            $c->flash( message => 'Logged In!' );
-            $c->log->debug( 'User ' . $c->user->login . ' logged' );
+            ){
+         	$c->flash( message => 'Logged In!' );
 
-            $c->detach('/follow_backref');
-        }
-        else {
-            $c->flash( error_msg => 'Invalid Login' );
-            $c->response->redirect( $c->uri_for('/auth/login') );
-            $c->detach();
-        }
-    }
+	 	if($c->user_in_realm('normal')){	
+              	 $c->response->redirect( $c->uri_for('/building/list') );
+    	 	 $c->detach();
+         	}
+         	if($c->user_in_realm('ldap')){
+             	 $c->response->redirect( $c->uri_for('/department/list') );
+ 	     	 $c->detach();
+           	}
+          }
+         #not authenticated
+	 $c->flash( error_msg => 'Invalid Login' );
+         $c->response->redirect( $c->uri_for('/auth/login') );
+         $c->detach();
+	}
 }
-
 =head2 logout
 
 =cut
