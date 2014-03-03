@@ -4,7 +4,7 @@ use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller' }
 
-#with 'IPAdmin::BackRef::Actions';
+with 'IPAdmin::BackRef::Actions';
 
 #
 # Sets the actions in this controller to be registered with no prefix

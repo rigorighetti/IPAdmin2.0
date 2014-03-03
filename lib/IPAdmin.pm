@@ -119,6 +119,23 @@ __PACKAGE__->config(
     }
 );
 
+sub check_backref {
+	    my $c       = shift;
+	    my $backref = $c->flash->{'backref'};
+	    return $backref;
+}
+
+sub set_backref : Private {
+   my $c       = shift;
+   my $backref = $c->req->param('backref');
+   if ($backref) {
+    $c->flash( backref => $backref );
+    delete $c->request->parameters->{'backref'};
+   }
+}
+
+
+
 # Start the application
 __PACKAGE__->setup();
 

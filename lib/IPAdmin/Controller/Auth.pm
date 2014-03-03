@@ -54,14 +54,9 @@ sub login : Local : CaptureArgs(0) {
             ){
          	$c->flash( message => 'Logged In!' );
 
-	 	if($c->user_in_realm('normal')){	
-              	 $c->response->redirect( $c->uri_for('/building/list') );
-    	 	 $c->detach();
-         	}
-         	if($c->user_in_realm('ldap')){
-             	 $c->response->redirect( $c->uri_for('/department/list') );
- 	     	 $c->detach();
-           	}
+	 	if($c->user_in_realm('normal') or $c->user_in_realm('ldap')){	
+                 $c->detach('/follow_backref');
+        	}
           }
          #not authenticated
 	 $c->flash( error_msg => 'Invalid Login' );
