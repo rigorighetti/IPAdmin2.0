@@ -42,6 +42,7 @@ sub login : Local : CaptureArgs(0) {
     $c->keep_flash("backref");
 
     $c->stash( default_backref => $c->uri_for('/building/list') );
+    my $username = $c->req->params->{'username'};
 
     if ( defined( $c->req->params->{'username'} ) ) {
 	 if (
@@ -54,9 +55,14 @@ sub login : Local : CaptureArgs(0) {
             ){
          	$c->flash( message => 'Logged In!' );
 
-	 	if($c->user_in_realm('normal') or $c->user_in_realm('ldap')){	
-                 $c->detach('/follow_backref');
+	 	if($c->user_in_realm('normal')){	
+		 $c->detach('/follow_backref');
         	}
+		if($c->user_in_realm('ldap') ){
+		$c->response->redirect(
+                             $c->uri_for_action( '/userldap/view', [$username] ) );
+      		$c->detach();
+		}
           }
          #not authenticated
 	 $c->flash( error_msg => 'Invalid Login' );

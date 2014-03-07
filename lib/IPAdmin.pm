@@ -85,7 +85,7 @@ __PACKAGE__->config(
                   binddn              => "anonymous",
                   bindpw              => "",
                   class               => "LDAP",
-                  ldap_server         => "",
+                  ldap_server         => "mail.uniroma1.it",
                   ldap_server_options => { timeout => 100 , onerror => "warn"},
                   role_basedn         => "", #This should be the basedn where the LDAP Objects representing your roles are.
                   role_field          => "",
@@ -98,7 +98,7 @@ __PACKAGE__->config(
                   start_tls_options   => { verify => "none" },
                   entry_class         => "Net::LDAP::Entry",
                   use_roles           => 0,
-                  user_basedn         => "",
+                  user_basedn         => "o=uniroma1,c=it",
                   user_field          => "cn",
                   user_filter         => "(&(objectClass=person)(cn=%s))",
                   user_scope          => "sub", # 

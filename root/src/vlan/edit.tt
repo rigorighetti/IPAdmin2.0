@@ -1,6 +1,0 @@
-[% META title='Edit Vlan'
-   section='NetDB' %]
-
-<div class="buttons">
-[% form.render %]
-</div>

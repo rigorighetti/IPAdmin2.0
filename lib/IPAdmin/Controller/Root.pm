@@ -45,7 +45,6 @@ sub auto : Private {
         use Data::Dumper;
 
   if ( $c->controller eq $c->controller('Auth') ) {
-   $c->log->debug("ROOT"); 
    return 1;
   }
   $c->log->debug($c->request->uri);

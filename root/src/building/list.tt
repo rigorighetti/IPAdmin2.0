@@ -4,7 +4,13 @@
    section='Asset'
 -%]
 
-[% init_table('build_list',[30,60,10]) %]
+<div class="buttons create_btn">
+<a href="[% c.uri_for_action('/building/create') %]" >
+   [% ui_icon('circle-plus') %] Create Building</a>
+ [% add_css_create_btn %]
+</div>
+
+[% init_table('build_list',[20,65,15]) %]
  <table class="display" id="build_list">
    <thead>  
      <tr>
@@ -18,7 +24,7 @@
 
          <tr>
  	 <td><a href=[% c.uri_for_action('/building/view', [b.id]) %]>[% b.name %]</a></td>
- 	 <td>[% b.desc %]</td>
+ 	 <td>[% b.description %]</td>
  	 <td>[% b.address %]</td>
          </tr>
 [% END %]

@@ -1,0 +1,32 @@
+[% META 
+   title='Area'
+   use_table=1
+   section='Asset'
+-%]
+
+<div class="buttons create_btn">
+<a href="[% c.uri_for_action('/area/create') %]" >
+   [% ui_icon('circle-plus') %] Create Area</a>
+ [% add_css_create_btn %]
+</div>
+
+[% init_table('area_list',[30,60,10]) %]
+ <table class="display" id="area_list">
+   <thead>  
+     <tr>
+        <th>Building</th>
+        <th>Department</th>
+        <th>Manager</th>
+     </tr>
+   </thead>  
+   <tbody>
+[% FOREACH a IN area_table %]
+
+         <tr>
+ 	 <td><a href=[% c.uri_for_action('/area/view', [a.id]) %]>[% a.building.name %]</a></td>
+ 	 <td>[% a.department.name %]</td>
+ 	 <td>[% a.manager.fullname %]</td>
+         </tr>
+[% END %]
+   </tbody>
+</table>

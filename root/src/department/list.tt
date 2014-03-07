@@ -1,0 +1,32 @@
+[% META 
+   title='Department'
+   use_table=1
+   section='Asset'
+-%]
+
+<div class="buttons create_btn">
+<a href="[% c.uri_for_action('/department/create') %]" >
+   [% ui_icon('circle-plus') %] Create Department</a>
+ [% add_css_create_btn %]
+</div>
+
+[% init_table('dep_list',[30,60,10]) %]
+ <table class="display" id="dep_list">
+   <thead>  
+     <tr>
+        <th>Name</th>
+        <th>Description</th>
+	<th>Nr. Buildings</th>
+     </tr>
+   </thead>  
+   <tbody>
+[% FOREACH d IN department_table %]
+
+         <tr>
+ 	 <td><a href=[% c.uri_for_action('/department/view', [d.id]) %]>[% d.name %]</a></td>
+ 	 <td>[% d.description %]</td> 
+	 <td>[% d.n_build %]</td>
+	</tr>
+[% END %]
+   </tbody>
+</table>

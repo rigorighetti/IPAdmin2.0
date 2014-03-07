@@ -1,12 +1,12 @@
 [% META 
-   title='Building'
+   title='Department'
    use_table=1
    section='Asset'
 -%]
 <div id="tabs">	 
   <ul>
     <li><a href="#tabs-1">General</a></li>
-    <li><a href="#tabs-2">Departments</a></li>
+    <li><a href="#tabs-2">Buildings</a></li>
   </ul>
   		
 
@@ -17,10 +17,6 @@
       </tr>
       <tr>
 	<td>Description:</td><td>[% object.description | html %] </td>
-      </tr>
-      <tr>
-	<td>Address:</td><td>[% object.address %] </td>
-      </tr>
       <tr>
 	<td>Notes:</td><td>[% object.notes | html%]</td>
       </tr>
@@ -28,36 +24,33 @@
     [% add_css_tableinfo -%]
     <p>
       <div class="buttons">	
-	<a href=[%c.uri_for_action('building/edit', [object.id]) %]> [% ui_icon('pencil') %] Edit</a>
-	&nbsp;<a href=[% c.uri_for_action('building/delete', [object.id]) %]>
+	<a href=[%c.uri_for_action('department/edit', [object.id]) %]> [% ui_icon('pencil') %] Edit</a>
+	&nbsp;<a href=[% c.uri_for_action('department/delete', [object.id]) %]>
 	[% ui_icon('closethick') %]  Delete</a>
-	&nbsp;
-<!-- 
-	<a href="[% c.uri_for('/rack/create', object.id,{backref=>c.req.uri}) %]">
-		[% ui_icon('plusthick') %] Add Rack</a> 
--->
       </div>
     </p>
   [% add_css_tableinfo %]
   </div>
   
   <div id="tabs-2">	
-    [% FOREACH d IN object.departments %]
+    [% FOREACH b IN object.buildings %]
     [% IF loop.first %]
-    [% init_table('dep_list') %]
-    <table class="display" id="dep_list">
+    [% init_table('build_list') %]
+    <table class="display" id="build_list">
       <thead>  
         <tr>
  	  <th>Name</th>
  	  <th>Description</th>
+	  <th>Address</th>
         </tr>
       </thead>  
       <tbody>
 	[% END %]
         <tr>
- 	  <td><a href=[% c.uri_for_action('/department/view', [d.id]) %]>[% d.name %]</a></td>
- 	  <td>[% d.description %]</td>
-        </tr>
+ 	  <td><a href=[% c.uri_for_action('/building/view', [b.id]) %]>[% b.name %]</a></td>
+ 	  <td>[% b.description %]</td>
+          <td>[% b.address %]</td>
+	</tr>
 	[% IF loop.last %]
       </tbody>
     </table>

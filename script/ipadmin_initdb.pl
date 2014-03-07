@@ -52,10 +52,10 @@ sub do_reset_admin {
             password => 'admin',
         }
     );
-    $self->log->info('Adding admin role to the admin user (password: admin)... done.');
-    if ( $admin_user->roles->search( { role => 'admin' } )->count == 0 ) {
-        $admin_user->add_to_roles($admin_role);
-    }
+#    $self->log->info('Adding admin role to the admin user (password: admin)... done.');
+#    if ( $admin_user->roles->search( { role => 'admin' } )->count == 0 ) {
+#        $admin_user->add_to_roles($admin_role);
+#    }
 }
 
 no Moose;

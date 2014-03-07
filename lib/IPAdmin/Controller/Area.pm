@@ -2,17 +2,17 @@
 #
 # This library is free software. You can redistribute it and/or modify
 # it under the same terms as Perl itself.
-package IPAdmin::Controller::Building;
+package IPAdmin::Controller::Area;
 use Moose;
 use namespace::autoclean;
-use IPAdmin::Form::Building;
+use IPAdmin::Form::Area;
 use Data::Dumper;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
 =head1 NAME
 
-IPAdmin::Controller::Building - Catalyst Controller
+IPAdmin::Controller::Area - Catalyst Controller
 
 =head1 DESCRIPTION
 
@@ -28,7 +28,7 @@ Catalyst Controller.
 
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
-    $c->response->redirect('building/list');
+    $c->response->redirect('area/list');
     $c->detach();
 }
 
@@ -36,9 +36,9 @@ sub index : Path : Args(0) {
 
 =cut
 
-sub base : Chained('/') : PathPart('building') : CaptureArgs(0) {
+sub base : Chained('/') : PathPart('area') : CaptureArgs(0) {
     my ( $self, $c ) = @_;
-    $c->stash( resultset => $c->model('IPAdminDB::Building') );
+    $c->stash( resultset => $c->model('IPAdminDB::Area') );
 }
 
 =head2 object
@@ -65,10 +65,10 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
 
     my $build_schema = $c->stash->{resultset};
 
-    my @building_table = $build_schema->search({}, {prefetch => ['vlan']});
+    my @area_table = $build_schema->all;
 
-    $c->stash( building_table => \@building_table );
-    $c->stash( template       => 'building/list.tt' );
+    $c->stash( area_table => \@area_table );
+    $c->stash( template       => 'area/list.tt' );
 }
 
 =head2 view
@@ -78,7 +78,7 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
 sub view : Chained('object') : PathPart('view') : Args(0) {
     my ( $self, $c ) = @_;
 
-    $c->stash( template => 'building/view.tt' );
+    $c->stash( template => 'area/view.tt' );
 }
 
 =head2 edit
@@ -102,13 +102,13 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
          $c->stash->{resultset}->new_result( {} );
 
      #set the default backref according to the action (create or edit)
-     my $def_br = $c->uri_for('/building/list');
-     $def_br = $c->uri_for_action( 'building/view', [ $c->stash->{object}->id ] )
+     my $def_br = $c->uri_for('/area/list');
+     $def_br = $c->uri_for_action( 'area/view', [ $c->stash->{object}->id ] )
          if ( defined( $c->stash->{object} ) );
      $c->stash( default_backref => $def_br );
 
-     my $form = IPAdmin::Form::Building->new( item => $item );
-     $c->stash( form => $form, template => 'building/save.tt' );
+     my $form = IPAdmin::Form::Area->new( item => $item );
+     $c->stash( form => $form, template => 'area/save.tt' );
 
      # the "process" call has all the saving logic,
      #   if it returns False, then a validation error happened
@@ -118,8 +118,8 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
      }
      return unless $form->process( params => $c->req->params );
 
-     $c->flash( message => 'Success! Building created.' );
-     $def_br = $c->uri_for_action( 'building/view', [ $item->id ] );
+     $c->flash( message => 'Success! Area created.' );
+     $def_br = $c->uri_for_action( 'area/view', [ $item->id ] );
      $c->stash( default_backref => $def_br );
      $c->detach('/follow_backref');
  }
@@ -139,10 +139,12 @@ sub create : Chained('base') : PathPart('create') : Args(0) {
 
 sub delete : Chained('object') : PathPart('delete') : Args(0) {
     my ( $self, $c ) = @_;
-    my $building = $c->stash->{'object'};
-    my $id       = $building->id;
-    my $name     = $building->name;
-    $c->stash( default_backref => $c->uri_for_action('building/list') );
+    my $area = $c->stash->{'object'};
+    my $id       = $area->id;
+    my $building     = $area->building;
+    my $department   = $area->department;
+    my $manager	     = $area->manager;
+    $c->stash( default_backref => $c->uri_for_action('area/list') );
 
     if ( lc $c->req->method eq 'post' ) {
 #        if ( $c->model('IPAdminDB::Rack')->search( { building => $id } )->count ) {
@@ -151,9 +153,9 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
 #            $c->detach('/follow_backref');
 #        }
 
-        $building->delete;
+        $area->delete;
 
-        $c->flash( message => 'Success!!  ' . $name . ' successful deleted.' );
+        $c->flash( message => 'Success!!  ' . $id . ' successful deleted.' );
         $c->detach('/follow_backref');
     }
     else {
