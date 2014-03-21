@@ -24,7 +24,7 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key(qw/user_id role_id/);
 
-__PACKAGE__->belongs_to( user => 'IPAdmin::DB::Result::User', 'user_id' );
+__PACKAGE__->belongs_to( user => 'IPAdmin::DB::Result::UserLDAP', 'user_id' );
 __PACKAGE__->belongs_to( role => 'IPAdmin::DB::Result::Role', 'role_id' );
 
 =head1 NAME

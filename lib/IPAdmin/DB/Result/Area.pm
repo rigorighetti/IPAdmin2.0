@@ -36,7 +36,7 @@ __PACKAGE__->set_primary_key('id');
 
 __PACKAGE__->belongs_to( building   => 'IPAdmin::DB::Result::Building' );
 __PACKAGE__->belongs_to( department => 'IPAdmin::DB::Result::Department' );
-__PACKAGE__->belongs_to( manager    => 'IPAdmin::DB::Result::User' );
+__PACKAGE__->belongs_to( manager    => 'IPAdmin::DB::Result::UserLDAP' );
 
 
 1;

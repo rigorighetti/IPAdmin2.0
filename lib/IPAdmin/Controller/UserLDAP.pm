@@ -51,7 +51,7 @@ sub object : Chained('base') : PathPart('id') : CaptureArgs(1) {
 
     my $local_user = $c->stash->{resultset}->search({username => $cn})->single;
     
-    $c->stash( user => $local_user ) if($local_user);
+    $c->stash( object => $local_user ) if($local_user);
     if ( !$local_user  ) {
         $c->stash( error_msg => "User $cn not found. You must provide some information before continue..." );
         $c->detach('/userldap/create');
@@ -66,7 +66,9 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
     my ( $self, $c ) = @_;
 
     my $user_schema = $c->stash->{resultset};
+    my @user_table = $c->stash->{resultset}->all;
 
+    $c->stash( userldap_table => \@user_table );
     $c->stash( template       => 'userldap/list.tt' );
 }
 
@@ -100,11 +102,11 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
      my $mail = $c->user->mail || '';
      my $cn   = $c->stash->{'username'} || '';
 
-     my $item = $c->stash->{'user'} ||
-	$c->stash->{resultset}->new_result( {email => $mail, username => $cn} );
+     my $item = $c->stash->{'object'} ||
+	 $c->stash->{resultset}->new_result( {email => $mail, username => $cn} );
 
      #set the default backref according to the action (create or edit)
-     my $def_br = $c->uri_for('/userldap/checkrole');
+     my $def_br = $c->uri_for_action( '/userldap/view', [$cn] );
      $c->stash( default_backref => $def_br );
 
      my $form = IPAdmin::Form::UserLDAP->new( item => $item );
@@ -113,14 +115,31 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
      # the "process" call has all the saving logic,
      #   if it returns False, then a validation error happened
 
-     if ( $c->req->param('discard') ) {
-         $c->detach('/follow_backref');
-     }
-     return unless $form->process( params => $c->req->params, );
+#     if ( $c->req->param('discard') ) {
+#         $c->detach('/follow_backref');
+#     }
+    return unless $form->process( params => $c->req->params, );
+
+    #If it'a a new user, set the default role (role \"user\")
+    unless ( defined( $c->stash->{object} ) ) {
+        my $role_user = $c->model('IPAdminDB::Role')->search( { role => "user" } )->single;
+        unless ($role_user) {
+            $c->stash( error_msg => "Role \"user\" not defined!" );
+            $c->detach('/error/index');
+        }
+        $c->model('IPAdminDB::UserRole')->create(
+            {
+                user_id => $item->id,
+                role_id => $role_user->id,
+            }
+        );
+    }
 
      $c->flash( message => 'Success! UserLDAP created.' );
      $c->detach('/follow_backref');
  }
+
+
 
 =head2 create
 
@@ -158,6 +177,20 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
         $c->stash( template => 'generic_delete.tt' );
     }
 }
+
+=head2 switch_status
+
+=cut
+
+sub switch_status : Chained('object') : PathPart('switch_status') : Args(0) {
+    my ( $self, $c ) = @_;
+    my $user = $c->stash->{'object'};
+    $user->active( !$user->active );
+    $user->update;
+    $c->response->redirect( $c->uri_for('/userldap/list') );
+    $c->detach();
+}
+
 
 =head1 AUTHOR
 

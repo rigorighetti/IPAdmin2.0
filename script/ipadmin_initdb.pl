@@ -42,6 +42,8 @@ sub do_reset_admin {
     my $admin_role = $schema->resultset('Role')->update_or_create( { role => 'admin', } );
     $self->log->info('Creating user role.');
     $schema->resultset('Role')->update_or_create( { role => 'user', } );
+    $self->log->info('Creating manager role.');
+    $schema->resultset('Role')->update_or_create( { role => 'manager', } );
 
     $self->log->info('Creating admin user.');
     my $admin_user = $schema->resultset('User')->update_or_create(

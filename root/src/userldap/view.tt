@@ -12,13 +12,13 @@
   <div id="tabs-1">
     <table id="info">
       <tr>
-	<td>Name:</td><td>[% object.username %]</td>
+	<td>Name:</td><td>[% object.fullname %]</td>
       </tr>
       <tr>
 	<td>Email:</td><td>[% object.email | html %] </td>
       </tr>
       <tr>
-	<td>Address:</td><td>[% object.address %] </td>
+	<td>Telephone:</td><td>[% object.telephone %] </td>
       </tr>
       <tr>
       </tr>
