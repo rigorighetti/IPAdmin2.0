@@ -7,7 +7,7 @@
 <!--
 <div class="buttons create_btn">
 <a href="[% c.uri_for_action('/userldap/create') %]" >
-   [% ui_icon('circle-plus') %] Create a User</a>
+   [% ui_icon('circle-plus') %] Crea un Utente</a>
 [% add_css_create_btn %]
 </div>
 -->
@@ -18,10 +18,10 @@
     <table class="display" id="userldap">
        <thead>  
 	 <tr>
- 	 <th>Name</th>
- 	 <th>Full Name</th>
+ 	 <th>Username</th>
+ 	 <th>Nome e Cognome</th>
    <th>Email</th>
- 	 <th>Roles</th>
+ 	 <th>Ruolo</th>
 	 <th>Active</th>
 	 <th>Commands</th>
          </tr>

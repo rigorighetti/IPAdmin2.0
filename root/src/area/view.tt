@@ -5,32 +5,32 @@
 -%]
 <div id="tabs">	 
   <ul>
-    <li><a href="#tabs-1">General</a></li>
-    <li><a href="#tabs-2">Departments</a></li>
+    <li><a href="#tabs-1">Informazioni</a></li>
+    <li><a href="#tabs-2">Dipartmenti</a></li>
   </ul>
   		
 
   <div id="tabs-1">
     <table id="info">
       <tr>
-	<td>Building:</td><td>[% object.building.name %]</td>
+	<td>Edificio:</td><td>[% object.building.name %]</td>
       </tr>
       <tr>
-	<td>Department:</td><td>[% object.department.name | html %] </td>
+	<td>Dipartmento:</td><td>[% object.department.name | html %] </td>
       <tr>
-	<td>Manager:</td><td>[% object.manager.name | html%]</td>
+	<td>Referente:</td><td>[% object.manager.fullname | html%]</td>
       </tr>
     </table>
     [% add_css_tableinfo -%]
     <p>
       <div class="buttons">	
-	<a href=[%c.uri_for_action('area/edit', [object.id]) %]> [% ui_icon('pencil') %] Edit</a>
+	<a href=[%c.uri_for_action('area/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica</a>
 	&nbsp;<a href=[% c.uri_for_action('area/delete', [object.id]) %]>
-	[% ui_icon('closethick') %]  Delete</a>
+	[% ui_icon('closethick') %]  Elimina</a>
 	&nbsp; 
 <!--
-	<a href="[% c.uri_for('/rack/create', object.id,{backref=>c.req.uri}) %]">
-		[% ui_icon('plusthick') %] Add Rack</a> 
+	<a href="[% c.uri_for('/area/create', object.id,{backref=>c.req.uri}) %]">
+		[% ui_icon('plusthick') %] Aggiungi Area</a> 
 -->
       </div>
     </p>

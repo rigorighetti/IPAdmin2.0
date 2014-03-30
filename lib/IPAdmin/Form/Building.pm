@@ -7,7 +7,7 @@ use warnings;
 use HTML::FormHandler::Moose;
 
 extends 'HTML::FormHandler::Model::DBIC';
-# with 'IPAdmin::FormRenderTable';
+ with 'IPAdmin::FormRenderTable';
 
 has_field 'name' => (
 	type	 => 'Text',
@@ -22,7 +22,7 @@ has_field 'name' => (
 );
 
 has_field 'description' => ( type => 'TextArea' );
-has_field 'address' => ( type => 'TextArea', required => 1 );
+has_field 'address' => ( type => 'Text', required => 1 );
 
 has_field 'submit'  => ( type => 'Submit', value => 'Submit' );
 has_field 'discard' => ( type => 'Submit', value => 'Discard' );

@@ -1,12 +1,11 @@
 [% META 
-   title='Building'
+   title='Richiesta IP'
    use_table=1
    section='Asset'
 -%]
 <div id="tabs">	 
   <ul>
     <li><a href="#tabs-1">Generale</a></li>
-    <li><a href="#tabs-2">Dipartimenti</a></li>
   </ul>
   		
 
@@ -16,7 +15,7 @@
 	<td>Nome:</td><td>[% object.name %]</td>
       </tr>
       <tr>
-	<td>Descrizione:</td><td>[% object.description | html %] </td>
+	<td>:</td><td>[% object.description | html %] </td>
       </tr>
       <tr>
 	<td>Indirizzo:</td><td>[% object.address %] </td>
@@ -41,29 +40,3 @@
   [% add_css_tableinfo %]
   </div>
   
-  <div id="tabs-2">	
-    [% FOREACH d IN object.departments %]
-    [% IF loop.first %]
-    [% init_table('dep_list') %]
-    <table class="display" id="dep_list">
-      <thead>  
-        <tr>
- 	  <th>Nome</th>
- 	  <th>Descrizione</th>
-        </tr>
-      </thead>  
-      <tbody>
-	[% END %]
-        <tr>
- 	  <td><a href=[% c.uri_for_action('/department/view', [d.id]) %]>[% d.name %]</a></td>
- 	  <td>[% d.description %]</td>
-        </tr>
-	[% IF loop.last %]
-      </tbody>
-    </table>
-    [% END %]
-    [% END %]
-  </div>
-</div>
-
-

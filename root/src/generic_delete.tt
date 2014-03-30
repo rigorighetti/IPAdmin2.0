@@ -1,7 +1,9 @@
 
 <table>
 <tr>
-  <td>Are you sure to delete this Object?</td>
+ <!-- <td>Are you sure to delete this Object?</td>
+-->
+ <td>Sei sicuro di voler eliminare questo Oggetto?</td>
 <td>
 <form method="POST" >
 <div class="buttons">

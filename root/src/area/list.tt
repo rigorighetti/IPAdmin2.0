@@ -6,7 +6,7 @@
 
 <div class="buttons create_btn">
 <a href="[% c.uri_for_action('/area/create') %]" >
-   [% ui_icon('circle-plus') %] Create Area</a>
+   [% ui_icon('circle-plus') %] Creare Area</a>
  [% add_css_create_btn %]
 </div>
 

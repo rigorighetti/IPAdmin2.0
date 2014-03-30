@@ -99,7 +99,7 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
  sub save : Private {
      my ( $self, $c ) = @_;
      my $item = $c->stash->{object} ||
-         $c->stash->{resultset}->new_result( {} );
+         $c->stash->{resultset}->new_result( { } );
 
      #set the default backref according to the action (create or edit)
      my $def_br = $c->uri_for('/area/list');
@@ -129,7 +129,9 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
 =cut
 
 sub create : Chained('base') : PathPart('create') : Args(0) {
-     my ( $self, $c ) = @_;
+     my ( $self, $c) = @_;
+     my $build_id = $c->req->params->{'building'} || '';
+     $c->stash(building => $build_id);
      $c->forward('save');
  }
 

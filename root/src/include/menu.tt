@@ -6,7 +6,7 @@
 	        },
 		{
 		     name = 'Asset',
-		     path = c.uri_for('/device'),
+		     path = c.uri_for('/area'),
 		},
 		{
 		     name = 'NetDB',
@@ -18,7 +18,7 @@
 		},
 		{
 		     name = 'Config',
-     		     path = c.uri_for('/user/list'),
+     		     path = c.uri_for('/userldap/list'),
  		 },	
 		 {
 		     name = 'About',
@@ -45,16 +45,16 @@
 		],
 	 Asset = [
   	       {
-		     name = 'Device', 
-		     path = c.uri_for('/device/list'),
+		     name = 'Dipartimento', 
+		     path = c.uri_for('/department/list'),
 	       },
 	       {
-		     name = 'Building',
+		     name = 'Edificio',
 		     path = c.uri_for('/building/list'),
 		},
 		{
-		     name = 'Rack',
-		     path = c.uri_for('/rack/list'),
+		     name = 'Area',
+		     path = c.uri_for('/area/list'),
 		},		     
 		],
 	 NetDB = [
@@ -77,8 +77,8 @@
 		],
 	 Config = [
   	       {
-		     name = 'Users', 
-		     path = c.uri_for('/user/list'),
+		     name = 'Utenti LDAP', 
+		     path = c.uri_for('/userldap/list'),
 	       },
 	       {
 		     name = 'Management Urls',

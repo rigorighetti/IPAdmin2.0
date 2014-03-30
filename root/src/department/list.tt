@@ -6,7 +6,7 @@
 
 <div class="buttons create_btn">
 <a href="[% c.uri_for_action('/department/create') %]" >
-   [% ui_icon('circle-plus') %] Create Department</a>
+   [% ui_icon('circle-plus') %] Crea Dipartimento</a>
  [% add_css_create_btn %]
 </div>
 
@@ -14,9 +14,9 @@
  <table class="display" id="dep_list">
    <thead>  
      <tr>
-        <th>Name</th>
-        <th>Description</th>
-	<th>Nr. Buildings</th>
+        <th>Nome</th>
+        <th>Descrizione</th>
+	<th>Nr. Edifici</th>
      </tr>
    </thead>  
    <tbody>

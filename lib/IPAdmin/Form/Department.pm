@@ -7,7 +7,7 @@ use warnings;
 use HTML::FormHandler::Moose;
 
 extends 'HTML::FormHandler::Model::DBIC';
-# with 'IPAdmin::FormRenderTable';
+ with 'IPAdmin::FormRenderTable';
 
 has_field 'name' => (
 	type	 => 'Text',

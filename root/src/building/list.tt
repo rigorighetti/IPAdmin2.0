@@ -6,7 +6,7 @@
 
 <div class="buttons create_btn">
 <a href="[% c.uri_for_action('/building/create') %]" >
-   [% ui_icon('circle-plus') %] Create Building</a>
+   [% ui_icon('circle-plus') %] Crea Edificio</a>
  [% add_css_create_btn %]
 </div>
 
@@ -14,9 +14,9 @@
  <table class="display" id="build_list">
    <thead>  
      <tr>
-        <th>Name</th>
-        <th>Description</th>
-        <th>Address</th>
+        <th>Nome</th>
+        <th>Descrizione</th>
+        <th>Indirizzo</th>
      </tr>
    </thead>  
    <tbody>

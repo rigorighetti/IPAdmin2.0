@@ -6,6 +6,7 @@ package IPAdmin::Controller::UserLDAP;
 use Moose;
 use namespace::autoclean;
 use IPAdmin::Form::UserLDAP;
+use IPAdmin::Form::SetManager;
 use Data::Dumper;
 
 BEGIN { extends 'Catalyst::Controller'; }
@@ -45,7 +46,7 @@ sub base : Chained('/') : PathPart('userldap') : CaptureArgs(0) {
 
 =cut
 
-sub object : Chained('base') : PathPart('id') : CaptureArgs(1) {
+sub object : Chained('base') : PathPart('username') : CaptureArgs(1) {
     my ( $self, $c, $cn ) = @_;
     $c->stash( username => $cn );
 
@@ -115,9 +116,9 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
      # the "process" call has all the saving logic,
      #   if it returns False, then a validation error happened
 
-#     if ( $c->req->param('discard') ) {
-#         $c->detach('/follow_backref');
-#     }
+     if ( $c->req->param('discard') ) {
+         $c->detach('/follow_backref');
+     }
     return unless $form->process( params => $c->req->params, );
 
     #If it'a a new user, set the default role (role \"user\")
@@ -189,6 +190,52 @@ sub switch_status : Chained('object') : PathPart('switch_status') : Args(0) {
     $user->update;
     $c->response->redirect( $c->uri_for('/userldap/list') );
     $c->detach();
+}
+
+sub set_manager : Chained('object') : PathPart('set_manager') : Args(0) {
+    my ( $self, $c ) = @_;
+    my $user_id = $c->stash->{'object'}->id;
+    my $item = $c->model('IPAdminDB::Area')->new_result( {manager => $user_id} );
+
+    $c->stash(manager_id => $user_id );
+     #set the default backref according to the action (create or edit)
+     my $def_br = $c->uri_for_action( '/userldap/list' );
+     $c->stash( default_backref => $def_br );
+
+     my $form = IPAdmin::Form::SetManager->new( item => $item );
+     $c->stash( form => $form, template => 'userldap/set_manager.tt' );
+
+     # the "process" call has all the saving logic,
+     #   if it returns False, then a validation error happened
+
+     if ( $c->req->param('discard') ) {
+         $c->detach('/follow_backref');
+     }
+    return unless $form->process( params => $c->req->params, );
+
+    $c->flash( message => "L'Utente è ora un referente" );
+    #Set user's roles
+    my @user_roles = $c->model('IPAdminDB::UserRole')->search( { 'user_id' => $user_id } );
+
+    foreach my $role (@user_roles){
+      if($role eq "manager"){
+            #l'utente è già referente
+	    $c->detach('/follow_backref');
+        }
+     }
+
+     #Add new roles
+     my $user_role_id = $c->model('IPAdminDB::Role')->search( { 'role' => "manager"} )->single;
+     if ($user_role_id) {
+       $c->model('IPAdminDB::UserRole')->update_or_create(
+               {
+                   user_id => $user_id,
+                   role_id => $user_role_id->id,
+               }
+           );
+     }
+
+    $c->detach('/follow_backref');
 }
 
 

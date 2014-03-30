@@ -5,28 +5,28 @@
 -%]
 <div id="tabs">	 
   <ul>
-    <li><a href="#tabs-1">General</a></li>
-    <li><a href="#tabs-2">Buildings</a></li>
+    <li><a href="#tabs-1">Informazioni</a></li>
+    <li><a href="#tabs-2">Edifici</a></li>
   </ul>
   		
 
   <div id="tabs-1">
     <table id="info">
       <tr>
-	<td>Name:</td><td>[% object.name %]</td>
+	<td>Nome:</td><td>[% object.name %]</td>
       </tr>
       <tr>
-	<td>Description:</td><td>[% object.description | html %] </td>
+	<td>Descrizione:</td><td>[% object.description | html %] </td>
       <tr>
-	<td>Notes:</td><td>[% object.notes | html%]</td>
+	<td>Note:</td><td>[% object.notes | html%]</td>
       </tr>
     </table>
     [% add_css_tableinfo -%]
     <p>
       <div class="buttons">	
-	<a href=[%c.uri_for_action('department/edit', [object.id]) %]> [% ui_icon('pencil') %] Edit</a>
+	<a href=[%c.uri_for_action('department/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica</a>
 	&nbsp;<a href=[% c.uri_for_action('department/delete', [object.id]) %]>
-	[% ui_icon('closethick') %]  Delete</a>
+	[% ui_icon('closethick') %]  Elimina</a>
       </div>
     </p>
   [% add_css_tableinfo %]
@@ -39,9 +39,9 @@
     <table class="display" id="build_list">
       <thead>  
         <tr>
- 	  <th>Name</th>
- 	  <th>Description</th>
-	  <th>Address</th>
+ 	  <th>Nome</th>
+ 	  <th>Descrizione</th>
+	  <th>Indirizzo</th>
         </tr>
       </thead>  
       <tbody>
