@@ -33,23 +33,6 @@ __PACKAGE__->add_columns(
         size        => 255,
         is_nullable => 1
     },
-    email => {
-        data_type   => 'varchar',
-        size        => 255,
-        is_nullable => 1
-    },
-    telephone => {
-        data_type => 'varchar',
-        size      => '255',
-        is_nullable => 1
-    },
-    active => {
-        data_type     => 'int',
-        size          => 1,
-        is_nullable   => 0,
-        default_value => 1,
-    },
-
             );
 __PACKAGE__->set_primary_key(qw(id));
 __PACKAGE__->add_unique_constraint( ['username'] );

@@ -29,7 +29,7 @@ Catalyst Controller.
 
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
-    $c->response->redirect('userldap/list');
+    $c->response->redirect($c->uri('userldap/list'));
     $c->detach();
 }
 

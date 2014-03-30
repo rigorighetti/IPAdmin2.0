@@ -18,6 +18,9 @@ __PACKAGE__->config(
 
 
 
+#__PACKAGE__->meta->make_immutable;
+
+1;
 
 =head1 NAME
 
@@ -38,6 +41,3 @@ it under the same terms as Perl itself.
 
 =cut
 
-__PACKAGE__->meta->make_immutable;
-
-1;

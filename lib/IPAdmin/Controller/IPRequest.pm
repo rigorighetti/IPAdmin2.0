@@ -99,7 +99,7 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
  sub save : Private {
      my ( $self, $c ) = @_;
      my $user =  $c->model('IPAdminDB::UserLDAP')->search( { username => $c->user->username } )->single;
-     my $item = $c->stash->{object} || {username => $user->fullname};
+     my $item = $c->stash->{object};
 
      #set the default backref according to the action (create or edit)
      my $def_br;# = $c->uri_for('/iprequest/list');
@@ -116,7 +116,8 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
      if ( $c->req->param('discard') ) {
          $c->detach('/follow_backref');
      }
-     return unless $form->process( params => $c->req->params );
+     return unless $form->process( params => $c->req->params, 
+        defaults => {username => $c->user->fullname} );
 
      $c->flash( message => 'Success! IPRequest created.' );
      $def_br = $c->uri_for_action( 'iprequest/view', [ $item->id ] );

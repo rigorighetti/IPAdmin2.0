@@ -22,10 +22,6 @@ __PACKAGE__->add_columns(
         data_type => 'varchar',
         size      => '255',
     },
-    address => {
-        data_type => 'varchar',
-        size      => '255',
-    },
 );
 
 __PACKAGE__->set_primary_key('id');

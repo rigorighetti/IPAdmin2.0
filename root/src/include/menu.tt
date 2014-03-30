@@ -7,15 +7,7 @@
 		{
 		     name = 'Asset',
 		     path = c.uri_for('/area'),
-		},
-		{
-		     name = 'NetDB',
-		     path = c.uri_for('/vlanrange'),
 		},		     
-		{
-		     name = 'Reports',
-		     path = c.uri_for('/reports'),
-		},
 		{
 		     name = 'Config',
      		     path = c.uri_for('/userldap/list'),
@@ -57,49 +49,17 @@
 		     path = c.uri_for('/area/list'),
 		},		     
 		],
-	 NetDB = [
-  	       {
-		     name = 'VLAN', 
-		     path = c.uri_for('/vlanrange/list'),
-	       },
-	       {
-		     name = 'VTP Vlan',
-		     path = c.uri_for('/vlan/list'),
-		},
-		{
-		     name = 'Subnet',
-		     path = c.uri_for('/iprange/list'),
-		},
-		{
-		     name = 'SSid',
-		     path = '#',
-		},	     
-		],
 	 Config = [
   	       {
-		     name = 'Utenti LDAP', 
+		     name = 'Utenti Strutturati', 
 		     path = c.uri_for('/userldap/list'),
 	       },
 	       {
-		     name = 'Management Urls',
-		     path = c.uri_for('/mngurlformat'),
-		},
-		{
-		     name = 'Credentials',
-		     path = '#',
-		}	     
-		],
-	 Reports = [
-  	       {
-		     name = 'Dynamic Reports', 
-		     path = c.uri_for('/reports'),
-	       },
-	       {
-		     name = 'Scheduled Reports',
-		     path = c.uri_for('/reportarchive'),
+		     name = 'Admin',
+		     path = c.uri_for('/user'),
 		},	     
 		],
-  }		
+	 }		
 -%]
 [% MACRO menu_dock BLOCK -%]
 <ul>
