@@ -1,7 +1,7 @@
 [% META 
-   title='Users in LDAP'
+   title='Richieste IP'
    use_table=1
-   section='Config'
+   section='Asset'
 -%]
 
 <!--
@@ -12,7 +12,7 @@
 </div>
 -->
 
-[% FOREACH u IN userldap_table %]
+[% FOREACH u IN iprequest_table %]
    [% IF loop.first %] 
      [%init_table('userldap') %]  
     <table class="display" id="userldap">

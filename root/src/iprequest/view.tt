@@ -12,29 +12,34 @@
   <div id="tabs-1">
     <table id="info">
       <tr>
-	<td>Nome:</td><td>[% object.name %]</td>
+	     <td>Data:</td><td>[% data %]</td>
       </tr>
       <tr>
-	<td>:</td><td>[% object.description | html %] </td>
+	     <td>Tipo:</td><td></td>
       </tr>
       <tr>
-	<td>Indirizzo:</td><td>[% object.address %] </td>
+	     <td>Responsabile:</td><td>[% object.user.fullname %] </td>
       </tr>
       <tr>
-	<td>Note:</td><td>[% object.notes | html%]</td>
+	     <td>Struttura:</td><td>[% object.area.department.name (object.area.building.name)%]</td>
       </tr>
+      <tr>
+       <td>Referente di rete:</td><td>[% object.area.manager.fullname%]</td>
+      </tr>
+      <tr>
+       <td>Nome a dominio:</td><td>[% object.hostname%].[%object.area.department.domain%]</td>
+      </tr>
+      <tr>
+       <td>MAC Address:</td><td>[% object.macaddr%]</td>
+      </tr>    
+
     </table>
     [% add_css_tableinfo -%]
     <p>
       <div class="buttons">	
-	<a href=[%c.uri_for_action('building/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica</a>
-	&nbsp;<a href=[% c.uri_for_action('building/delete', [object.id]) %]>
-	[% ui_icon('closethick') %]  Elimina</a>
-	&nbsp;
-
-	<a href="[% c.uri_for_action('/area/create',{building => object.id, backref=>c.req.uri}) %]">
-		[% ui_icon('plusthick') %] Aggiungi Dipartimento</a> 
-
+	<a href=[%c.uri_for_action('iprequest/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica</a>
+	&nbsp;<a href=[% c.uri_for_action('iprequest/delete', [object.id]) %]>
+	[% ui_icon('closethick') %]  Rinuncia</a>
       </div>
     </p>
   [% add_css_tableinfo %]

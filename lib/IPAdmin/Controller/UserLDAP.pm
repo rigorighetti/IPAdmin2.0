@@ -50,7 +50,7 @@ sub object : Chained('base') : PathPart('username') : CaptureArgs(1) {
     my ( $self, $c, $cn ) = @_;
     $c->stash( username => $cn );
 
-    my $local_user = $c->stash->{resultset}->search({username => $cn})->single;
+    my $local_user = $c->stash->{resultset}->search({username => $cn })->single;
     
     $c->stash( object => $local_user ) if($local_user);
     if ( !$local_user  ) {
@@ -101,7 +101,7 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
  sub save : Private {
      my ( $self, $c ) = @_;
      my $mail = $c->user->mail || '';
-     my $cn   = $c->stash->{'username'} || '';
+     my $cn   = $c->user->username;
 
      my $item = $c->stash->{'object'} ||
 	 $c->stash->{resultset}->new_result( {email => $mail, username => $cn} );
@@ -159,7 +159,7 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
     my ( $self, $c ) = @_;
     my $userldap = $c->stash->{'object'};
     my $id       = $userldap->id;
-    my $name     = $userldap->name;
+    my $name     = $userldap->username;
     $c->stash( default_backref => $c->uri_for_action('userldap/list') );
 
     if ( lc $c->req->method eq 'post' ) {

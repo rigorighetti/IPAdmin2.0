@@ -9,9 +9,11 @@ use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Model::DBIC';
  with 'IPAdmin::FormRenderTable';
 
-has_field 'username' => (
-    type  => 'Text', disabled => 1
+
+has_field 'user' => (
+    type  => 'Hidden', 
 );
+
 
 has_field 'department' => (
         type    => 'Select',

@@ -23,6 +23,8 @@ has_field 'name' => (
 
 has_field 'description' => ( type => 'TextArea' );
 
+has_field 'domain' => ( type => 'Text', required => 0 );
+
 has_field 'submit'  => ( type => 'Submit', value => 'Submit' );
 has_field 'discard' => ( type => 'Submit', value => 'Discard' );
 

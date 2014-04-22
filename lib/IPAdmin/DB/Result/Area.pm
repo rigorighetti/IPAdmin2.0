@@ -9,11 +9,11 @@ __PACKAGE__->load_components(qw/PK::Auto Core/);
 
 __PACKAGE__->table('area');
 __PACKAGE__->add_columns(
-                         id => {
-                                data_type         => 'int',
-                                is_nullable       => 0,
-                                is_auto_increment => 1,
-                               },
+             id => {
+                   data_type         => 'int',
+                   is_nullable       => 0,
+                   is_auto_increment => 1,
+                   },
 			 building   => {
 				      data_type      => 'int',
 				      is_nullable    => 0,

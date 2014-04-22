@@ -7,6 +7,7 @@ use Moose;
 use namespace::autoclean;
 use IPAdmin::Form::IPRequest;
 use Data::Dumper;
+use IPAdmin::Utils;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -56,28 +57,31 @@ sub object : Chained('base') : PathPart('id') : CaptureArgs(1) {
     }
 }
 
-#=head2 list
-# commentata in attesa di capire come fare 
-#=cut
-#
-#sub list : Chained('base') : PathPart('list') : Args(0) {
-#    my ( $self, $c ) = @_;
-#
-#    my $build_schema = $c->stash->{resultset};
-#
-#    my @iprequest_table = $build_schema->search({});
-#
-#    $c->stash( iprequest_table => \@iprequest_table );
-#    $c->stash( template       => 'iprequest/list.tt' );
-#}
-#
+=head2 list
+commentata in attesa di capire come fare.
+L'utente deve vedere solo le sue.
+Il referente le sue + quelle di cui è referente divise da tab.
+L'amministratore vede tutte le richieste insieme
+=cut
+
+sub list : Chained('base') : PathPart('list') : Args(0) {
+   my ( $self, $c ) = @_;
+
+   my $build_schema    = $c->stash->{resultset};
+   my @iprequest_table = $build_schema->search({});
+
+   $c->stash( iprequest_table => \@iprequest_table );
+   $c->stash( template        => 'iprequest/list.tt' );
+}
+
 =head2 view
 
 =cut
 
 sub view : Chained('object') : PathPart('view') : Args(0) {
     my ( $self, $c ) = @_;
-
+    my $req = $c->stash->{object};
+    $c->stash( data => IPAdmin::Utils::print_short_timestamp($req->date));
     $c->stash( template => 'iprequest/view.tt' );
 }
 
@@ -98,8 +102,10 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
 
  sub save : Private {
      my ( $self, $c ) = @_;
-     my $user =  $c->model('IPAdminDB::UserLDAP')->search( { username => $c->user->username } )->single;
-     my $item = $c->stash->{object};
+    #user info
+    my $user = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    my $item = $c->stash->{object} || 
+         $c->stash->{resultset}->new_result( {user => $user->id} );
 
      #set the default backref according to the action (create or edit)
      my $def_br;# = $c->uri_for('/iprequest/list');
@@ -107,7 +113,7 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
          if ( defined( $c->stash->{object} ) );
      $c->stash( default_backref => $def_br );
 
-     my $form = IPAdmin::Form::IPRequest->new( );
+     my $form = IPAdmin::Form::IPRequest->new( item => $item );
      $c->stash( form => $form, template => 'iprequest/save.tt' );
 
      # the "process" call has all the saving logic,
@@ -116,8 +122,7 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
      if ( $c->req->param('discard') ) {
          $c->detach('/follow_backref');
      }
-     return unless $form->process( params => $c->req->params, 
-        defaults => {username => $c->user->fullname} );
+     return unless $form->process( params => $c->req->params,  );
 
      $c->flash( message => 'Success! IPRequest created.' );
      $def_br = $c->uri_for_action( 'iprequest/view', [ $item->id ] );
@@ -125,20 +130,119 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
      $c->detach('/follow_backref');
  }
 
-=head2 create
 
-=cut
+sub create : Chained('base') : PathPart('create') : Args() {
+    my ( $self, $c, $parent ) = @_;
+    my $id;
+    $c->stash( default_backref => $c->uri_for_action('/iprequest/list') );
 
-sub create : Chained('base') : PathPart('create') : Args(0) {
-     my ( $self, $c ) = @_;
-     $c->forward('save');
- }
+    if ( lc $c->req->method eq 'post' ) {
+        if ( $c->req->param('discard') ) {
+            $c->detach('/follow_backref');
+        }
+        my $done = $c->forward('process_create');
+        if ($done) {
+            $c->flash( message => $c->stash->{message} );
+            $c->stash( default_backref =>
+                $c->uri_for_action( "iprequest/list" ) );
+            $c->detach('/follow_backref');
+        }
+    }
+    #set form defaults
+    my %tmpl_param;
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+
+    if($realm eq "normal") {
+        #se non è un utente ldap ci deve stare un campo select per l'utente ldap
+    }
+    my @aree = $c->model('IPAdminDB::Area')->search()->all;
+
+
+    $tmpl_param{realm}     = $realm;
+    $tmpl_param{user}      = $user;
+    $tmpl_param{fullname}  = $user->fullname;
+    $tmpl_param{area}      = \@aree;
+    $tmpl_param{data}      = IPAdmin::Utils::print_short_timestamp(time);
+    $tmpl_param{template}  = 'iprequest/create.tt';
+
+
+    $c->stash(%tmpl_param);
+}
+
+sub process_create : Private {
+    my ( $self, $c ) = @_;
+    my $area      = $c->req->param('area');
+    my $user      = $c->req->param('user');
+    my $location  = $c->req->param('location');
+    my $mac       = $c->req->param('mac');
+    my $type      = $c->req->param('type');
+    my $hostname  = $c->req->param('hostname');
+    my $error;
+
+
+    # check name parameter
+    # if ( $name ) {
+    # $c->forward('check_name', [ $name ]) or 
+    #   $c->stash->{error}->{name} = $c->stash->{message}; 
+    # } else {
+    # $c->stash->{error}->{name} = "Missing field";
+    # }
+    # scalar( keys(%{$c->stash->{error}}) ) and return 0;
+
+    # check form
+    $c->forward('check_ipreq_form') || return 0; 
+
+    #state == 0 non validata
+    #state == 1 convalidata
+    #state == 2 IP assegnato 
+    #state == 3 archiviata
+
+    my $ret = $c->stash->{'resultset'}->create({
+                        area        => $area,
+                        user        => $user,
+                        location    => $location,
+                        macaddress  => $mac,
+                        hostname    => $hostname,
+                        date        => time,
+                        state       => 0,
+ #                       type     => $type,
+                           });
+    if (! $ret ) {
+    $c->stash->{message} = "Errore nella creazione della richiesta IP";
+    return 0;
+    } else {
+    $c->stash->{message} = "La richiesta IP è stata creata.";
+    return 1;
+    }
+}
+
+sub check_ipreq_form : Private {
+    my ( $self, $c) = @_;
+    my $schema = $c->stash->{resultset};
+
+    # if ( $name eq '' ) {
+    # $c->stash->{message} = "Empty name";
+    # return 0;
+    # }
+    # if ( $name !~ /^\w[\w-]*$/ ) {
+    # $c->stash->{message} = "Invalid name";
+    # return 0;
+    # }
+
+    # if ($schema->search({ name => $name})->count() > 0 ) {
+    # $c->stash->{message} = "Duplicated name";
+    # $c->log->error("duplicated $name");
+    # return 0;
+    # }
+
+    return 1;
+}
 
 =head2 delete
 
 =cut
 
-#sub delete : Chained('object') : PathPart('delete') : Args(0) {
+sub delete : Chained('object') : PathPart('delete') : Args(0) {
 #    my ( $self, $c ) = @_;
 #    my $iprequest = $c->stash->{'object'};
 #    my $id       = $iprequest->id;
@@ -213,7 +317,7 @@ sub create : Chained('base') : PathPart('create') : Args(0) {
 #    else {
 #        $c->stash( template => 'generic_delete.tt' );
 #    }
-#}
+}
 
 =head1 AUTHOR
 

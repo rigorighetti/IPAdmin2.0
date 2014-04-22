@@ -18,7 +18,7 @@
       <tr>
 	<td>Descrizione:</td><td>[% object.description | html %] </td>
       <tr>
-	<td>Note:</td><td>[% object.notes | html%]</td>
+	<td>Dominio:</td><td>[% object.domain%]</td>
       </tr>
     </table>
     [% add_css_tableinfo -%]

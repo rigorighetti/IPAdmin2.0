@@ -50,7 +50,6 @@ sub do_reset_admin {
         {
             username => 'admin',
             fullname => 'Administrator',
-            active   => 1,
             password => 'admin',
         }
     );

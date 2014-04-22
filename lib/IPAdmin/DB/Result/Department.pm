@@ -19,8 +19,14 @@ __PACKAGE__->add_columns(
         size      => '32',
     },
     description => {
-        data_type => 'varchar',
-        size      => '255',
+        data_type   => 'varchar',
+        size        => '255',
+        is_nullable => 1,
+    },
+    domain => {
+        data_type   => 'varchar',
+        size        => '32',
+        is_nullable => 0,
     },
 );
 

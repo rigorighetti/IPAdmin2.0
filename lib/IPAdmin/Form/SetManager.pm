@@ -17,7 +17,8 @@ has_field 'area' => (
 );
 
 has_field 'manager' => (
-        type    => 'Hidden',
+        type    => 'Hidden',        
+        label   => '',
         required     => 0
 );
 

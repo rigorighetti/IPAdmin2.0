@@ -12,14 +12,14 @@ extends 'HTML::FormHandler::Model::DBIC';
 has_field 'building' => (
     type         => 'Select',
     label        => 'Building name',
-    empty_select => '---Choose a Building---',
+    empty_select => '---Edificio---',
     required     => 1
 );
 
 has_field 'department' => (
 	type	=> 'Select',
 	label	=> 'Department name',
-	empty_select => '---Choose a Building---',
+	empty_select => '---Struttura---',
         required     => 1
 );
 
