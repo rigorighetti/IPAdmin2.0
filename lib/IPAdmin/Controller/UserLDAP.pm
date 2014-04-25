@@ -48,13 +48,15 @@ sub base : Chained('/') : PathPart('userldap') : CaptureArgs(0) {
 
 sub object : Chained('base') : PathPart('username') : CaptureArgs(1) {
     my ( $self, $c, $cn ) = @_;
+    #force lower case
+    $cn = lc($cn);
     $c->stash( username => $cn );
 
     my $local_user = $c->stash->{resultset}->search({username => $cn })->single;
     
     $c->stash( object => $local_user ) if($local_user);
     if ( !$local_user  ) {
-        $c->stash( error_msg => "User $cn not found. You must provide some information before continue..." );
+        $c->stash( error_msg => "Utente $cn non trovato nel database locale. Inserisci alcune informazioni prima di continuare" );
         $c->detach('/userldap/create');
     }
 }
@@ -101,7 +103,7 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
  sub save : Private {
      my ( $self, $c ) = @_;
      my $mail = $c->user->mail || '';
-     my $cn   = $c->user->username;
+     my $cn   = lc($c->user->username);
 
      my $item = $c->stash->{'object'} ||
 	 $c->stash->{resultset}->new_result( {email => $mail, username => $cn} );

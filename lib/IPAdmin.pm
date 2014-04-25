@@ -135,6 +135,44 @@ sub set_backref : Private {
 }
 
 
+########################################################################
+
+########################################################################
+
+after setup_finalize => sub {
+
+    #default admin ACL for full CRUD resources
+    my @CRUD        = qw/create edit delete/;
+    my @controllers = qw/department building area/;
+
+    foreach my $ctrl (@controllers) {
+        foreach (@CRUD) {
+            __PACKAGE__->allow_access_if( "$ctrl/$_",  sub {
+               my $c = shift;
+               return $c->user->username eq "admin";
+             }
+            );
+            __PACKAGE__->deny_access_unless( "$ctrl/$_", [qw/admin/] );
+        }
+    }
+
+    #Additional acl for admin privileges
+    my @admin_acl =
+        qw{ iprequest/create
+    };
+    foreach my $acl (@admin_acl) {
+        __PACKAGE__->deny_access_unless( $acl, [qw/admin/] );
+    }
+
+    # #Acl for manager privileges
+    # my @manager_acl =
+    #     qw{ 
+    # };
+    # foreach my $acl (@manager_acl) {
+    #     __PACKAGE__->deny_access_unless( $acl, [qw/admin manager/] );
+    # }
+};
+
 
 # Start the application
 __PACKAGE__->setup();

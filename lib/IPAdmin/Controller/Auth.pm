@@ -42,13 +42,13 @@ sub login : Local : CaptureArgs(0) {
     $c->keep_flash("backref");
 
     $c->stash( default_backref => $c->uri_for('/building/list') );
-    my $username = $c->req->params->{'username'};
+    my $username = lc($c->req->params->{'username'});
 
     if ( defined( $c->req->params->{'username'} ) ) {
 	 if (
             $c->authenticate(
                 {
-                    username => $c->req->params->{'username'},
+                    username => $username,
                     password => $c->req->params->{'password'},
                 }, 'normal_then_ldap'
             )
