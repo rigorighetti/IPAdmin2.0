@@ -1,0 +1,30 @@
+[% META 
+   title='Building'
+   use_table=1
+   section='Asset'
+-%]
+
+<div class="buttons create_btn">
+<a href="[% c.uri_for_action('/typerequest/create') %]" >
+   [% ui_icon('circle-plus') %] Crea Tipo di Richiesta IP</a>
+ [% add_css_create_btn %]
+</div>
+
+[% init_table('typereq_list') %]
+ <table class="display" id="typereq_list">
+   <thead>  
+     <tr>
+        <th>Nome</th>
+        <th>Descrizione</th>
+     </tr>
+   </thead>  
+   <tbody>
+[% FOREACH t IN typerequest_table %]
+
+         <tr>
+ 	 <td><a href=[% c.uri_for_action('/typerequest/view', [t.id]) %]>[% t.type %]</a></td>
+ 	 <td>[% t.description %]</td>
+         </tr>
+[% END %]
+   </tbody>
+</table>

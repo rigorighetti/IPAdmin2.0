@@ -50,11 +50,11 @@ __PACKAGE__->add_columns(
         size           => 1,
 	    is_nullable    => 0,
     },
- #    type =>   {
- #        data_type      => 'int',
- #        is_nullable    => 0,
- #        is_foreign_key => 1,
-	# },
+    type =>   {
+        data_type      => 'int',
+        is_nullable    => 0,
+        is_foreign_key => 1,
+    },
 );
 
 __PACKAGE__->set_primary_key(qw(id));
@@ -64,7 +64,7 @@ __PACKAGE__->belongs_to( area   => 'IPAdmin::DB::Result::Area',
 );
 
 __PACKAGE__->belongs_to( user       => 'IPAdmin::DB::Result::UserLDAP' );
-#__PACKAGE__->belongs_to( type       => 'IPAdmin::DB::Result::TypeRequest' );
+__PACKAGE__->belongs_to( type       => 'IPAdmin::DB::Result::TypeRequest' );
 
 
 =head1 NAME

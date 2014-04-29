@@ -69,7 +69,8 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
 	        id      => $_->id,
 	        name    => $_->name,
 	        description    => $_->description,
-	        n_build => $_->buildings->count()
+	        domain  => $_->domain,
+		n_build => $_->buildings->count()
 	        },
 	        $build_schema->search({},
         	                      {prefetch => 'map_area_build'});

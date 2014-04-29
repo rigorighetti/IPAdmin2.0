@@ -1,0 +1,39 @@
+[% META 
+   title='Type Request'
+   use_table=1
+   section='Asset'
+-%]
+<div id="tabs">	 
+  <ul>
+    <li><a href="#tabs-1">Generale</a></li>
+  </ul>
+  		
+
+  <div id="tabs-1">
+    <table id="info">
+      <tr>
+	<td>Nome:</td><td>[% object.type %]</td>
+      </tr>
+      <tr>
+	<td>Descrizione:</td><td>[% object.description | html %] </td>
+      </tr>
+    </table>
+    [% add_css_tableinfo -%]
+    <p>
+      <div class="buttons">	
+	<a href=[%c.uri_for_action('typerequest/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica</a>
+	&nbsp;<a href=[% c.uri_for_action('typerequest/delete', [object.id]) %]>
+	[% ui_icon('closethick') %]  Elimina</a>
+	&nbsp;
+
+	<a href="[% c.uri_for_action('/area/create',{typerequest => object.id, backref=>c.req.uri}) %]">
+		[% ui_icon('plusthick') %] Aggiungi Dipartimento</a> 
+
+      </div>
+    </p>
+  [% add_css_tableinfo %]
+  </div>
+  
+</div>
+
+

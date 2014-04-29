@@ -2,7 +2,7 @@
   menu_sections = [
   		{
 		     name = 'Search', 
-		     path = c.uri_for('/search'),
+		     path = c.uri_for('/iprequest'),
 	        },
 		{
 		     name = 'Asset',
@@ -33,7 +33,11 @@
 	       {
 		     name = 'Advanced',
 		     path = c.uri_for('/search',{advanced=>1}),
-		}	     
+		},	     
+		{	
+		     name = 'Richieste IP',
+		     path = c.uri_for('/iprequest'),
+		}
 		],
 	 Asset = [
   	       {

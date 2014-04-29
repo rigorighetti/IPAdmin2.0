@@ -36,7 +36,7 @@
     </p>
   [% add_css_tableinfo %]
   </div>
-  
+ 
   <div id="tabs-2">	
     [% FOREACH d IN object.departments %]
     [% IF loop.first %]
@@ -60,6 +60,7 @@
     [% END %]
     [% END %]
   </div>
+
 </div>
 
 

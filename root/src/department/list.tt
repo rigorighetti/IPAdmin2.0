@@ -10,12 +10,13 @@
  [% add_css_create_btn %]
 </div>
 
-[% init_table('dep_list',[30,60,10]) %]
+[% init_table('dep_list',[30,50,10,10]) %]
  <table class="display" id="dep_list">
    <thead>  
      <tr>
         <th>Nome</th>
         <th>Descrizione</th>
+	<th>Dominio</th>
 	<th>Nr. Edifici</th>
      </tr>
    </thead>  
@@ -25,6 +26,7 @@
          <tr>
  	 <td><a href=[% c.uri_for_action('/department/view', [d.id]) %]>[% d.name %]</a></td>
  	 <td>[% d.description %]</td> 
+	 <td>[% d.domain %]</td>
 	 <td>[% d.n_build %]</td>
 	</tr>
 [% END %]

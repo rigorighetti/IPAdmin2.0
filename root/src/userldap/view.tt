@@ -1,11 +1,12 @@
 [% META 
    title='Utente Strutturato'
    use_table=1
-   section='Asset'
+   section='Config'
 -%]
 <div id="tabs">	 
   <ul>
     <li><a href="#tabs-1">Informazioni</a></li>
+    <li><a href="#tabs-2">Le mie richieste IP</a></li>
   </ul>
   		
 
@@ -21,6 +22,7 @@
 	<td>Telefono:</td><td>[% object.telephone %] </td>
       </tr>
       <tr>
+        <td>Fax:</td><td>[% object.fax %] </td>
       </tr>
     </table>
     [% add_css_tableinfo -%]
@@ -32,6 +34,35 @@
   [% add_css_tableinfo %]
   </div>
   
+  <div id="tabs-2">
+  [% FOREACH i IN object.map_user_ipreq %]
+    [% IF loop.first %]
+    [% init_table('iprequest_list') %]
+    <table class="display" id="iprequest_list">
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Tipo</th>
+	  <th>Area</th>
+          <th>Referente di Rete</th>
+        </tr>
+      </thead>
+      <tbody>
+        [% END %]
+        <tr>
+          <td><a href=[% c.uri_for_action('/iprequest/view', [i.id]) %]>[% i.id %]</a></td>
+          <td>[% i.type.type %]</td>
+	  <td>[% i.area.department.name %] presso [% i.area.building.name %]</td>
+          <td>[% i.area.manager.fullname %]</td>
+        </tr>
+        [% IF loop.last %]
+      </tbody>
+    </table>
+    [% END %]
+    [% END %]
+
+  </div>
+
 </div>
 
 

@@ -1,61 +1,41 @@
 [% META 
    title='Richieste IP'
    use_table=1
-   section='Asset'
+   section='Search'
 -%]
 
-<!--
 <div class="buttons create_btn">
-<a href="[% c.uri_for_action('/userldap/create') %]" >
-   [% ui_icon('circle-plus') %] Crea un Utente</a>
+<a href="[% c.uri_for_action('/iprequest/create') %]" >
+   [% ui_icon('circle-plus') %] Nuova Richiesta IP</a>
 [% add_css_create_btn %]
 </div>
--->
 
-[% FOREACH u IN iprequest_table %]
+[% FOREACH i IN iprequest_table %]
    [% IF loop.first %] 
-     [%init_table('userldap') %]  
-    <table class="display" id="userldap">
+     [%init_table('iprequest') %]  
+    <table class="display" id="iprequest">
        <thead>  
 	 <tr>
- 	 <th>Username</th>
- 	 <th>Nome e Cognome</th>
-   <th>Email</th>
- 	 <th>Ruolo</th>
-	 <th>Active</th>
+	 <th>Id</th>
+ 	 <th>Data</th>
+	 <th>Nome e Cognome</th>
+   	 <th>Area</th>
+ 	 <th>Referente di Rete</th>
 	 <th>Commands</th>
          </tr>
        </thead>  
        <tbody>
   [% END %]
          <tr>
- 	 <td><a href=[% c.uri_for_action('/userldap/view', [u.username]) %]>[% u.username %]</a></td>
- 	 <td>[% u.fullname %]</td>
- 	 <td>[% u.email %]</td>
+	 <td align=center><a href=[% c.uri_for_action('/iprequest/view', [i.id]) %]>[% i.id %]</a></td>
+ 	 <td>[% i.date %]</td>
+	 <td><a href="[% c.uri_for_action('/userldap/view', [i.user.username]) %]">[% i.user.fullname %]</a></td>
+ 	 <td>[% i.area.department.name %] <i>presso</i> [% i.area.building.name %]</td>
+ 	 <td>[% i.area.manager.fullname %]</td>
 	 <td>
-	 [% FOREACH r IN u.roles %]
-          [% r.role %] 
-	   [%IF loop.last %].[% ELSE %],[% END %]
-	 [% END %]
+	  <a href="[% c.uri_for_action('iprequest/edit',[u.username])%]">[% icon('edit') %]</a>
+	  <a href="[% c.uri_for_action('iprequest/delete',[u.username])%]">[% icon('remove') %]</a>
 	 </td>
- 	 <td align="center">
-	  [% IF u.active %] 
-              [% IF u.login == 'admin' %]  [% icon('ok_white') %] 
-              [% ELSE %] <a href="[% c.uri_for_action('userldap/switch_status',[u.username]) %]"> [% icon('ok') %] </a> 
-	      [% END %]
-	  [% ELSE %]   
-             <a href="[% c.uri_for_action('userldap/switch_status',[u.username]) %]">[% icon('remove') %] </a> 
-          [% END %]
-	 </td>
- 	 <td>
-	  <a href="[% c.uri_for_action('userldap/edit',[u.username])%]">[% icon('edit') %]</a>
-	  <a href="[% c.uri_for_action('userldap/delete',[u.username])%]">[% icon('remove') %]</a>
-	   <div class="buttons small_btn">
-	   <a href="[% c.uri_for_action('userldap/set_manager',[u.username]) %]">Promuovi a referente </a>
-	   </div>
-	 </td>
-
-
          </tr>
   [% IF loop.last %]
         </tbody>

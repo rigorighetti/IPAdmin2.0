@@ -59,7 +59,7 @@ sub object : Chained('base') : PathPart('id') : CaptureArgs(1) {
 
 =head2 list
 commentata in attesa di capire come fare.
-L'utente deve vedere solo le sue.
+L'utente deve vedere solo le sue. (23-04-14 implementata come tab per userldap)
 Il referente le sue + quelle di cui è referente divise da tab.
 L'amministratore vede tutte le richieste insieme
 =cut
@@ -155,13 +155,15 @@ sub create : Chained('base') : PathPart('create') : Args() {
     if($realm eq "normal") {
         #se non è un utente ldap ci deve stare un campo select per l'utente ldap
     }
-    my @aree = $c->model('IPAdminDB::Area')->search()->all;
+    my @aree  = $c->model('IPAdminDB::Area')->search()->all;
+    my @types = $c->model('IPAdminDB::TypeRequest')->search()->all;
 
 
     $tmpl_param{realm}     = $realm;
     $tmpl_param{user}      = $user;
     $tmpl_param{fullname}  = $user->fullname;
-    $tmpl_param{area}      = \@aree;
+    $tmpl_param{aree}      = \@aree;
+    $tmpl_param{types}     = \@types;
     $tmpl_param{data}      = IPAdmin::Utils::print_short_timestamp(time);
     $tmpl_param{template}  = 'iprequest/create.tt';
 
@@ -205,7 +207,7 @@ sub process_create : Private {
                         hostname    => $hostname,
                         date        => time,
                         state       => 0,
- #                       type     => $type,
+                        type     => $type,
                            });
     if (! $ret ) {
     $c->stash->{message} = "Errore nella creazione della richiesta IP";

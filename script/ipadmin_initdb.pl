@@ -45,6 +45,10 @@ sub do_reset_admin {
     $self->log->info('Creating manager role.');
     $schema->resultset('Role')->update_or_create( { role => 'manager', } );
 
+    $self->log->info('Creating request types');
+    $schema->resultset('TypeRequest')->update_or_create( { type => 'client', } );
+    $schema->resultset('TypeRequest')->update_or_create( { type => 'server', } );
+
     $self->log->info('Creating admin user.');
     my $admin_user = $schema->resultset('User')->update_or_create(
         {

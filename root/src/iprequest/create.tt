@@ -24,13 +24,13 @@
         <td><label>Struttura:</label></td>
         <td>
 	  	    <select name="area">
-		        [% FOREACH a IN area %]
+		        [% FOREACH a IN aree %]
                     <option value="[% a.id %]">
                     Dip. di [%a.department.name%] a [%a.building.name%]</option>
 		        [% END %]
             </select>
-        </td>
-	    <td>
+        </td>    
+	<td>
 		 [% IF error.type %]
 	      <span class="error" id="error">[% error.type %] </span>
 		 [%END%]
@@ -64,11 +64,11 @@
   		<td><label>Tipo di apparato:</label></td>
         <td>
 	  	    <select name="types">
-		        [% FOREACH a IN types %]
-                    <option value="[% a.id %]">
-                    sistemare</option>
-		        [% END %]
-            </select>
+			[% FOREACH a IN types %]
+                    	<option value="[% a.id %]">
+                    	[%a.type%]</option>
+		        [% END %] 
+            	    </select>
         </td>
 	    <td>
 		 [% IF error.type %]

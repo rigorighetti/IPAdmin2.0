@@ -37,7 +37,7 @@ __PACKAGE__->add_unique_constraint( [ 'building', 'department' ] );
 __PACKAGE__->belongs_to( building   => 'IPAdmin::DB::Result::Building' );
 __PACKAGE__->belongs_to( department => 'IPAdmin::DB::Result::Department' );
 __PACKAGE__->belongs_to( manager    => 'IPAdmin::DB::Result::UserLDAP' );
-
+__PACKAGE__->has_many(   area       => 'IPAdmin::DB::Result::Area' );
 
 1;
 
