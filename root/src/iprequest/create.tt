@@ -63,7 +63,7 @@
 	<tr>
   		<td><label>Tipo di apparato:</label></td>
         <td>
-	  	    <select name="types">
+	  	    <select name="type">
 			[% FOREACH a IN types %]
                     	<option value="[% a.id %]">
                     	[%a.type%]</option>

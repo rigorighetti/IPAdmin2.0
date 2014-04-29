@@ -7,6 +7,9 @@
   <ul>
     <li><a href="#tabs-1">Informazioni</a></li>
     <li><a href="#tabs-2">Le mie richieste IP</a></li>
+    [% IF object.managed_area -%]
+    <li><a href="#tabs-3">Area referente di rete</a></li>
+    [% END -%]
   </ul>
   		
 
@@ -63,6 +66,42 @@
 
   </div>
 
+[% IF object.managed_area -%]
+ <div id="tabs-3">
+  [% FOREACH i IN requests %]
+    [% IF loop.first %]
+    [% init_table('requests') %]
+    <table class="display" id="requests">
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Tipo</th>
+          <th>Area</th>
+        </tr>
+      </thead>
+      <tbody>
+        [% END %]
+        <tr>
+          <td><a href=[% c.uri_for_action('/iprequest/view', [i.id]) %]>[% i.id %]</a></td>
+          <td>[% i.type.type %]</td>
+          <td>[% i.area.department.name %] presso [% i.area.building.name %]</td>
+          <td>
+            <a href="[% c.uri_for_action('iprequest/delete',[i.id])%]">[% icon('remove') %]</a>
+            <div class="buttons small_btn">
+            <a href="[% c.uri_for_action('iprequest/validate',[i.id]) %]">Convalida</a>
+            </div>
+          </td>
+          </tr>
+        [% IF loop.last %]
+      </tbody>
+    </table>
+    [% END %]
+    [% END %]
+
+  </div>
+
+
+[%END -%]
 </div>
 
 

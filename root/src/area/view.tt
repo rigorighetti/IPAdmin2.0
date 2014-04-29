@@ -6,7 +6,6 @@
 <div id="tabs">	 
   <ul>
     <li><a href="#tabs-1">Informazioni</a></li>
-    <li><a href="#tabs-2">Dipartmenti</a></li>
   </ul>
   		
 
@@ -37,30 +36,6 @@
   [% add_css_tableinfo %]
   </div>
  
-  <div id="tabs-2">	
-    [% FOREACH d IN object.departments %]
-    [% IF loop.first %]
-    [% init_table('dep_list') %]
-    <table class="display" id="dep_list">
-      <thead>  
-        <tr>
- 	  <th>Name</th>
- 	  <th>Description</th>
-        </tr>
-      </thead>  
-      <tbody>
-	[% END %]
-        <tr>
- 	  <td><a href=[% c.uri_for_action('/department/view', [d.id]) %]>[% d.name %]</a></td>
- 	  <td>d.description</td>
-        </tr>
-	[% IF loop.last %]
-      </tbody>
-    </table>
-    [% END %]
-    [% END %]
-  </div>
-
 </div>
 
 

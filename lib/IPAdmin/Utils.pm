@@ -32,6 +32,7 @@ sub print_short_timestamp {
 sub find_user {
   my ( $self, $c, $username ) = @_;
   my $user;
+  $username = lc($username);
   if($c->user_in_realm( "normal" )){
   	$user = $c->model('IPAdminDB::User')->search( { username => $username } )->single;
   	return ("normal",$user);

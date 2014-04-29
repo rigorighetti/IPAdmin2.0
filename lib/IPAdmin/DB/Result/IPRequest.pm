@@ -55,6 +55,11 @@ __PACKAGE__->add_columns(
         is_nullable    => 0,
         is_foreign_key => 1,
     },
+    assignement => {
+        data_type      => 'int',
+        is_nullable    => 0,
+        is_foreign_key => 1,
+    },
 );
 
 __PACKAGE__->set_primary_key(qw(id));
@@ -62,7 +67,9 @@ __PACKAGE__->set_primary_key(qw(id));
 __PACKAGE__->belongs_to( area   => 'IPAdmin::DB::Result::Area',
     { 'foreign.id' => 'self.area' } 
 );
-
+__PACKAGE__->belongs_to( assignement   => 'IPAdmin::DB::Result::IPAssignement',
+    { 'foreign.id' => 'self.assignement' } 
+);
 __PACKAGE__->belongs_to( user       => 'IPAdmin::DB::Result::UserLDAP' );
 __PACKAGE__->belongs_to( type       => 'IPAdmin::DB::Result::TypeRequest' );
 

@@ -67,8 +67,14 @@ L'amministratore vede tutte le richieste insieme
 sub list : Chained('base') : PathPart('list') : Args(0) {
    my ( $self, $c ) = @_;
 
-   my $build_schema    = $c->stash->{resultset};
-   my @iprequest_table = $build_schema->search({});
+   my @iprequest_table =  map +{
+            id          => $_->id,
+            date        => IPAdmin::Utils::print_short_timestamp($_->date),
+            area        => $_->area,
+            user        => $_->user,
+            },
+            $c->stash->{resultset}->search({}
+            );
 
    $c->stash( iprequest_table => \@iprequest_table );
    $c->stash( template        => 'iprequest/list.tt' );
@@ -181,23 +187,12 @@ sub process_create : Private {
     my $hostname  = $c->req->param('hostname');
     my $error;
 
-
-    # check name parameter
-    # if ( $name ) {
-    # $c->forward('check_name', [ $name ]) or 
-    #   $c->stash->{error}->{name} = $c->stash->{message}; 
-    # } else {
-    # $c->stash->{error}->{name} = "Missing field";
-    # }
-    # scalar( keys(%{$c->stash->{error}}) ) and return 0;
-
     # check form
     $c->forward('check_ipreq_form') || return 0; 
 
     #state == 0 non validata
     #state == 1 convalidata
-    #state == 2 IP assegnato 
-    #state == 3 archiviata
+    #state == 2 archiviata
 
     my $ret = $c->stash->{'resultset'}->create({
                         area        => $area,
@@ -240,8 +235,71 @@ sub check_ipreq_form : Private {
     return 1;
 }
 
-=head2 delete
+sub validate : Chained('object') : PathPart('validate') : Args(0) {
+    my ( $self, $c ) = @_;
+    my $req = $c->stash->{'object'};
 
+    if ( lc $c->req->method eq 'post' ) {
+        if ( $c->req->param('discard') ) {
+            $c->detach('/follow_backref');
+        }
+        my $done = $c->forward('process_validate');
+        if ($done) {
+            $c->flash( message => $c->stash->{message} );
+            $c->stash( default_backref =>
+                $c->uri_for_action( "iprequest/list" ) );
+            $c->detach('/follow_backref');
+        }
+    }
+
+
+    #set form defaults
+    my %tmpl_param;
+    $tmpl_param{template}  = 'iprequest/validate.tt';
+    #a regime deve proporre un indirizzo IP tra le subnet associate 
+    #all'area
+    #$tmpl_param{ipaddr}  = ?
+
+    $c->stash(%tmpl_param);
+}
+
+sub process_validate {
+    my ( $self, $c ) = @_;
+    my $ipaddr       = $c->req->param('ipaddr');
+    my $error;
+    
+    if ($ipaddr) {
+    $c->stash->{message} = "L'indirizzo IP è un campo obbligatorio";
+    return 0;
+    }
+    #Stati IPRequest
+    #state == 0 non validata
+    #state == 1 convalidata
+    #state == 2 archiviata
+    $c->stash->{'object'}->state(1);
+
+    #stati IPAssignement 
+    #state == 0 prenotato
+    #state == 1 attiva
+    my $ret = $c->model('IPAdminDB::IPAssignement')->create({
+                        ipaddr      => $ipaddr,
+                        state       => 0,
+                        date_in     => time,
+                        ip_request  => $c->stash->{'object'}->id,
+                        });
+    if (! $ret ) {
+    $c->stash->{message} = "Errore nella creazione dell'assegnazione IP";
+    return 0;
+    } else {
+    $c->stash->{message} = "L'assegnazione' IP è stata creata. Ora....simone completa";
+    return 1;
+    }
+}
+
+
+=head2 delete
+il delete deve archiviare prima la richiesta e poi cancellarla. 
+(quindi spostare la richiesta in ArchivedRequest). Successivamente elimina l'assegnazione IP
 =cut
 
 sub delete : Chained('object') : PathPart('delete') : Args(0) {

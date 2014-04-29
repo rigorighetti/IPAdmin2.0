@@ -157,12 +157,12 @@ after setup_finalize => sub {
     }
 
     #Additional acl for admin privileges
-    my @admin_acl =
-        qw{ iprequest/create
-    };
-    foreach my $acl (@admin_acl) {
-        __PACKAGE__->deny_access_unless( $acl, [qw/admin/] );
-    }
+    # my @admin_acl =
+    #     qw{ 
+    # };
+    # foreach my $acl (@admin_acl) {
+    #     __PACKAGE__->deny_access_unless( $acl, [qw/admin/] );
+    # }
 
     # #Acl for manager privileges
     # my @manager_acl =
