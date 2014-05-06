@@ -5,8 +5,9 @@
 -%]
 <div id="tabs">	 
   <ul>
-    <li><a href="#tabs-1">Generale</a></li>
-  </ul>
+    <li><a href="#tabs-1">Informazioni</a></li>
+    <li><a href="#tabs-2">Assegnazioni IP</a></li>
+ </ul>
   		
 
   <div id="tabs-1">
@@ -42,6 +43,34 @@
 	[% ui_icon('closethick') %]  Rinuncia</a>
       </div>
     </p>
-  [% add_css_tableinfo %]
+
+  <div id="tabs-2">
+  [% FOREACH i IN object.assignement %]
+    [% IF loop.first %]
+    [% init_table('ipassignement_list') %]
+    <table class="display" id="ipassignement_list">
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Data assegnazione</th>
+          <th>Data scadenza</th>
+        </tr>
+      </thead>
+      <tbody>
+        [% END %]
+        <tr>
+          <td><a href=[% c.uri_for_action('/ipassignement/view', [i.id]) %]>[% i.id %]</a></td>
+          <td>[% i.date_in %]</td>
+          <td>[% i.date_out %] </td>
+        </tr>
+        [% IF loop.last %]
+      </tbody>
+    </table>
+    [% END %]
+    [% END %]
+
+  </div>
+
+   [% add_css_tableinfo %]
   </div>
   

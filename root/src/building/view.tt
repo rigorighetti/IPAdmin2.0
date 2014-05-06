@@ -21,9 +21,6 @@
       <tr>
 	<td>Indirizzo:</td><td>[% object.address %] </td>
       </tr>
-      <tr>
-	<td>Note:</td><td>[% object.notes | html%]</td>
-      </tr>
     </table>
     [% add_css_tableinfo -%]
     <p>

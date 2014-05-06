@@ -26,7 +26,7 @@
 	  	    <select name="area">
 		        [% FOREACH a IN aree %]
                     <option value="[% a.id %]">
-                    Dip. di [%a.department.name%] a [%a.building.name%]</option>
+                    [%a.department.name%] presso [%a.building.name%]</option>
 		        [% END %]
             </select>
         </td>    

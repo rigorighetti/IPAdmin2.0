@@ -79,7 +79,7 @@ h1.logo a {
     text-decoration:none;
 }
 #dock ul li a:hover, #dock ul li.selected a {
-    border-bottom: 2px solid #FF9C08;
+    border-bottom: 2px solid #459E00;
 }
 #dock ul li.selected a {
     font-weight:bold;
@@ -104,7 +104,6 @@ h1.logo a {
     height:41px;
 }
 #navigation ul li a {
-    color:#DDDDDD;
     display:block;
     float:left;
     height:33px;
@@ -112,8 +111,8 @@ h1.logo a {
     text-decoration:none;
 }
 #navigation ul li.selected a {
-    color:#FFFFFF;
-    border-bottom: 2px solid #FFFFFF;
+    color:#000000;
+    border-bottom: 2px solid #000000;
     font-weight:bold;
 }
 #navigation ul li.last a {
