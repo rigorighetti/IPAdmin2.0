@@ -34,7 +34,6 @@ use Catalyst qw/
 extends 'Catalyst';
 
 our $VERSION = '0.01';
-
 # Configure the application.
 #
 # Note that settings in ipadmin.conf (or other external
@@ -43,6 +42,11 @@ our $VERSION = '0.01';
 # details given here can function as a default configuration,
 # with an external configuration file acting as an override for
 # local deployment.
+
+our $INACTIVE = 0;
+our $ACTIVE   = 1;
+our $ARCHIVED = 2;
+our $DELETED  = 3;
 
 __PACKAGE__->config(
     name         => 'IPAdmin',
