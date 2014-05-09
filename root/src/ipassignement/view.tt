@@ -1,0 +1,39 @@
+[% META 
+   title='Assegnazione IP'
+   use_table=1
+   section='Asset'
+-%]
+<div id="tabs">	 
+  <ul>
+    <li><a href="#tabs-1">Generale</a></li>
+  </ul>
+  		
+
+  <div id="tabs-1">
+    <table id="info">
+      <tr>
+	     <td>Data:</td><td>[% date_in %]</td>
+      [% IF date_out > 0 -%] <td>Data scadenza:</td><td>[% object.data_out %]</td>[% END -%]
+      </tr>
+      <tr>
+	     <td>Indirizzo IP:</td><td>[% object.ipaddr %]</td>
+      </tr>
+      <tr>
+       <td>Nome a dominio:</td><td>[% object.ip_request.hostname%].[%object.ip_request.area.department.domain%].uniroma1.it</td>
+      </tr>
+      <tr>
+       <td>MAC Address:</td><td>[% object.ip_request.macaddress%]</td>
+      </tr>    
+
+    </table>
+    [% add_css_tableinfo -%]
+    <p>
+      <div class="buttons">	
+	<a href=[%c.uri_for_action('ipassignement/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica</a>
+	&nbsp;<a href=[% c.uri_for_action('ipassignement/delete', [object.id]) %]>
+	[% ui_icon('closethick') %]  Rinuncia</a>
+      </div>
+    </p>
+  [% add_css_tableinfo %]
+  </div>
+  

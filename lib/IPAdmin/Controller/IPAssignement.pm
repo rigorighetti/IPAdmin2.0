@@ -2,10 +2,9 @@
 #
 # This library is free software. You can redistribute it and/or modify
 # it under the same terms as Perl itself.
-package IPAdmin::Controller::IPRequest;
+package IPAdmin::Controller::IPAssignement;
 use Moose;
 use namespace::autoclean;
-use IPAdmin::Form::IPRequest;
 use Data::Dumper;
 use IPAdmin::Utils;
 
@@ -13,7 +12,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 =head1 NAME
 
-IPAdmin::Controller::IPRequest - Catalyst Controller
+IPAdmin::Controller::IPAssignement - Catalyst Controller
 
 =head1 DESCRIPTION
 
@@ -29,7 +28,7 @@ Catalyst Controller.
 
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
-    $c->response->redirect('iprequest/list');
+    $c->response->redirect('ipassignement/list');
     $c->detach();
 }
 
@@ -37,9 +36,9 @@ sub index : Path : Args(0) {
 
 =cut
 
-sub base : Chained('/') : PathPart('iprequest') : CaptureArgs(0) {
+sub base : Chained('/') : PathPart('ipassignement') : CaptureArgs(0) {
     my ( $self, $c ) = @_;
-    $c->stash( resultset => $c->model('IPAdminDB::IPRequest') );
+    $c->stash( resultset => $c->model('IPAdminDB::IPAssignement') );
 }
 
 =head2 object
@@ -58,26 +57,23 @@ sub object : Chained('base') : PathPart('id') : CaptureArgs(1) {
 }
 
 =head2 list
-commentata in attesa di capire come fare.
-L'utente deve vedere solo le sue. (23-04-14 implementata come tab per userldap)
-Il referente le sue + quelle di cui è referente divise da tab. (28-04-14 implementata come tab per userldap)
-L'amministratore vede tutte le richieste insieme
+
 =cut
 
 sub list : Chained('base') : PathPart('list') : Args(0) {
    my ( $self, $c ) = @_;
 
-   my @iprequest_table =  map +{
+   my @ipassignement_table =  map +{
             id          => $_->id,
-            date        => IPAdmin::Utils::print_short_timestamp($_->date),
-            area        => $_->area,
-            user        => $_->user,
+#            data_in     => IPAdmin::Utils::print_short_timestamp($_->date),
+#           area        => $_->area,
+#           user        => $_->user,
             },
             $c->stash->{resultset}->search({}
             );
 
-   $c->stash( iprequest_table => \@iprequest_table );
-   $c->stash( template        => 'iprequest/list.tt' );
+   $c->stash( ipassignement_table => \@ipassignement_table );
+   $c->stash( template        => 'ipassignement/list.tt' );
 }
 
 =head2 view
@@ -87,24 +83,9 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
 sub view : Chained('object') : PathPart('view') : Args(0) {
     my ( $self, $c ) = @_;
     my $req = $c->stash->{object};
-
-    #Creare lista di assegnazioni per richiesta IP
-   my @assignement =  map +{
-            id          => $_->id,
-            date_in     => IPAdmin::Utils::print_short_timestamp($_->date_in),
-            #date_out    => IPAdmin::Utils::print_short_timestamp($_->date_out),
-            state       => $_->state,
-            },
-            $req->map_assignement;
-
-
-    $c->stash( data => IPAdmin::Utils::print_short_timestamp($req->date));
-    $c->stash( assignement => \@assignement );
-    $c->stash( template => 'iprequest/view.tt' );
+    $c->stash( date_in => IPAdmin::Utils::print_short_timestamp($req->date_in));
+    $c->stash( template => 'ipassignement/view.tt' );
 }
-
-
-
 
 =head2 edit
 
@@ -129,13 +110,13 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
          $c->stash->{resultset}->new_result( {user => $user->id} );
 
      #set the default backref according to the action (create or edit)
-     my $def_br;# = $c->uri_for('/iprequest/list');
-     $def_br = $c->uri_for_action( 'iprequest/view', [ $c->stash->{object}->id ] )
+     my $def_br;# = $c->uri_for('/ipassignement/list');
+     $def_br = $c->uri_for_action( 'ipassignement/view', [ $c->stash->{object}->id ] )
          if ( defined( $c->stash->{object} ) );
      $c->stash( default_backref => $def_br );
 
-     my $form = IPAdmin::Form::IPRequest->new( item => $item );
-     $c->stash( form => $form, template => 'iprequest/save.tt' );
+     my $form = IPAdmin::Form::IPAssignement->new( item => $item );
+     $c->stash( form => $form, template => 'ipassignement/save.tt' );
 
      # the "process" call has all the saving logic,
      #   if it returns False, then a validation error happened
@@ -145,8 +126,8 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
      }
      return unless $form->process( params => $c->req->params,  );
 
-     $c->flash( message => 'Success! IPRequest created.' );
-     $def_br = $c->uri_for_action( 'iprequest/view', [ $item->id ] );
+     $c->flash( message => 'Success! IPAssignement created.' );
+     $def_br = $c->uri_for_action( 'ipassignement/view', [ $item->id ] );
      $c->stash( default_backref => $def_br );
      $c->detach('/follow_backref');
  }
@@ -155,7 +136,7 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
 sub create : Chained('base') : PathPart('create') : Args() {
     my ( $self, $c, $parent ) = @_;
     my $id;
-    $c->stash( default_backref => $c->uri_for_action('/iprequest/list') );
+    $c->stash( default_backref => $c->uri_for_action('/ipassignement/list') );
 
     if ( lc $c->req->method eq 'post' ) {
         if ( $c->req->param('discard') ) {
@@ -165,7 +146,7 @@ sub create : Chained('base') : PathPart('create') : Args() {
         if ($done) {
             $c->flash( message => $c->stash->{message} );
             $c->stash( default_backref =>
-                $c->uri_for_action( "iprequest/list" ) );
+                $c->uri_for_action( "ipassignement/list" ) );
             $c->detach('/follow_backref');
         }
     }
@@ -176,8 +157,7 @@ sub create : Chained('base') : PathPart('create') : Args() {
     if($realm eq "normal") {
         #se non è un utente ldap ci deve stare un campo select per l'utente ldap
     }
-    #TODO ordinamento aree per nome dipartimento
-    my @aree  = $c->model('IPAdminDB::Area')->search({})->all;
+    my @aree  = $c->model('IPAdminDB::Area')->search()->all;
     my @types = $c->model('IPAdminDB::TypeRequest')->search()->all;
 
 
@@ -187,7 +167,7 @@ sub create : Chained('base') : PathPart('create') : Args() {
     $tmpl_param{aree}      = \@aree;
     $tmpl_param{types}     = \@types;
     $tmpl_param{data}      = IPAdmin::Utils::print_short_timestamp(time);
-    $tmpl_param{template}  = 'iprequest/create.tt';
+    $tmpl_param{template}  = 'ipassignement/create.tt';
 
 
     $c->stash(%tmpl_param);
@@ -231,104 +211,58 @@ sub process_create : Private {
 
 sub check_ipreq_form : Private {
     my ( $self, $c) = @_;
-    my $schema = $c->stash->{'resultset'};
-    my $mac = $c->req->param('mac');
-    my $hostname = $c->req->param('hostname');
-    #my $area = $c->req->param('area'); 
-    #my $referente = $c->stash->{'resultset'}->search(
+    my $schema = $c->stash->{resultset};
 
-     if ( $mac eq '' ) {
-     	$c->stash->{message} = "Campo Mac Address obbligatorio!";
-     	return 0;
-     }
-    #controllo formato mac address (ancora non copre aa:bb:cc:dd:ee:ff) 
-     if ( $mac !~ /([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}/ 
-	||$mac =~ /((aa|bb|cc|dd|ee|ff|00|11|22|33|44|55|66|77|88|99):){5}(aa|bb|cc|dd|ee|ff|00|11|22|33|44|55|66|77|88|99){2}/i ) {
-     	$c->stash->{message} = "Errore nel formato del mac address! aa:aa:aa:aa:aa:aa";
-     	return 0;
-     }
-
-     if ( $hostname eq '' ) {
-	$c->stash->{message} = "Campo Hostname obbligatorio!";
-	return 0;
-     }
-
+    # if ( $name eq '' ) {
+    # $c->stash->{message} = "Empty name";
+    # return 0;
+    # }
     # if ( $name !~ /^\w[\w-]*$/ ) {
     # $c->stash->{message} = "Invalid name";
     # return 0;
     # }
 
-     if ($schema->search({ macaddress => $mac})->count() > 0 ) {
-     $c->stash->{message} = "Mac Address già registrato!";
-     $c->log->error("duplicated $mac");
-     return 0;
-     }
+    # if ($schema->search({ name => $name})->count() > 0 ) {
+    # $c->stash->{message} = "Duplicated name";
+    # $c->log->error("duplicated $name");
+    # return 0;
+    # }
 
     return 1;
 }
 
-sub validate : Chained('object') : PathPart('validate') : Args(0) {
-    my ( $self, $c ) = @_;
-    my $req = $c->stash->{'object'};
-
-    if ( lc $c->req->method eq 'post' ) {
-        if ( $c->req->param('discard') ) {
-            $c->detach('/follow_backref');
-        }
-        my $done = $c->forward('process_validate');
-        if ($done) {
-            $c->flash( message => $c->stash->{message} );
-            $c->stash( default_backref =>
-                $c->uri_for_action( "iprequest/list" ) );
-            $c->detach('/follow_backref');
-        }
-    }
-
-
-    #set form defaults
-    my %tmpl_param;
-    $tmpl_param{template}  = 'iprequest/validate.tt';
-    #a regime deve proporre un indirizzo IP tra le subnet associate 
-    #all'area
-    #$tmpl_param{ipaddr}  = ?
-
-    $c->stash(%tmpl_param);
-
-}
-
-sub process_validate : Private {
-    my ( $self, $c ) = @_;
-    my $ipaddr       = $c->req->param('ipaddr');
-    my $error;
+#sub process_validate {
+#    my ( $self, $c ) = @_;
+#    my $ipaddr       = $c->req->param('ipaddr');
+#    my $error;
     
-    if ($ipaddr) {
-    $c->stash->{message} = "L'indirizzo IP è un campo obbligatorio";
-    return 0;
-    }
-    #Stati IPRequest
+#    if ($ipaddr) {
+#    $c->stash->{message} = "L'indirizzo IP è un campo obbligatorio";
+#    return 0;
+#    }
+    #Stati IPAssignement
     #state == 0 non validata
     #state == 1 convalidata
     #state == 2 archiviata
-    $c->stash->{'object'}->state(1);
+#    $c->stash->{'object'}->state(1);
 
     #stati IPAssignement 
     #state == 0 prenotato
     #state == 1 attiva
-    my $ret = $c->model('IPAdminDB::IPAssignement')->create({
-                        #ipaddr      => $ipaddr,
-                        ipaddr	    => '151.100.14.200',
-			state       => 0,
-                        date_in     => time,
-                        ip_request  => $c->stash->{'object'}->id,
-                        });
-    if (! $ret ) {
-    $c->stash->{message} = "Errore nella creazione dell'assegnazione IP";
-    return 0;
-    } else {
-    $c->stash->{message} = "L'assegnazione' IP è stata creata. Ora....simone completa";
-    return 1;
-    }
-}
+#    my $ret = $c->model('IPAdminDB::IPAssignement')->create({
+#                        ipaddr      => $ipaddr,
+#                        state       => 0,
+#                        date_in     => time,
+#                        ip_request  => $c->stash->{'object'}->id,
+#                        });
+#    if (! $ret ) {
+#    $c->stash->{message} = "Errore nella creazione dell'assegnazione IP";
+#    return 0;
+#    } else {
+#    $c->stash->{message} = "L'assegnazione' IP è stata creata. Ora....simone completa";
+#    return 1;
+#    }
+#}
 
 
 =head2 delete
@@ -338,18 +272,18 @@ il delete deve archiviare prima la richiesta e poi cancellarla.
 
 sub delete : Chained('object') : PathPart('delete') : Args(0) {
 #    my ( $self, $c ) = @_;
-#    my $iprequest = $c->stash->{'object'};
-#    my $id       = $iprequest->id;
-#    $c->stash( default_backref => $c->uri_for_action('iprequest/list') );
+#    my $ipassignement = $c->stash->{'object'};
+#    my $id       = $ipassignement->id;
+#    $c->stash( default_backref => $c->uri_for_action('ipassignement/list') );
 #
 #    if ( lc $c->req->method eq 'post' ) {
-##        if ( $c->model('IPAdminDB::Rack')->search( { iprequest => $id } )->count ) {
-##            $c->flash( error_msg => 'IPRequest is not empty. Cannot be deleted.' );
-##            $c->stash( default_backref => $c->uri_for_action( 'iprequest/view', [$id] ) );
+##        if ( $c->model('IPAdminDB::Rack')->search( { ipassignement => $id } )->count ) {
+##            $c->flash( error_msg => 'IPAssignement is not empty. Cannot be deleted.' );
+##            $c->stash( default_backref => $c->uri_for_action( 'ipassignement/view', [$id] ) );
 ##            $c->detach('/follow_backref');
 ##        }
 #
-#        #$iprequest->delete;
+#        #$ipassignement->delete;
 #    my ( $self, $c ) = @_;
 #    my $device = $c->stash->{'object'};
 #    my $id     = $device->id;
@@ -364,7 +298,7 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
 #                # 1) create a new deletedevice d2
 #                # 2) move mat for $device to archivedmat for d2
 #                # 3) $device->delete
-#                my $del_device = $c->model('IPAdminDB::DeletedIPRequest')->create(
+#                my $del_device = $c->model('IPAdminDB::DeletedIPAssignement')->create(
 #                    {
 #                        ipaddr    => $id,
 #                        name      => $device->name,

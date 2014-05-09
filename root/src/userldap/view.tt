@@ -77,7 +77,8 @@
           <th>Id</th>
           <th>Tipo</th>
           <th>Area</th>
-        </tr>
+          <th>Comandi</th>
+	</tr>
       </thead>
       <tbody>
         [% END %]

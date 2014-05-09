@@ -43,12 +43,12 @@
 	[% ui_icon('closethick') %]  Rinuncia</a>
       </div>
     </p>
-
+  </div>
   <div id="tabs-2">
-  [% FOREACH i IN object.assignement %]
+  [% FOREACH i IN assignement %]
     [% IF loop.first %]
-    [% init_table('ipassignement_list') %]
-    <table class="display" id="ipassignement_list">
+    [% init_table('assignement') %]
+    <table class="display" id="assignement">
       <thead>
         <tr>
           <th>Id</th>
@@ -71,6 +71,5 @@
 
   </div>
 
-   [% add_css_tableinfo %]
   </div>
   
