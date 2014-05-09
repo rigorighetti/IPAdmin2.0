@@ -9,6 +9,7 @@ use IPAdmin::Form::IPRequest;
 use Data::Dumper;
 use IPAdmin::Utils;
 
+
 BEGIN { extends 'Catalyst::Controller'; }
 
 =head1 NAME
@@ -73,8 +74,7 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
             area        => $_->area,
             user        => $_->user,
             },
-            $c->stash->{resultset}->search({}
-            );
+            $c->stash->{resultset}->search({});
 
    $c->stash( iprequest_table => \@iprequest_table );
    $c->stash( template        => 'iprequest/list.tt' );
@@ -112,44 +112,7 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
 
 sub edit : Chained('object') : PathPart('edit') : Args(0) {
     my ( $self, $c ) = @_;     
-    $c->forward('save');
 }
-
-=head2 save
-
-# Handle create and edit resources
-
-=cut
-
- sub save : Private {
-     my ( $self, $c ) = @_;
-    #user info
-    my $user = IPAdmin::Utils::find_user($self,$c,$c->user->username);
-    my $item = $c->stash->{object} || 
-         $c->stash->{resultset}->new_result( {user => $user->id} );
-
-     #set the default backref according to the action (create or edit)
-     my $def_br;# = $c->uri_for('/iprequest/list');
-     $def_br = $c->uri_for_action( 'iprequest/view', [ $c->stash->{object}->id ] )
-         if ( defined( $c->stash->{object} ) );
-     $c->stash( default_backref => $def_br );
-
-     my $form = IPAdmin::Form::IPRequest->new( item => $item );
-     $c->stash( form => $form, template => 'iprequest/save.tt' );
-
-     # the "process" call has all the saving logic,
-     #   if it returns False, then a validation error happened
-
-     if ( $c->req->param('discard') ) {
-         $c->detach('/follow_backref');
-     }
-     return unless $form->process( params => $c->req->params,  );
-
-     $c->flash( message => 'Success! IPRequest created.' );
-     $def_br = $c->uri_for_action( 'iprequest/view', [ $item->id ] );
-     $c->stash( default_backref => $def_br );
-     $c->detach('/follow_backref');
- }
 
 
 sub create : Chained('base') : PathPart('create') : Args() {
@@ -217,8 +180,8 @@ sub process_create : Private {
                         macaddress  => $mac,
                         hostname    => $hostname,
                         date        => time,
-                        state       => 0,
-                        type     => $type,
+                        state       => $IPAdmin::INACTIVE,
+                        type        => $type,
                            });
     if (! $ret ) {
     $c->stash->{message} = "Errore nella creazione della richiesta IP";
@@ -315,9 +278,8 @@ sub process_validate : Private {
     #state == 0 prenotato
     #state == 1 attiva
     my $ret = $c->model('IPAdminDB::IPAssignement')->create({
-                        #ipaddr      => $ipaddr,
-                        ipaddr	    => '151.100.14.200',
-			state       => 0,
+                        ipaddr      => $ipaddr,
+                        state       => $IPAdmin::INACTIVE,
                         date_in     => time,
                         ip_request  => $c->stash->{'object'}->id,
                         });
@@ -337,80 +299,22 @@ il delete deve archiviare prima la richiesta e poi cancellarla.
 =cut
 
 sub delete : Chained('object') : PathPart('delete') : Args(0) {
-#    my ( $self, $c ) = @_;
-#    my $iprequest = $c->stash->{'object'};
-#    my $id       = $iprequest->id;
-#    $c->stash( default_backref => $c->uri_for_action('iprequest/list') );
-#
-#    if ( lc $c->req->method eq 'post' ) {
-##        if ( $c->model('IPAdminDB::Rack')->search( { iprequest => $id } )->count ) {
-##            $c->flash( error_msg => 'IPRequest is not empty. Cannot be deleted.' );
-##            $c->stash( default_backref => $c->uri_for_action( 'iprequest/view', [$id] ) );
-##            $c->detach('/follow_backref');
-##        }
-#
-#        #$iprequest->delete;
-#    my ( $self, $c ) = @_;
-#    my $device = $c->stash->{'object'};
-#    my $id     = $device->id;
-#    my ( $e, $it );
-#
-#    $c->stash( default_backref => $c->uri_for_action('device/list') );
-#    if ( lc $c->req->method eq 'post' ) {
-#        $c->model('IPAdminDB')->schema->txn_do(
-#            sub {
-#
-#                # transaction....
-#                # 1) create a new deletedevice d2
-#                # 2) move mat for $device to archivedmat for d2
-#                # 3) $device->delete
-#                my $del_device = $c->model('IPAdminDB::DeletedIPRequest')->create(
-#                    {
-#                        ipaddr    => $id,
-#                        name      => $device->name,
-#                        model     => $device->model,
-#                        vendor    => $device->vendor,
-#                        timestamp => time()
-#                    }
-#                );
-#
-#                $it = $c->model('ManocDB::Mat')->search(
-#                    { device => $id, },
-#                    {
-#                        select => [
-#                            'macaddr', 'vlan',
-#                            { 'min' => 'firstseen' }, { 'max' => 'lastseen' },
-#                        ],
-#                        group_by => [qw(macaddr vlan)],
-#                        as       => [ 'macaddr', 'vlan', 'min_firstseen', 'max_lastseen' ]
-#                    }
-#                );
-#
-#                while ( $e = $it->next ) {
-#                    $del_device->add_to_mat_assocs(
-#                        {
-#                            macaddr   => $e->macaddr,
-#                            firstseen => $e->get_column('min_firstseen'),
-#                            lastseen  => $e->get_column('max_lastseen'),
-#                            vlan      => $e->vlan
-#                        }
-#                    );
-#                }
-#                $device->delete;
-#            }
-#          }
-#        );
-#        if ($@) {
-#            $c->flash( error_msg => 'Commit error: ' . $@ );
-#            $c->detach('/error/index');
-#        }
-#
-#        $c->flash( message => 'Richiesta IP archiviata.' );
-#        $c->detach('/follow_backref');
-#    }
-#    else {
-#        $c->stash( template => 'generic_delete.tt' );
-#    }
+     my ( $self, $c ) = @_;
+   my $iprequest = $c->stash->{'object'};
+   $c->stash( default_backref => $c->uri_for_action('iprequest/list') );
+
+  
+    if ( lc $c->req->method eq 'post' ) {
+        #TODO invalidare ogni assegnazione associata alla richiesta
+
+         $iprequest->state($IPAdmin::DELETED);
+         $iprequest->update;
+         $c->flash( message => 'Richiesta IP archiviata.' );
+         $c->detach('/follow_backref');
+   }
+   else {
+       $c->stash( template => 'generic_delete.tt' );
+   }
 }
 
 =head1 AUTHOR
