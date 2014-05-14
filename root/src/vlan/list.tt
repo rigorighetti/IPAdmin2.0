@@ -1,0 +1,36 @@
+[% META 
+   title='Lista Vlan'
+   use_table=1
+   section='NetDB'
+-%]
+
+<div class="buttons create_btn">
+<a href="[% c.uri_for_action('/vlan/create') %]" >
+   [% ui_icon('circle-plus') %] Crea Vlan</a>
+ [% add_css_create_btn %]
+</div>
+
+[% FOREACH v IN vlan_list %]
+ [% IF loop.first %]
+  [% init_table('vlan_list') %]
+  <table class="display" id="vlan_list">
+  <thead>  
+	<tr>
+ 	  <th>Vlan</th>
+ 	  <th>Descrizione</th>
+ 	  <th>Edificio</th>
+  </tr>
+  </thead>  
+  <tbody>
+  [% END %]
+   <tr>
+ 	  <td><a href="[%c.uri_for_action('vlan/view', [v.id])%]">[% v.id %]</a></td>
+    <td>[% v.description %]</td>
+	  <td><a href="[% c.uri_for_action('building/view', [v.building.id]) %]">[% v.building.name %]</a></td>
+   </tr>
+  [% IF loop.last %]
+        </tbody>
+    </table>
+   [% END %]
+[% END %]
+

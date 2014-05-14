@@ -1,0 +1,38 @@
+[% META 
+   title='Lista Subnet'
+   use_table=1
+   section='NetDB'
+-%]
+
+<div class="buttons create_btn">
+<a href="[% c.uri_for_action('/subnet/create') %]" >
+   [% ui_icon('circle-plus') %] Crea Subnet</a>
+ [% add_css_create_btn %]
+</div>
+
+[% FOREACH v IN subnet_list %]
+ [% IF loop.first %]
+  [% init_table('subnet_list') %]
+  <table class="display" id="subnet_list">
+  <thead>  
+	<tr>
+ 	  <th>Id</th>
+ 	  <th>Nome</th>
+ 	  <th>Subnet</th>
+    <th>Vlan</th>
+  </tr>
+  </thead>  
+  <tbody>
+  [% END %]
+   <tr>
+ 	  <td><a href="[%c.uri_for_action('subnet/view', [v.id])%]">[% v.id %]</a></td>
+    <td>[% v.name %]</td>
+    <td>151.100.[%v.id%].0/24</td>
+    <td><a href="[%c.uri_for_action('vlan/view', [v.vlan.id])%]">[% v.vlan.id %]</a></td>
+   </tr>
+  [% IF loop.last %]
+        </tbody>
+    </table>
+   [% END %]
+[% END %]
+

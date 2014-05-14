@@ -1,0 +1,40 @@
+[% META 
+   title='Vlan View'
+   section='NetDB'
+-%]
+
+
+  <div id="tabs">
+      <ul>
+        <li><a href="#tabs-1">Info</a></li>
+      </ul>
+
+<div id="tabs-1">
+
+<table id="info">
+    <tr align=left>
+     <th>Id:</th>
+     <td>[% object.id %]</td>	
+    </tr>
+    <tr align=left>
+      <th>Building:</th>
+      <td><a href="[% c.uri_for_action('/building/view', [object.building.id]) %]">[% object.building.name %]</a> </td>
+    </tr>
+    <tr align=left>
+      <th>Descrizione:</th>
+      <td>[% object.description %]</td>
+    </tr>
+</table>
+[% add_css_tableinfo -%]
+
+<p>
+ <div class="buttons">	
+    <a href="[%c.uri_for_action('vlan/edit',[object.id],{backref=> c.uri_for_action('vlan/view',[object.id])})%]">
+    [% ui_icon('pencil') %]Edit</a>
+    <a href="[%c.uri_for_action('vlan/delete',[object.id])%]">[% ui_icon('closethick') %]Delete</a>
+ </div>
+</p>
+
+</div>
+</div>
+

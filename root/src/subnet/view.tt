@@ -1,0 +1,44 @@
+[% META 
+   title='Subnet View'
+   section='NetDB'
+-%]
+
+
+  <div id="tabs">
+      <ul>
+        <li><a href="#tabs-1">Info</a></li>
+      </ul>
+
+<div id="tabs-1">
+
+<table id="info">
+    <tr align=left>
+     <th>Id:</th>
+        <td>[% object.id %]</td>	
+    </tr>
+    <tr align=left>
+        <th>Name:</th>
+        <td>[% object.name %]</td>
+    </tr>
+    <tr>
+        <th>Subnet:</th>
+        <td>151.100.[%object.id%].0/24</td>
+    </tr>
+    <tr align=left>
+      <th>Vlan:</th>
+      <td>[%object.vlan.id%]</td>
+    </tr>
+</table>
+[% add_css_tableinfo -%]
+
+<p>
+ <div class="buttons">	
+    <a href="[%c.uri_for_action('subnet/edit',[object.id],{backref=> c.uri_for_action('subnet/view',[object.id])})%]">
+    [% ui_icon('pencil') %]Edit</a>
+    <a href="[%c.uri_for_action('subnet/delete',[object.id])%]">[% ui_icon('closethick') %]Delete</a>
+ </div>
+</p>
+
+</div>
+</div>
+

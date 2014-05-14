@@ -55,6 +55,15 @@ __PACKAGE__->add_columns(
         is_nullable    => 0,
         is_foreign_key => 1,
     },
+    subnet =>   {
+        data_type      => 'int',
+        is_nullable    => 0,
+        is_foreign_key => 1,
+    }, 
+    host => {
+        data_type   => 'int',
+        is_nullable => 1,
+    },
 );
 
 __PACKAGE__->set_primary_key(qw(id));
@@ -65,6 +74,8 @@ __PACKAGE__->belongs_to( area   => 'IPAdmin::DB::Result::Area',
 __PACKAGE__->has_many( map_assignement   => 'IPAdmin::DB::Result::IPAssignement','ip_request');
 __PACKAGE__->belongs_to( user       => 'IPAdmin::DB::Result::UserLDAP' );
 __PACKAGE__->belongs_to( type       => 'IPAdmin::DB::Result::TypeRequest' );
+__PACKAGE__->belongs_to( subnet     => 'IPAdmin::DB::Result::Subnet' );
+
 
 
 =head1 NAME
