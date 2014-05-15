@@ -10,13 +10,14 @@
  [% add_css_create_btn %]
 </div>
 
-[% init_table('build_list',[20,65,15]) %]
+[% init_table('build_list',[20,65,10,5]) %]
  <table class="display" id="build_list">
    <thead>  
      <tr>
         <th>Nome</th>
         <th>Descrizione</th>
         <th>Indirizzo</th>
+        <th>Vlan</th>
      </tr>
    </thead>  
    <tbody>
@@ -26,6 +27,7 @@
  	 <td><a href=[% c.uri_for_action('/building/view', [b.id]) %]>[% b.name %]</a></td>
  	 <td>[% b.description %]</td>
  	 <td>[% b.address %]</td>
+   <td>[% b.vlan.id %]</td>
          </tr>
 [% END %]
    </tbody>

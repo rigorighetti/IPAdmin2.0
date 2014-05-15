@@ -27,6 +27,11 @@ __PACKAGE__->add_columns(
         data_type => 'varchar',
         size      => '255',
     },
+    vlan => {
+        data_type      => 'int',
+        is_nullable    => 1,
+        is_foreign_key => 1,
+    },
 );
 
 __PACKAGE__->set_primary_key('id');
@@ -36,10 +41,9 @@ __PACKAGE__->add_unique_constraint( [qw/name/] );
 __PACKAGE__->has_many(map_area_dep => 'IPAdmin::DB::Result::Area','building' );
 __PACKAGE__->many_to_many( departments => 'map_area_dep', 'department' );
 
-__PACKAGE__->might_have(
-    vlan => 'IPAdmin::DB::Result::Vlan',
-    'building',
-  );
+__PACKAGE__->belongs_to( vlan => 'IPAdmin::DB::Result::Vlan' );
+
+
 
 1;
 

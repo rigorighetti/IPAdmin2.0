@@ -25,13 +25,6 @@ has_field 'id' => (
 
     );
 
-has_field 'building' => (
-    type    => 'Select',
-    label   => 'Seleziona edificio',
-    empty_select => '---Edificio---',
-    required     => 1,
-);
-
 has_field 'description' => (
     type     => 'Text',
     required => 0,

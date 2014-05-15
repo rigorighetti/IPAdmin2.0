@@ -233,6 +233,7 @@ sub check_ipreq_form : Private {
 sub validate : Chained('object') : PathPart('validate') : Args(0) {
     my ( $self, $c ) = @_;
     my $req = $c->stash->{'object'};
+    $c->stash( default_backref => $c->uri_for_action('/iprequest/list') );
 
     if ( lc $c->req->method eq 'post' ) {
         if ( $c->req->param('discard') ) {
@@ -250,11 +251,41 @@ sub validate : Chained('object') : PathPart('validate') : Args(0) {
 
     #set form defaults
     my %tmpl_param;
-    $tmpl_param{template}  = 'iprequest/validate.tt';
+  
     #a regime deve proporre un indirizzo IP tra le subnet associate 
     #all'area
-    #$tmpl_param{ipaddr}  = ?
+    my $vlan = $req->area->building->vlan;
+    my $subnets; 
+    defined $vlan and $subnets = $vlan->map_subnet;
 
+    if(!defined $subnets){
+        $c->flash( message => "Nessuna subnet associata alla vlan $vlan!" );
+        return;
+    }
+
+
+    #TODO SOLO NELLE POST
+    my @availables;
+    while(my $subnet = $subnets->next) {
+        my $lastip = $c->model("IPAdminDB::IPRequest")->search({subnet => $subnet->id},{
+            order_by => {-desc => ['host']}})->single;
+        
+        if (defined $lastip){
+            $lastip = $lastip->id;
+        }else{ 
+            $lastip = 1;
+        }
+
+        print "\n\n$lastip\n\n";
+        #TODO spostare tutto in una funzione
+        #TODO logica degli ip
+       
+        my $proposed_ip = "151.100.".$subnet->id.".$lastip";
+        push @availables, $proposed_ip;
+    }
+
+    $tmpl_param{proposed_ip} = \@availables;
+    $tmpl_param{template}  = 'iprequest/validate.tt';
     $c->stash(%tmpl_param);
 
 }
@@ -264,7 +295,7 @@ sub process_validate : Private {
     my $ipaddr       = $c->req->param('ipaddr');
     my $error;
     
-    if ($ipaddr) {
+    unless ($ipaddr) {
     $c->stash->{message} = "L'indirizzo IP è un campo obbligatorio";
     return 0;
     }
@@ -272,13 +303,26 @@ sub process_validate : Private {
     #state == 0 non validata
     #state == 1 convalidata
     #state == 2 archiviata
-    $c->stash->{'object'}->state(1);
+    $c->stash->{'object'}->state($IPAdmin::ACTIVE);
 
     #stati IPAssignement 
     #state == 0 prenotato
     #state == 1 attiva
+
+    #cambiare stato alla ip_request
+    #segnare subnet e host in ip_request
+    #creare assegnamento
+    $ipaddr =~ m/151\.100\.(\d+)\.(\d+)/;
+    my ($sub,$host) = ($1,$2);
+
+    print "\n\n$sub $host\n\n\n";
+    $c->stash->{'object'}->state($IPAdmin::ACTIVE);
+    $c->stash->{'object'}->subnet($sub);
+    $c->stash->{'object'}->host($host);
+    $c->stash->{'object'}->update;
+
+
     my $ret = $c->model('IPAdminDB::IPAssignement')->create({
-                        ipaddr      => $ipaddr,
                         state       => $IPAdmin::INACTIVE,
                         date_in     => time,
                         ip_request  => $c->stash->{'object'}->id,

@@ -6,9 +6,9 @@
   		
 <form name="form2" method="POST">
 
-<table class="ui-widget-content ui-corner-all manoc-form">
+  <table class="ui-widget-content ui-corner-all manoc-form">
       <tr>
-	     <td>Datai Richiesta:</td><td>[% data %]</td>
+	     <td>Dati Richiesta:</td><td>[% data %]</td>
       </tr>
       <tr>
 	     <td>Tipo:</td><td>[% object.type.type %]</td>
@@ -29,17 +29,20 @@
        <td>MAC Address:</td><td>[% object.macaddress%]</td>
       </tr>    
       <tr>
-	<td>Indirizzo IP:</td>
+	     <td>Indirizzo IP:</td>
+       <td>
+        [% FOREACH ip IN proposed_ip %]
+         <input  type="radio" name="ipaddr" value="[% ip %]" /> [%ip%] <br>
+       [% END -%]
+       </td>
       </tr>
-    </table>
-    [% add_css_tableinfo -%]
-    <p>
-	<div class="buttons">
-             <input type="submit" name="submit" value="Submit">
-             <input type="submit" name="discard" value="Discard">
+      <tr>
+        <td colspan="2" class="buttons-form">
+        <div class="buttons">
+          [%IF proposed_ip.0 %]<input type="submit" name="submit" value="Submit"> [%END %]
+          <input type="submit" name="discard" value="Discard">
         </div>
-    </p>
-
-   [% add_css_tableinfo %]
-  </div>
-  
+        </td>
+       </tr>
+  </table>
+</form>

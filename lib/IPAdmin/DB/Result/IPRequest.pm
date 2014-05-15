@@ -57,7 +57,7 @@ __PACKAGE__->add_columns(
     },
     subnet =>   {
         data_type      => 'int',
-        is_nullable    => 0,
+        is_nullable    => 1,
         is_foreign_key => 1,
     }, 
     host => {

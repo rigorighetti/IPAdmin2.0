@@ -13,13 +13,16 @@
   <div id="tabs-1">
     <table id="info">
       <tr>
-	<td>Nome:</td><td>[% object.name %]</td>
+	     <td>Nome:</td><td>[% object.name %]</td>
       </tr>
       <tr>
-	<td>Descrizione:</td><td>[% object.description | html %] </td>
+	     <td>Descrizione:</td><td>[% object.description | html %] </td>
       </tr>
       <tr>
-	<td>Indirizzo:</td><td>[% object.address %] </td>
+	     <td>Indirizzo:</td><td>[% object.address %] </td>
+      </tr>
+      <tr>
+       <td>Vlan:</td><td>[% object.vlan.id %] </td>
       </tr>
     </table>
     [% add_css_tableinfo -%]

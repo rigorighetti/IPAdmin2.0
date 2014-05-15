@@ -89,7 +89,7 @@
           <td>
             <a href="[% c.uri_for_action('iprequest/delete',[i.id])%]">[% icon('remove') %]</a>
             <div class="buttons small_btn">
-            <a href="[% c.uri_for_action('iprequest/validate',[i.id]) %]">Convalida</a>
+            <a href="[% c.uri_for_action('iprequest/validate',[i.id],{backref => c.req.uri}) %]">Convalida</a>
             </div>
           </td>
           </tr>

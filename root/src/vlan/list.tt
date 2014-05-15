@@ -18,7 +18,6 @@
 	<tr>
  	  <th>Vlan</th>
  	  <th>Descrizione</th>
- 	  <th>Edificio</th>
   </tr>
   </thead>  
   <tbody>
@@ -26,7 +25,6 @@
    <tr>
  	  <td><a href="[%c.uri_for_action('vlan/view', [v.id])%]">[% v.id %]</a></td>
     <td>[% v.description %]</td>
-	  <td><a href="[% c.uri_for_action('building/view', [v.building.id]) %]">[% v.building.name %]</a></td>
    </tr>
   [% IF loop.last %]
         </tbody>

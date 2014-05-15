@@ -24,7 +24,36 @@ has_field 'name' => (
 has_field 'description' => ( type => 'TextArea' );
 has_field 'address' => ( type => 'Text', required => 1 );
 
+
+has_field 'vlan' => (
+	type	=> 'Select',
+	label	=> 'Vlan',
+	empty_select => '---Vlan---',
+    required     => 0
+);
+
 has_field 'submit'  => ( type => 'Submit', value => 'Submit' );
 has_field 'discard' => ( type => 'Submit', value => 'Discard' );
+
+sub options_vlan {
+    my $self = shift;
+    return unless $self->schema;
+
+    my $vlans = $self->schema->resultset('Vlan')->search(
+        {},
+        {
+            order_by => 'me.id',
+        }
+    );
+    my @selections;
+    while ( my $vlan = $vlans->next ) {
+        push @selections, { value => $vlan->id, label => $vlan->id };
+    }
+     
+    return  @selections;
+
+
+}
+
 
 1;
