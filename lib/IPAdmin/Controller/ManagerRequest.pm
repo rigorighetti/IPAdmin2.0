@@ -58,10 +58,7 @@ sub object : Chained('base') : PathPart('id') : CaptureArgs(1) {
 }
 
 =head2 list
-commentata in attesa di capire come fare.
-L'utente deve vedere solo le sue. (23-04-14 implementata come tab per userldap)
-Il referente le sue + quelle di cui è referente divise da tab. (28-04-14 implementata come tab per userldap)
-L'amministratore vede tutte le richieste insieme
+
 =cut
 
 sub list : Chained('base') : PathPart('list') : Args(0) {
@@ -91,19 +88,10 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
 sub view : Chained('object') : PathPart('view') : Args(0) {
     my ( $self, $c ) = @_;
     my $req = $c->stash->{object};
+    $c->stash( date    => IPAdmin::Utils::print_short_timestamp($req->date));
+    $req->date_in  and $c->stash( date_in => IPAdmin::Utils::print_short_timestamp($req->date_in));
+    $req->date_out and $c->stash( date_out => IPAdmin::Utils::print_short_timestamp($req->date_out));
 
-    #Creare lista di assegnazioni per richiesta IP
-    my @assignement =  map +{
-            id          => $_->id,
-            date_in     => IPAdmin::Utils::print_short_timestamp($_->date_in),
-            #date_out    => IPAdmin::Utils::print_short_timestamp($_->date_out),
-            state       => $_->state,
-            },
-            $req->map_assignement;
-
-
-    $c->stash( data => IPAdmin::Utils::print_short_timestamp($req->date));
-    $c->stash( assignement => \@assignement );
     $c->stash( template => 'managerrequest/view.tt' );
 }
 
@@ -111,7 +99,7 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
 
 
 =head2 edit
-
+TODO
 =cut
 
 sub edit : Chained('object') : PathPart('edit') : Args(0) {
@@ -247,51 +235,44 @@ sub check_manreq_form : Private {
 sub activate : Chained('object') : PathPart('activate') : Args(0) {
     my ( $self, $c ) = @_;
     my $req = $c->stash->{'object'};
-    $c->stash( default_backref => $c->uri_for_action('managerrequest/list') );
+    $c->stash( default_backref => $c->uri_for_action( "managerrequest/view",[$req->id] ));
 
-    if ( lc $c->req->method eq 'post' ) {
-        if ( $c->req->param('discard') ) {
-            $c->detach('/follow_backref');
-        }
-        my $done = $c->forward('process_activate');
-        if ($done) {
-            $c->flash( message => $c->stash->{message} );
-            $c->stash( default_backref =>
-                $c->uri_for_action( "managerrequest/list" ) );
-            $c->detach('/follow_backref');
-        }
-    }
-
-    #set form defaults
-    my %tmpl_param;
-    $tmpl_param{template}  = 'managerrequest/activate.tt';
-    $tmpl_param{data}      = IPAdmin::Utils::print_short_timestamp($req->date);
-
-    $c->stash(%tmpl_param);
-
+ 
+    my $done = $c->forward('process_activate');
+    $c->flash( message => $c->stash->{message} );
+    $c->stash( default_backref =>
+    $c->uri_for_action( "managerrequest/view",[$req->id] ) );
+    $c->detach('/follow_backref');
 }
 
 
 sub process_activate : Private {
     my ( $self, $c ) = @_;
     my $error;
-
+    my $user = $c->stash->{'object'}->user;
     #Cambia lo stato dell'managerrequest
     $c->stash->{object}->state($IPAdmin::ACTIVE);
-    $c->stash->{object}->update;
-    #Aggiorna la data dell'assegnamento 
+    my $ret1 =$c->stash->{object}->update;
+    my $ret2;
+     #Add new roles
+     my $user_role_id = $c->model('IPAdminDB::Role')->search( { 'role' => "manager"} )->single;
+     if ($user_role_id) {
+       $ret2 = $c->model('IPAdminDB::UserRole')->update_or_create(
+               {
+                   user_id => $user->id,
+                   role_id => $user_role_id->id,
+               }
+           );
+     }
 
-    my $ret = $c->model('IPAdminDB::IPAssignement')->search({state=>$IPAdmin::ACTIVE})->update({
-                        date_in     => time,
-                        });
 
-    if (! $ret ) {
+    if (! ($ret1 and $ret2) ) {
     $c->stash->{message} = "Errore nell'aggiornamento dell'assegnazione IP";
     return 0;
     } else {
-    $c->stash->{message} = "L'assegnazione' IP è stata attivata.";
-    return 1;
+    $c->stash->{message} = "La richiesta del referente è stata attivata. ".$user->fullname." è ora un referente.";
     }
+
 }
 
 
@@ -303,24 +284,25 @@ il delete deve archiviare prima la richiesta e poi cancellarla.
 
 sub delete : Chained('object') : PathPart('delete') : Args(0) {
      my ( $self, $c ) = @_;
-   my $managerrequest = $c->stash->{'object'};
-   $c->stash( default_backref => $c->uri_for_action('managerrequest/list') );
-
+    my $req = $c->stash->{'object'};
+    $c->stash( default_backref => $c->uri_for_action( "managerrequest/view",[$req->id] ));
+    my $user = $req->user;
   
     if ( lc $c->req->method eq 'post' ) {
         #Archivia la richiesta
-        $managerrequest->state($IPAdmin::ARCHIVED);
-        $managerrequest->update;
-        #chiude l'ultima assegnazione
-        my $ret = $c->model('IPAdminDB::IPAssignement')->search({state=>$IPAdmin::ACTIVE})->single;
-
-        $ret->update({
-                        date_out => time,
-                        state    => $IPAdmin::INACTIVE,
-                        });
-       
-         $c->flash( message => 'Richiesta IP archiviata.' );
-         $c->detach('/follow_backref');
+        $req->state($IPAdmin::ARCHIVED);
+        $req->update;
+        my $user_role_id = $c->model('IPAdminDB::Role')->search( { 'role' => "manager"} )->single;
+        if ($user_role_id) {
+        my $ret = $c->model('IPAdminDB::UserRole')->search(
+               {
+                   user_id => $user->id,
+                   role_id => $user_role_id->id,
+               }
+           )->delete;
+     }
+    $c->flash( message => 'Richiesta IP archiviata. '.$user->fullname." non è più un referente." );
+    $c->detach('/follow_backref');
    }
    else {
        $c->stash( template => 'generic_delete.tt' );

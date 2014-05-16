@@ -286,7 +286,6 @@ sub validate : Chained('object') : PathPart('validate') : Args(0) {
         
         if (defined $lastip){
             $lastip = $lastip->host;
-            print "\n\n\n$lastip\n\n\n";
             $lastip += 1;
         }else{ 
             $lastip = 6;
@@ -370,7 +369,8 @@ sub unactivate : Chained('object') : PathPart('unactivate') : Args(0) {
         $iprequest->state($IPAdmin::PREACTIVE);
         $iprequest->update;
         #invalida la vecchia assegnazione IP
-        my $ret = $c->model('IPAdminDB::IPAssignement')->search({state=>$IPAdmin::ACTIVE})->update({
+        my $ret = $c->model('IPAdminDB::IPAssignement')->search({state=>$IPAdmin::ACTIVE})->single;
+        $ret->update({
                         date_out => time,
                         state    => $IPAdmin::INACTIVE,
                         });
@@ -427,7 +427,8 @@ sub process_activate : Private {
     $c->stash->{object}->update;
     #Aggiorna la data dell'assegnamento 
 
-    my $ret = $c->model('IPAdminDB::IPAssignement')->search({state=>$IPAdmin::ACTIVE})->update({
+    my $ret = $c->model('IPAdminDB::IPAssignement')->search({state=>$IPAdmin::ACTIVE})->single;
+    $ret->update({
                         date_in     => time,
                         });
 

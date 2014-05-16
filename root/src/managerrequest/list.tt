@@ -13,7 +13,7 @@
 [% FOREACH i IN request_table %]
    [% IF loop.first %] 
      [%init_table('request') %]  
-    <table class="display" id="iprequest">
+    <table class="display" id="request">
        <thead>  
 	 <tr>
 	 <th>Id</th>
