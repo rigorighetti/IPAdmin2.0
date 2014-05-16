@@ -89,7 +89,7 @@
 	     <td><a href=[% c.uri_for_action('/iprequest/view', [i.id]) %]>[% i.id %]</a></td>
           <td>[% i.type.type %]</td>
           <td>[% i.area.department.name %] presso [% i.area.building.name %]</td>
-          <td[% IF i.state == 0 -%] style="background:#d1392b">[% END -%][% IF i.state == 1 -%] style="background:#ffbb00">[% END -%][% IF i.state == 2 -%] style="background:#53db3b">[% END -%][% i.state %]</td>
+          <td [% IF i.state == 0 -%] style="background:#d1392b"[% END -%][% IF i.state == 1 -%] style="background:#ffbb00"[% END -%][% IF i.state == 2 -%] style="background:#53db3b"[% END -%][% IF i.state == 3 -%] style="background:#7b00ff"[% END -%]>[% i.state %]</td>
 	     <td>
         <a href="[% c.uri_for_action('iprequest/delete',[i.id])%]">[% icon('remove') %]</a>
           <div class="buttons small_btn">

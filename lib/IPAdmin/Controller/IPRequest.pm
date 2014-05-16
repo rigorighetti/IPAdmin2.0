@@ -93,7 +93,7 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
     my @assignement =  map +{
             id          => $_->id,
             date_in     => IPAdmin::Utils::print_short_timestamp($_->date_in),
-            #date_out    => IPAdmin::Utils::print_short_timestamp($_->date_out),
+            date_out    => IPAdmin::Utils::print_short_timestamp($_->date_out),
             state       => $_->state,
             },
             $req->map_assignement;
@@ -359,7 +359,7 @@ sub process_validate : Private {
     }
 }
 
-sub unactivate : Chained('object') : PathPart('activate') : Args(0) {
+sub unactivate : Chained('object') : PathPart('unactivate') : Args(0) {
  my ( $self, $c ) = @_;
  my $iprequest = $c->stash->{'object'};
 
@@ -385,7 +385,7 @@ sub unactivate : Chained('object') : PathPart('activate') : Args(0) {
         $c->detach('/follow_backref');
    }
    else {
-       $c->stash( template => 'unactivate.tt' );
+       $c->stash( template => 'iprequest/unactivate.tt' );
    }
 }
 
@@ -458,10 +458,12 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
         $iprequest->state($IPAdmin::ARCHIVED);
         $iprequest->update;
         #chiude l'ultima assegnazione
-        my $ret = $c->model('IPAdminDB::IPAssignement')->search({state=>$IPAdmin::ACTIVE})->update({
+        my $ret = $c->model('IPAdminDB::IPAssignement')->search({state=>$IPAdmin::ACTIVE})->single;
+
+        $ret->update({
                         date_out => time,
                         state    => $IPAdmin::INACTIVE,
-                        });
+                     });
        
          $c->flash( message => 'Richiesta IP archiviata.' );
          $c->detach('/follow_backref');

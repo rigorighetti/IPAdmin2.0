@@ -1,0 +1,58 @@
+[% META 
+   title='Richieste Referenti di Rete'
+   use_table=1
+   section='Search'
+-%]
+
+<div class="buttons create_btn">
+<a href="[% c.uri_for_action('/managerrequest/create') %]" >
+   [% ui_icon('circle-plus') %] Nuova Richiesta per Referente</a>
+[% add_css_create_btn %]
+</div>
+
+[% FOREACH i IN request_table %]
+   [% IF loop.first %] 
+     [%init_table('request') %]  
+    <table class="display" id="iprequest">
+       <thead>  
+	 <tr>
+	 <th>Id</th>
+   <th>Data</th>
+   <th>Validata</th>
+   <th>Scadenza</th>
+ 	 <th>Direttore</th>
+   <th>Area</th>
+ 	 <th>Referente di Rete</th>
+	 <th>Subnet</th>
+   <th>State</th>
+	 <th>Nr. IP ass</th>
+   <th>Comandi</th>
+   </tr>
+   </thead>  
+   <tbody>
+  [% END %]
+    <tr>
+	 <td align=center><a href=[% c.uri_for_action('/managerrequest/view', [i.id]) %]>[% i.id %]</a></td>
+ 	 <td>[% i.date %]</td>
+   <td>[% i.date_in %]</td>
+   <td>[% i.date_out %]</td>
+   <td>[% i.dir_fullname %]</td>
+ 	 <td>[% i.area.department.name %] <i>presso</i> [% i.area.building.name %]</td>
+ 	 <td>[% i.user.fullname %]</td>
+	 <td>[% i.area.building.vlan.subnet %]</td>
+   <td [% IF i.state == 0 -%] style="background:#d1392b" [% END -%] 
+	     [% IF i.state == 1 -%] style="background:#ffbb00" [% END -%]
+	     [% IF i.state == 2 -%] style="background:#53db3b" [% END -%]
+	     >[% i.state %]
+	 </td>
+   <td>TODO</td>
+	 <td>
+	<!--  <a href="[% c.uri_for_action('managerrequest/edit',[i.id])%]">[% icon('edit') %]</a>
+	  <a href="[% c.uri_for_action('managerrequest/delete',[i.id])%]">[% icon('remove') %]</a> -->
+	 </td>
+         </tr>
+  [% IF loop.last %]
+        </tbody>
+    </table>
+   [% END %]
+[% END %]

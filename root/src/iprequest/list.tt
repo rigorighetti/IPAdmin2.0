@@ -39,8 +39,8 @@
 	     >[% i.state %]
 	 </td>
 	 <td>
-	  <a href="[% c.uri_for_action('iprequest/edit',[u.username])%]">[% icon('edit') %]</a>
-	  <a href="[% c.uri_for_action('iprequest/delete',[u.username])%]">[% icon('remove') %]</a>
+	  <a href="[% c.uri_for_action('iprequest/edit',[i.id])%]">[% icon('edit') %]</a>
+	  <a href="[% c.uri_for_action('iprequest/delete',[i.id])%]">[% icon('remove') %]</a>
 	 </td>
          </tr>
   [% IF loop.last %]

@@ -1,0 +1,82 @@
+[%  META title='Nomina o conferma referente di rete'    
+    section='Asset'
+ %]
+
+<form name="form1" method="POST">
+
+<input type=hidden name="user" value="[% user.id %]" />
+
+<br>
+<table class="ui-widget-content ui-corner-all manoc-form">
+	  <tr>
+        <td><label>Struttura:</label></td>
+        <td>
+	  	    <select name="area">
+		        [% FOREACH a IN aree %]
+                    <option value="[% a.id %]">
+                    [%a.department.name%] presso [%a.building.name%]</option>
+		        [% END %]
+            </select>
+        </td>    
+		<td>
+		 [% IF error.area %]
+	      <span class="error" id="error">[% error.area %] </span>
+		 [%END%]
+        </td>
+    </tr>
+	<p> Dati del Responsabile della struttura </p>
+	<tr>
+		<td><label>Richiesta in data<label></td>
+		<td>[% data %]</td>
+		<td></td> 
+	<tr>
+		<td><label>Nome e Cognome:</label></td>
+		<td><input type="text" name="dir_fullname" value="[% dir_fullname %]" /></td>
+ 		<td> [% IF error.dir_fullname %]
+	      	 <span class="error" id="error">[% error.dir_fullname %] </span>
+		     [%END%]
+		 </td>
+	</tr>
+    <tr>
+ 	  	<td><label>Telefono:</label></td>
+		<td><input type="text" name="dir_phone" value="[% dir_phone %]" /></td>
+ 	  	<td> [% IF error.dir_phone %]
+	   	     <span class="error" id="error">[% error.dir_phone %] </span>
+		     [%END%]
+		 </td>
+	</tr>
+	<tr>
+ 	  	<td><label>Email:</label></td>
+	  	<td><input type="text" name="dir_email" value="[% dir_email %]" /></td>
+ 	  	<td> [% IF error.dir_email %]
+	   	     <span class="error" id="error">[% error.dir_email %] </span>
+		     [%END%]
+		 </td> 	</tr>
+	<tr>
+		<td colspan="3">Dati del referente di rete</td>
+	</tr>
+  		<td class="label">Nome e Cognome:</td>
+  		<td colspan="2">[% user.fullname -%]</td>
+  		<td></td>
+	</tr>
+	<tr>
+  		<td><label>Telefono:</label></td>
+        <td>[% user.telephone -%]</td>
+	    <td> </td>
+	</tr>
+	<tr>
+  		<td><label>Email:</label></td>
+        <td>[% user.email -%]</td>
+	    <td> </td>
+	</tr>
+	<tr>
+	<td colspan="2" class="buttons-form">
+	<div class="buttons">
+	     <input type="submit" name="submit" value="Submit">
+	     <input type="submit" name="discard" value="Discard">
+	</div>
+	</td>
+	</tr>
+</table>
+</form>
+
