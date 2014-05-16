@@ -1,0 +1,45 @@
+[% META 
+   title='Attiva Richiesta IP'
+   use_table=1
+   section='Asset'
+-%]
+  		
+<form name="form2" method="POST">
+
+<table class="ui-widget-content ui-corner-all manoc-form">
+      <tr>
+	     <td>Datai Richiesta:</td><td>[% data %]</td>
+      </tr>
+      <tr>
+	     <td>Tipo:</td><td>[% object.type.type %]</td>
+      </tr>
+      <tr>
+	     <td>Responsabile:</td><td>[% object.user.fullname %] </td>
+      </tr>
+      <tr>
+	     <td>Struttura:</td><td>[% object.area.department.name (object.area.building.name)%]</td>
+      </tr>
+      <tr>
+       <td>Referente di rete:</td><td>[% object.area.manager.fullname%]</td>
+      </tr>
+      <tr>
+       <td>Nome a dominio:</td><td>[% object.hostname%].[%object.area.department.domain%].uniroma1.it</td>
+      </tr>
+      <tr>
+       <td>MAC Address:</td><td>[% object.macaddress%]</td>
+      </tr>    
+      <tr>
+	<td>Indirizzo IP:</td><td>151.100.[% object.subnet.id -%].[% object.host -%]</td>
+      </tr>
+    </table>
+    [% add_css_tableinfo -%]
+    <p>
+	<div class="buttons">
+             <input type="submit" name="submit" value="Submit">
+             <input type="submit" name="discard" value="Discard">
+        </div>
+    </p>
+
+   [% add_css_tableinfo %]
+  </div>
+  

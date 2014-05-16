@@ -21,6 +21,7 @@
 	 <th>Nome e Cognome</th>
    	 <th>Area</th>
  	 <th>Referente di Rete</th>
+	 <th>Stato</th>
 	 <th>Commands</th>
          </tr>
        </thead>  
@@ -32,6 +33,11 @@
 	 <td><a href="[% c.uri_for_action('/userldap/view', [i.user.username]) %]">[% i.user.fullname %]</a></td>
  	 <td>[% i.area.department.name %] <i>presso</i> [% i.area.building.name %]</td>
  	 <td>[% i.area.manager.fullname %]</td>
+	 <td [% IF i.state == 0 -%] style="background:#d1392b" [% END -%] 
+	     [% IF i.state == 1 -%] style="background:#ffbb00" [% END -%]
+	     [% IF i.state == 2 -%] style="background:#53db3b" [% END -%]
+	     >[% i.state %]
+	 </td>
 	 <td>
 	  <a href="[% c.uri_for_action('iprequest/edit',[u.username])%]">[% icon('edit') %]</a>
 	  <a href="[% c.uri_for_action('iprequest/delete',[u.username])%]">[% icon('remove') %]</a>

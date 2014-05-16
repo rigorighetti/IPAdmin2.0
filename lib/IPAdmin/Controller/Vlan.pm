@@ -67,6 +67,16 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
     my ( $self, $c ) = @_;
     #Set template parameters
     $c->stash( template => 'vlan/view.tt');
+    
+    my $req = $c->stash->{'object'};
+    my @subnet =  map +{
+            id          => $_->id,
+            name        => $_->name,
+            },
+            $req->map_subnet;
+
+    $c->stash( subnet => \@subnet );
+
 }
 
 =head2 list

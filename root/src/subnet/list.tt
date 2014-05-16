@@ -1,7 +1,7 @@
 [% META 
    title='Lista Subnet'
    use_table=1
-   section='NetDB'
+   section='Asset'
 -%]
 
 <div class="buttons create_btn">
