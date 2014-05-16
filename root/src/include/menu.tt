@@ -51,7 +51,15 @@
 		{
 		     name = 'Area',
 		     path = c.uri_for('/area/list'),
-		},		     
+		},
+		{
+                     name = 'Subnet',
+                     path = c.uri_for('/subnet/list'),
+                },
+		{
+                     name = 'Vlan',
+                     path = c.uri_for('/vlan/list'),
+                },		     
 		],
 	 Config = [
   	       {

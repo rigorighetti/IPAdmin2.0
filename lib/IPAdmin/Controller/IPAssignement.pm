@@ -65,12 +65,11 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
 
    my @ipassignement_table =  map +{
             id          => $_->id,
-#            data_in     => IPAdmin::Utils::print_short_timestamp($_->date),
-#           area        => $_->area,
-#           user        => $_->user,
+            date_in     => IPAdmin::Utils::print_short_timestamp($_->date_in),
+            state       => $_->state,
+            ip_request  => $_->ip_request,
             },
-            $c->stash->{resultset}->search({}
-            );
+            $c->stash->{resultset}->search({});
 
    $c->stash( ipassignement_table => \@ipassignement_table );
    $c->stash( template        => 'ipassignement/list.tt' );
@@ -208,62 +207,6 @@ sub process_create : Private {
     return 1;
     }
 }
-
-sub check_ipreq_form : Private {
-    my ( $self, $c) = @_;
-    my $schema = $c->stash->{resultset};
-
-    # if ( $name eq '' ) {
-    # $c->stash->{message} = "Empty name";
-    # return 0;
-    # }
-    # if ( $name !~ /^\w[\w-]*$/ ) {
-    # $c->stash->{message} = "Invalid name";
-    # return 0;
-    # }
-
-    # if ($schema->search({ name => $name})->count() > 0 ) {
-    # $c->stash->{message} = "Duplicated name";
-    # $c->log->error("duplicated $name");
-    # return 0;
-    # }
-
-    return 1;
-}
-
-#sub process_validate {
-#    my ( $self, $c ) = @_;
-#    my $ipaddr       = $c->req->param('ipaddr');
-#    my $error;
-    
-#    if ($ipaddr) {
-#    $c->stash->{message} = "L'indirizzo IP è un campo obbligatorio";
-#    return 0;
-#    }
-    #Stati IPAssignement
-    #state == 0 non validata
-    #state == 1 convalidata
-    #state == 2 archiviata
-#    $c->stash->{'object'}->state(1);
-
-    #stati IPAssignement 
-    #state == 0 prenotato
-    #state == 1 attiva
-#    my $ret = $c->model('IPAdminDB::IPAssignement')->create({
-#                        ipaddr      => $ipaddr,
-#                        state       => 0,
-#                        date_in     => time,
-#                        ip_request  => $c->stash->{'object'}->id,
-#                        });
-#    if (! $ret ) {
-#    $c->stash->{message} = "Errore nella creazione dell'assegnazione IP";
-#    return 0;
-#    } else {
-#    $c->stash->{message} = "L'assegnazione' IP è stata creata. Ora....simone completa";
-#    return 1;
-#    }
-#}
-
 
 =head2 delete
 il delete deve archiviare prima la richiesta e poi cancellarla. 

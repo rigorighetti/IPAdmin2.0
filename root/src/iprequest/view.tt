@@ -1,7 +1,7 @@
 [% META 
    title='Richiesta IP'
    use_table=1
-   section='Asset'
+   section='Search'
 -%]
 <div id="tabs">	 
   <ul>
@@ -32,12 +32,31 @@
       </tr>
       <tr>
        <td>MAC Address:</td><td>[% object.macaddress%]</td>
-      </tr>    
+      </tr>
+      </table>
 
-    </table>
+        [% IF object.state == 2 -%]
+        <table style="border:solid 1px #53db3b">
+        [% END -%]
+	[% IF object.state == 1 -%] 
+        <table style="border:solid 1px #ffbb00">
+	[% END -%]
+	[% IF object.state == 0 -%]
+	<table style="border:solid 1px #d1392b">
+      	[% END -%]
+	<tr>
+	 <td>Indirizzo IP: [% IF object.subnet && object.host -%] 151.100.[% object.subnet.id %].[% object.host %] [% END -%] [% IF !object.subnet -%] non assegnato [% END -%] </td>
+      </tr>
+      </table> 
+      
+
     [% add_css_tableinfo -%]
     <p>
       <div class="buttons">	
+	[% IF object.state == 0 -%] <a href=[%c.uri_for_action('iprequest/validate', [object.id]) %]> [%ui_icon('check')%] Convalida</a>
+	[% END -%]
+	[% IF object.state == 1 -%] <a href=[%c.uri_for_action('iprequest/activate', [object.id]) %]> [%ui_icon('check')%] Attiva</a>
+        [% END -%]
 	<a href=[%c.uri_for_action('iprequest/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica</a>
 	&nbsp;<a href=[% c.uri_for_action('iprequest/delete', [object.id]) %]>
 	[% ui_icon('closethick') %]  Rinuncia</a>
@@ -52,6 +71,7 @@
       <thead>
         <tr>
           <th>Id</th>
+	  <th>Stato</th>
           <th>Data assegnazione</th>
           <th>Data scadenza</th>
         </tr>
@@ -60,7 +80,11 @@
         [% END %]
         <tr>
           <td><a href=[% c.uri_for_action('/ipassignement/view', [i.id]) %]>[% i.id %]</a></td>
-          <td>[% i.date_in %]</td>
+          <td [% IF i.state == 0 -%] style="background:#d1392b"> stato 0 [% END -%] 
+	      [% IF i.state == 1 -%] style="background:#ffbb00"> stato 1 [% END -%]
+	      [% IF i.state == 2 -%] style="background:#53db3b"> stato 2 [% END -%]
+	  </td>
+	  <td>[% i.date_in %]</td>
           <td>[% i.date_out %] </td>
         </tr>
         [% IF loop.last %]

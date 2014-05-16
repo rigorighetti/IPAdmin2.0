@@ -31,7 +31,7 @@
  	 <td>[% i.date_in %]</td>
 	 <td>[% i.date_out %]</td>
 	 <td>[% i.state %]</td>
-	 <td><a href="[% c.uri_for_action('/userldap/view', [i.iprequest.user.username]) %]">[% i.iprequest.user.fullname %]</a></td>
+	 <td><a href="[% c.uri_for_action('/userldap/view', [i.iprequest.user.username]) %]">[% i.ip_request.user.fullname %]</a></td>
 	 <td>
 	  <a href="[% c.uri_for_action('ipassignement/edit',[u.username])%]">[% icon('edit') %]</a>
 	  <a href="[% c.uri_for_action('ipassignement/delete',[u.username])%]">[% icon('remove') %]</a>

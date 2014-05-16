@@ -47,6 +47,7 @@
           <th>Id</th>
           <th>Tipo</th>
 	  <th>Area</th>
+	  <th>Stato</th>
           <th>Referente di Rete</th>
         </tr>
       </thead>
@@ -56,7 +57,8 @@
           <td><a href=[% c.uri_for_action('/iprequest/view', [i.id]) %]>[% i.id %]</a></td>
           <td>[% i.type.type %]</td>
 	  <td>[% i.area.department.name %] presso [% i.area.building.name %]</td>
-          <td>[% i.area.manager.fullname %]</td>
+	  <td[% IF i.state == 0 -%] style="background:#d1392b"[% END -%][% IF i.state == 1 -%] style="background:#ffbb00"[% END -%]>[% i.state %]</td>
+	  <td>[% i.area.manager.fullname %]</td>
         </tr>
         [% IF loop.last %]
       </tbody>
@@ -77,23 +79,27 @@
           <th>Id</th>
           <th>Tipo</th>
           <th>Area</th>
+	  <th>Stato</th>
           <th>Comandi</th>
 	</tr>
       </thead>
       <tbody>
         [% END %]
-        <tr>
-          <td><a href=[% c.uri_for_action('/iprequest/view', [i.id]) %]>[% i.id %]</a></td>
+        <tr> 
+	     <td><a href=[% c.uri_for_action('/iprequest/view', [i.id]) %]>[% i.id %]</a></td>
           <td>[% i.type.type %]</td>
           <td>[% i.area.department.name %] presso [% i.area.building.name %]</td>
-          <td>
-            <a href="[% c.uri_for_action('iprequest/delete',[i.id])%]">[% icon('remove') %]</a>
-            <div class="buttons small_btn">
-            <a href="[% c.uri_for_action('iprequest/validate',[i.id],{backref => c.req.uri}) %]">Convalida</a>
-            </div>
-          </td>
-          </tr>
-        [% IF loop.last %]
+          <td[% IF i.state == 0 -%] style="background:#d1392b">[% END -%][% IF i.state == 1 -%] style="background:#ffbb00">[% END -%][% IF i.state == 2 -%] style="background:#53db3b">[% END -%][% i.state %]</td>
+	     <td>
+        <a href="[% c.uri_for_action('iprequest/delete',[i.id])%]">[% icon('remove') %]</a>
+          <div class="buttons small_btn">
+          [%IF i.state == 0 -%]
+	         <a href="[% c.uri_for_action('iprequest/validate',[i.id], {backref=>c.req.uri } ) %]">Convalida</a>
+         [%END -%]  
+	       </div>
+    </td>
+  </tr>
+      [% IF loop.last %]
       </tbody>
     </table>
     [% END %]

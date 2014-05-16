@@ -73,7 +73,8 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
             date        => IPAdmin::Utils::print_short_timestamp($_->date),
             area        => $_->area,
             user        => $_->user,
-            },
+            state	=> $_->state,
+	    },
             $c->stash->{resultset}->search({});
 
    $c->stash( iprequest_table => \@iprequest_table );
@@ -89,7 +90,7 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
     my $req = $c->stash->{object};
 
     #Creare lista di assegnazioni per richiesta IP
-   my @assignement =  map +{
+    my @assignement =  map +{
             id          => $_->id,
             date_in     => IPAdmin::Utils::print_short_timestamp($_->date_in),
             #date_out    => IPAdmin::Utils::print_short_timestamp($_->date_out),
@@ -112,6 +113,11 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
 
 sub edit : Chained('object') : PathPart('edit') : Args(0) {
     my ( $self, $c ) = @_;     
+    my $req = $c->stash->{object};
+    #TODO recuperare i dati e lasciare solo alcuni campi modificabili
+
+
+
 }
 
 
@@ -206,7 +212,7 @@ sub check_ipreq_form : Private {
      }
     #controllo formato mac address (ancora non copre aa:bb:cc:dd:ee:ff) 
      if ( $mac !~ /([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}/ 
-	||$mac =~ /((aa|bb|cc|dd|ee|ff|00|11|22|33|44|55|66|77|88|99):){5}(aa|bb|cc|dd|ee|ff|00|11|22|33|44|55|66|77|88|99){2}/i ) {
+	and $mac =~ /((aa|bb|cc|dd|ee|ff|00|11|22|33|44|55|66|77|88|99):){5}(aa|bb|cc|dd|ee|ff|00|11|22|33|44|55|66|77|88|99){2}/i ) {
      	$c->stash->{message} = "Errore nel formato del mac address! aa:aa:aa:aa:aa:aa";
      	return 0;
      }
@@ -233,6 +239,7 @@ sub check_ipreq_form : Private {
 sub validate : Chained('object') : PathPart('validate') : Args(0) {
     my ( $self, $c ) = @_;
     my $req = $c->stash->{'object'};
+
     $c->stash( default_backref => $c->uri_for_action('/iprequest/list') );
 
     if ( lc $c->req->method eq 'post' ) {
@@ -243,7 +250,7 @@ sub validate : Chained('object') : PathPart('validate') : Args(0) {
         if ($done) {
             $c->flash( message => $c->stash->{message} );
             $c->stash( default_backref =>
-                $c->uri_for_action( "iprequest/list" ) );
+                $c->uri_for_action( "/iprequest/list" ) );
             $c->detach('/follow_backref');
         }
     }
@@ -251,7 +258,8 @@ sub validate : Chained('object') : PathPart('validate') : Args(0) {
 
     #set form defaults
     my %tmpl_param;
-  
+
+    $tmpl_param{data}      = IPAdmin::Utils::print_short_timestamp($req->date);
     #a regime deve proporre un indirizzo IP tra le subnet associate 
     #all'area
     my $vlan = $req->area->building->vlan;
@@ -263,23 +271,38 @@ sub validate : Chained('object') : PathPart('validate') : Args(0) {
         return;
     }
 
-
-    #TODO SOLO NELLE POST
     my @availables;
     while(my $subnet = $subnets->next) {
-        my $lastip = $c->model("IPAdminDB::IPRequest")->search({subnet => $subnet->id},{
-            order_by => {-desc => ['host']}})->single;
+        #
+        my $sub_id = $subnet->id;
+        my $lastip = $c->model("IPAdminDB::IPRequest")->search({-and => 
+                                                     [ subnet => $sub_id,
+                                                       -or     =>[ state => 1,
+                                                                   state => 2
+                                                                 ]
+                                                     ]},
+                                                    {order_by => {-desc => ['host']}}
+                                                    )->single;
         
         if (defined $lastip){
-            $lastip = $lastip->id;
+            $lastip = $lastip->host;
+            print "\n\n\n$lastip\n\n\n";
+            $lastip += 1;
         }else{ 
-            $lastip = 1;
+            $lastip = 6;
         }
 
-        print "\n\n$lastip\n\n";
         #TODO spostare tutto in una funzione
         #TODO logica degli ip
-       
+        if ($lastip > 248 ) {
+            $c->flash( message => "Non ci sono IP disponibili per la subnet 151.100.$subnet->id.0.
+                                   Contattare ipsapienza\@uniroma1.it" );
+            #TODO redirigere su userldap/<utente>/view
+            $c->stash( default_backref =>
+                $c->uri_for_action( "/iprequest/list" ) );
+            $c->detach('/follow_backref');
+        }
+
         my $proposed_ip = "151.100.".$subnet->id.".$lastip";
         push @availables, $proposed_ip;
     }
@@ -303,7 +326,6 @@ sub process_validate : Private {
     #state == 0 non validata
     #state == 1 convalidata
     #state == 2 archiviata
-    $c->stash->{'object'}->state($IPAdmin::ACTIVE);
 
     #stati IPAssignement 
     #state == 0 prenotato
@@ -315,26 +337,109 @@ sub process_validate : Private {
     $ipaddr =~ m/151\.100\.(\d+)\.(\d+)/;
     my ($sub,$host) = ($1,$2);
 
-    print "\n\n$sub $host\n\n\n";
-    $c->stash->{'object'}->state($IPAdmin::ACTIVE);
+    $c->stash->{'object'}->state($IPAdmin::PREACTIVE);
     $c->stash->{'object'}->subnet($sub);
     $c->stash->{'object'}->host($host);
     $c->stash->{'object'}->update;
 
-
     my $ret = $c->model('IPAdminDB::IPAssignement')->create({
-                        state       => $IPAdmin::INACTIVE,
+                        state       => $IPAdmin::ACTIVE,
                         date_in     => time,
                         ip_request  => $c->stash->{'object'}->id,
                         });
+
+
+
     if (! $ret ) {
     $c->stash->{message} = "Errore nella creazione dell'assegnazione IP";
     return 0;
     } else {
-    $c->stash->{message} = "L'assegnazione' IP è stata creata. Ora....simone completa";
+    $c->stash->{message} = "L'assegnazione' IP è stata creata.";
     return 1;
     }
 }
+
+sub unactivate : Chained('object') : PathPart('activate') : Args(0) {
+ my ( $self, $c ) = @_;
+ my $iprequest = $c->stash->{'object'};
+
+ 
+ if ( lc $c->req->method eq 'post' ) {
+     #TODO invalidare ogni assegnazione associata alla richiesta
+
+        $iprequest->state($IPAdmin::PREACTIVE);
+        $iprequest->update;
+        #invalida la vecchia assegnazione IP
+        my $ret = $c->model('IPAdminDB::IPAssignement')->search({state=>$IPAdmin::ACTIVE})->update({
+                        date_out => time,
+                        state    => $IPAdmin::INACTIVE,
+                        });
+        #crea la nuova assegnazione (riatticabile dall'utente entro tot giorni)
+        $c->model('IPAdminDB::IPAssignement')->create({
+                        date_in     => time,
+                        state       => $IPAdmin::ACTIVE,
+                        ip_request  => $c->stash->{'object'}->id,
+                        });
+
+        $c->flash( message => 'Richiesta IP invalidata.' );
+        $c->detach('/follow_backref');
+   }
+   else {
+       $c->stash( template => 'unactivate.tt' );
+   }
+}
+
+
+sub activate : Chained('object') : PathPart('activate') : Args(0) {
+    my ( $self, $c ) = @_;
+    my $req = $c->stash->{'object'};
+    $c->stash( default_backref => $c->uri_for_action('iprequest/list') );
+
+    if ( lc $c->req->method eq 'post' ) {
+        if ( $c->req->param('discard') ) {
+            $c->detach('/follow_backref');
+        }
+        my $done = $c->forward('process_activate');
+        if ($done) {
+            $c->flash( message => $c->stash->{message} );
+            $c->stash( default_backref =>
+                $c->uri_for_action( "iprequest/list" ) );
+            $c->detach('/follow_backref');
+        }
+    }
+
+    #set form defaults
+    my %tmpl_param;
+    $tmpl_param{template}  = 'iprequest/activate.tt';
+    $tmpl_param{data}      = IPAdmin::Utils::print_short_timestamp($req->date);
+
+    $c->stash(%tmpl_param);
+
+}
+
+
+sub process_activate : Private {
+    my ( $self, $c ) = @_;
+    my $error;
+
+    #Cambia lo stato dell'iprequest
+    $c->stash->{object}->state($IPAdmin::ACTIVE);
+    $c->stash->{object}->update;
+    #Aggiorna la data dell'assegnamento 
+
+    my $ret = $c->model('IPAdminDB::IPAssignement')->search({state=>$IPAdmin::ACTIVE})->update({
+                        date_in     => time,
+                        });
+
+    if (! $ret ) {
+    $c->stash->{message} = "Errore nell'aggiornamento dell'assegnazione IP";
+    return 0;
+    } else {
+    $c->stash->{message} = "L'assegnazione' IP è stata attivata.";
+    return 1;
+    }
+}
+
 
 
 =head2 delete
@@ -349,10 +454,15 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
 
   
     if ( lc $c->req->method eq 'post' ) {
-        #TODO invalidare ogni assegnazione associata alla richiesta
-
-         $iprequest->state($IPAdmin::DELETED);
-         $iprequest->update;
+        #Archivia la richiesta
+        $iprequest->state($IPAdmin::ARCHIVED);
+        $iprequest->update;
+        #chiude l'ultima assegnazione
+        my $ret = $c->model('IPAdminDB::IPAssignement')->search({state=>$IPAdmin::ACTIVE})->update({
+                        date_out => time,
+                        state    => $IPAdmin::INACTIVE,
+                        });
+       
          $c->flash( message => 'Richiesta IP archiviata.' );
          $c->detach('/follow_backref');
    }
