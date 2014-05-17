@@ -125,6 +125,8 @@ sub create : Chained('base') : PathPart('create') : Args() {
     my ( $self, $c, $parent ) = @_;
     my $id;
     $c->stash( default_backref => $c->uri_for_action('/iprequest/list') );
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+
 
     if ( lc $c->req->method eq 'post' ) {
         if ( $c->req->param('discard') ) {
@@ -140,10 +142,11 @@ sub create : Chained('base') : PathPart('create') : Args() {
     }
     #set form defaults
     my %tmpl_param;
-    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    my @users;
 
     if($realm eq "normal") {
-        #se non è un utente ldap ci deve stare un campo select per l'utente ldap
+        @users =  $c->model('IPAdminDB::UserLDAP')->search({})->all;
+        $tmpl_param{users} = \@users;
     }
     #TODO ordinamento aree per nome dipartimento
     my @aree  = $c->model('IPAdminDB::Area')->search({})->all;
@@ -179,6 +182,11 @@ sub process_create : Private {
     #state == 1 convalidata
     #state == 2 archiviata
 
+    #Se l'utente è già referente per quella struttura non si deve creare
+    #la richiesta 
+    #TODO un referente può avere più managed area?
+    # my $check_area = $c->model("IPAdminDB::UserLDAP")->find($user)->managed_area;
+    
     my $ret = $c->stash->{'resultset'}->create({
                         area        => $area,
                         user        => $user,

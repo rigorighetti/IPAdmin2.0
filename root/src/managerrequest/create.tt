@@ -4,7 +4,7 @@
 
 <form name="form1" method="POST">
 
-<input type=hidden name="user" value="[% user.id %]" />
+[%IF realm != "normal"-%]<input type=hidden name="user" value="[% user.id %]" />[%END-%]
 
 <br>
 <table class="ui-widget-content ui-corner-all manoc-form">
@@ -55,8 +55,19 @@
 	<tr>
 		<td colspan="3">Dati del referente di rete</td>
 	</tr>
-  		<td class="label">Nome e Cognome:</td>
-  		<td colspan="2">[% user.fullname -%]</td>
+  	<td class="label">Nome e Cognome:</td>
+  	<td colspan="2">
+    [%IF realm == "normal" -%]
+       	<select name="user">
+            [% FOREACH a IN users %]
+                <option value="[% a.id %]">
+                [%a.fullname%]</option>
+            [% END %]
+       </select>
+    [%ELSE -%]
+  		[% user.fullname -%]
+  	[%END -%]
+  	</td>
   		<td></td>
 	</tr>
 	<tr>

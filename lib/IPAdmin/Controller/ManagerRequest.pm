@@ -99,13 +99,53 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
 
 
 =head2 edit
-TODO
+TODO 
 =cut
 
 sub edit : Chained('object') : PathPart('edit') : Args(0) {
     my ( $self, $c ) = @_;     
     my $req = $c->stash->{object};
-    #TODO recuperare i dati e lasciare solo alcuni campi modificabili
+    $c->stash( default_backref => $c->uri_for_action('/managerrequest/view', [req->user->id]) );
+
+    if ( lc $c->req->method eq 'post' ) {
+        if ( $c->req->param('discard') ) {
+            $c->detach('/follow_backref');
+        }
+        my $done = $c->forward('process_edit');
+        if ($done) {
+            $c->flash( message => $c->stash->{message} );
+            $c->stash( default_backref =>
+                $c->uri_for_action( "managerrequest/list" ) );
+            $c->detach('/follow_backref');
+        }
+    }
+    #set form defaults
+    my %tmpl_param;
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    my @users;
+    if($realm eq "normal") {
+        @users = $c->model('IPAdminDB::UserLDAP')->search({})->all;;
+    }
+    #TODO ordinamento aree per nome dipartimento
+    my @aree  = $c->model('IPAdminDB::Area')->search({})->all;
+
+
+    $tmpl_param{realm}     = $realm;
+    $tmpl_param{user}      = $user;
+    $tmpl_param{users}      = \@users;
+    $tmpl_param{aree}      = \@aree;
+    $tmpl_param{user}      = $user;
+    $tmpl_param{data}      = IPAdmin::Utils::print_short_timestamp(time);
+    $tmpl_param{dir_fullname} = $c->req->param('dir_fullname');
+    $tmpl_param{dir_phone}    = $c->req->param('dir_phone');
+    $tmpl_param{dir_email}    = $c->req->param('dir_email');
+
+
+
+    $tmpl_param{template}  = 'managerrequest/edit.tt';
+
+
+    $c->stash(%tmpl_param);
 
 
 
@@ -132,13 +172,13 @@ sub create : Chained('base') : PathPart('create') : Args() {
     #set form defaults
     my %tmpl_param;
     my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
-
+    my @users;
     if($realm eq "normal") {
-        #se non è un utente ldap ci deve stare un campo select per l'utente ldap
+        @users = $c->model('IPAdminDB::UserLDAP')->search({})->all;
+        $tmpl_param{users}      = \@users;
     }
     #TODO ordinamento aree per nome dipartimento
     my @aree  = $c->model('IPAdminDB::Area')->search({})->all;
-
 
     $tmpl_param{realm}     = $realm;
     $tmpl_param{user}      = $user;
