@@ -33,7 +33,7 @@
 	[% ui_icon('closethick') %]  Elimina</a>
 	&nbsp;
 
-	<a href="[% c.uri_for_action('/area/create',{building => object.id, backref=>c.req.uri}) %]">
+	<a href="[% c.uri_for_action('/area/create',{def_build => object.id, backref=>c.req.uri}) %]">
 		[% ui_icon('plusthick') %] Aggiungi Dipartimento</a> 
 
       </div>

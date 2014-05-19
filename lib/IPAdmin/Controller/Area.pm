@@ -97,16 +97,24 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
 =cut
 
  sub save : Private {
-    my ( $self, $c ) = @_;
-    my $item = $c->stash->{object} || $c->stash->{resultset}->new_result( {} );
-   
+    my ( $self, $c ) = @_;   
+    my $def_build = $c->req->param('def_build') || -1;
+    my $item = $c->stash->{object}; 
+
+
+    if(!defined $item){ 
+        defined $def_build ? $item = $c->stash->{resultset}->new_result( {building => $def_build} ) : 
+        $item = $c->stash->{resultset}->new_result( {} );
+        delete $c->req->params->{'def_build'} 
+    }
+
      #set the default backref according to the action (create or edit)
     my $def_br = $c->uri_for('/area/list');
     $def_br = $c->uri_for_action( 'area/view', [ $c->stash->{object}->id ] )
          if ( defined( $c->stash->{object} ) );
      $c->stash( default_backref => $def_br );
 
-    my $form = IPAdmin::Form::Area->new( {item => $item} );
+    my $form = IPAdmin::Form::Area->new( {item => $item, def_build => $def_build} );
      $c->stash( form => $form, template => 'area/save.tt' );
 
      # the "process" call has all the saving logic,
@@ -115,7 +123,7 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
      if ( $c->req->param('discard') ) {
          $c->detach('/follow_backref');
      }
-     return unless $form->process( params => $c->req->params );
+     return unless $form->process( params => $c->req->params);
 
      $c->flash( message => 'Success! Area created.' );
      $def_br = $c->uri_for_action( 'area/view', [ $item->id ] );

@@ -11,25 +11,46 @@ extends 'HTML::FormHandler::Model::DBIC';
 
 has_field 'building' => (
     type         => 'Select',
-    label        => 'Building name',
+    label        => 'Nome dell\'Edificio',
     empty_select => '---Edificio---',
     required     => 1
 );
 
 has_field 'department' => (
 	type	=> 'Select',
-	label	=> 'Department name',
+	label	=> 'Nome della Struttura',
 	empty_select => '---Struttura---',
         required     => 1
 );
-
-#has_field 'manager' => (
-#        type    => 'Select',
-#       label   => 'Manager name',
-#        empty_select => '---Choose a Manager---'
-#);
+ 
+has 'def_build' => (
+    is       => 'rw',
+    isa      => 'Int',
+    required => 0,
+);
 
 has_field 'submit'  => ( type => 'Submit', value => 'Submit' );
 has_field 'discard' => ( type => 'Submit', value => 'Discard' );
+
+
+
+sub options_building {
+    my $self = shift;
+    return unless $self->schema;
+
+    my $builds = $self->schema->resultset('Building')->search(
+        {},
+        {
+            order_by => 'me.id',
+        }
+    );
+    my @selections;
+    while ( my $build = $builds->next ) {
+        push @selections, { value => $build->id, label => $build->name, selected => $build->id eq $self->def_build };
+    }
+    return  @selections;
+}
+
+
 
 1;
