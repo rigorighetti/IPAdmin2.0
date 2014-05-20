@@ -26,8 +26,8 @@ __PACKAGE__->add_columns(
 				      },
 			 manager   =>{
 			              data_type      => 'int',
-			              is_nullable    => 1,
-				      is_foreign_key => 1,
+			          	  is_nullable    => 1,
+				      	  is_foreign_key => 1,
 				     }
 			);
 

@@ -83,11 +83,13 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
     my ( $self, $c ) = @_;
     my @requests;     
 
-    my $managed_area = $c->stash->{'object'}->managed_area;
+    my @managed_area = $c->stash->{'object'}->managed_area;
 
-    @requests = $c->model("IPAdminDB::IPRequest")->search({area => $managed_area->id})->all
-        if(defined $managed_area);
+    foreach my $area (@managed_area){
+        @requests = $c->model("IPAdminDB::IPRequest")->search({area => $area->id})->all
+    }
 
+    
     $c->stash( requests => \@requests );
     $c->stash( template => 'userldap/view.tt' );
 }

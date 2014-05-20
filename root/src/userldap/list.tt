@@ -50,9 +50,6 @@
  	 <td>
 	  <a href="[% c.uri_for_action('userldap/edit',[u.username])%]">[% icon('edit') %]</a>
 	  <a href="[% c.uri_for_action('userldap/delete',[u.username])%]">[% icon('remove') %]</a>
-	   <div class="buttons small_btn">
-	   <a href="[% c.uri_for_action('userldap/set_manager',[u.username]) %]">Promuovi a referente </a>
-	   </div>
 	 </td>
 
 

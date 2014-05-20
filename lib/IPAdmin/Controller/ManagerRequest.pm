@@ -5,7 +5,7 @@
 package IPAdmin::Controller::ManagerRequest;
 use Moose;
 use namespace::autoclean;
-    use Data::Dumper;
+use Data::Dumper;
 use IPAdmin::Utils;
 
 
@@ -29,7 +29,7 @@ Catalyst Controller.
 
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
-    $c->response->redirect('managerrequest/list');
+    $c->response->redirect($c->uri_for('/managerrequest/list'));
     $c->detach();
 }
 
@@ -105,7 +105,19 @@ TODO
 sub edit : Chained('object') : PathPart('edit') : Args(0) {
     my ( $self, $c ) = @_;     
     my $req = $c->stash->{object};
-    $c->stash( default_backref => $c->uri_for_action('/managerrequest/view', [req->user->id]) );
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+
+    $c->stash( default_backref => $c->uri_for_action('/managerrequest/list') );
+
+    if($req->state != $IPAdmin::INACTIVE){
+        $c->flash( message => 'Solo le richieste non ancora validate possono essere modificate.');
+        $c->detach('/follow_backref');
+    }
+
+    if($req->user->id != $user->id ){
+        $c->flash( message => 'Si possono modificare solo le proprie richieste');
+        $c->detach('/follow_backref');
+    }
 
     if ( lc $c->req->method eq 'post' ) {
         if ( $c->req->param('discard') ) {
@@ -121,24 +133,25 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
     }
     #set form defaults
     my %tmpl_param;
-    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
     my @users;
     if($realm eq "normal") {
-        @users = $c->model('IPAdminDB::UserLDAP')->search({})->all;;
+        @users = $c->model('IPAdminDB::UserLDAP')->search({})->all;
+        $tmpl_param{users}      = \@users;
     }
     #TODO ordinamento aree per nome dipartimento
-    my @aree  = $c->model('IPAdminDB::Area')->search({})->all;
+    my @aree  = $c->model('IPAdminDB::Area')->search({}, {order_by => 'department'})->all;
 
 
-    $tmpl_param{realm}     = $realm;
-    $tmpl_param{user}      = $user;
-    $tmpl_param{users}      = \@users;
-    $tmpl_param{aree}      = \@aree;
-    $tmpl_param{user}      = $user;
-    $tmpl_param{data}      = IPAdmin::Utils::print_short_timestamp(time);
-    $tmpl_param{dir_fullname} = $c->req->param('dir_fullname');
-    $tmpl_param{dir_phone}    = $c->req->param('dir_phone');
-    $tmpl_param{dir_email}    = $c->req->param('dir_email');
+    $tmpl_param{realm}        = $realm;
+    $tmpl_param{user}         = $req->user;
+    $tmpl_param{aree}         = \@aree;
+    $tmpl_param{data}         = IPAdmin::Utils::print_short_timestamp(time);
+    $tmpl_param{dir_fullname} = $req->dir_fullname;
+    $tmpl_param{dir_phone}    = $req->dir_phone;
+    $tmpl_param{dir_email}    = $req->dir_email;
+    $tmpl_param{skill}        = $req->skill;
+    $tmpl_param{area}         = $req->area->id;
+
 
 
 
@@ -146,11 +159,38 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
 
 
     $c->stash(%tmpl_param);
-
-
-
 }
 
+sub process_edit : Private { 
+    my ( $self, $c ) = @_;
+    my $area      = $c->req->param('area');
+    my $user      = $c->req->param('user');
+    my $dir_name  = $c->req->param('dir_fullname');
+    my $dir_phone = $c->req->param('dir_phone');
+    my $dir_email = $c->req->param('dir_email');
+    my $skill     = 1; #$c->req->param('skill');
+    my $req       = $c->stash->{'object'};
+    my $error;
+
+    # check form
+    $c->forward('check_manreq_form') || return 0; 
+
+    $user and $req->user($user);
+    my $ret = $req->update({
+                        area          => $area,
+                        dir_fullname  => $dir_name,
+                        dir_phone     => $dir_phone,
+                        dir_email     => $dir_email,
+                        skill         => $skill, 
+                        });
+    if (! $ret ) {
+    $c->stash->{message} = "Errore nella creazione della richiesta referente";
+    return 0;
+    } else {
+    $c->stash->{message} = "La richiesta per il referente è stata modificata.";
+    return 1;
+    }
+}
 
 sub create : Chained('base') : PathPart('create') : Args() {
     my ( $self, $c, $parent ) = @_;
@@ -183,7 +223,6 @@ sub create : Chained('base') : PathPart('create') : Args() {
     $tmpl_param{realm}     = $realm;
     $tmpl_param{user}      = $user;
     $tmpl_param{aree}      = \@aree;
-    $tmpl_param{user}      = $user;
     $tmpl_param{data}      = IPAdmin::Utils::print_short_timestamp(time);
     $tmpl_param{dir_fullname} = $c->req->param('dir_fullname');
     $tmpl_param{dir_phone}    = $c->req->param('dir_phone');
@@ -209,6 +248,18 @@ sub process_create : Private {
 
     # check form
     $c->forward('check_manreq_form') || return 0; 
+ 
+    #prima di tutto controlla se per l'area in oggetto non esiste già un referente
+    #in caso  va abortita l'attivazione della nuova richiesta
+    my $result = $c->model('IPAdminDB::Area')->find($area);
+
+    if(defined  $result->manager){
+        $c->flash( message => "Non è stato possibile creare la richiesta. Esiste già un referente per il dipartimento di ".$result->department->name.
+        " presso ".$result->building->name."." );
+        $c->stash( default_backref =>
+        $c->uri_for_action( "managerrequest/list" ) );
+        $c->detach('/follow_backref');
+    }
 
     #state == 0 non validata
     #state == 1 convalidata
@@ -275,7 +326,7 @@ sub check_manreq_form : Private {
 sub activate : Chained('object') : PathPart('activate') : Args(0) {
     my ( $self, $c ) = @_;
     my $req = $c->stash->{'object'};
-    $c->stash( default_backref => $c->uri_for_action( "managerrequest/view",[$req->id] ));
+    $c->stash( default_backref => $c->uri_for_action( "managerrequest/list"));
 
  
     my $done = $c->forward('process_activate');
@@ -289,10 +340,27 @@ sub activate : Chained('object') : PathPart('activate') : Args(0) {
 sub process_activate : Private {
     my ( $self, $c ) = @_;
     my $error;
+    my $req  = $c->stash->{'object'};
     my $user = $c->stash->{'object'}->user;
+    
+    #prima di tutto controlla se per l'area in oggetto non esiste già un referente
+    #in caso  va abortita l'attivazione della nuova richiesta
+    if(defined  $req->area->manager){
+        $c->flash( message => "Non è stato possibile autorizzare la richiesta. Esiste già un referente per il dipartimento di ".$req->area->department->name.
+        " presso ".$req->area->building->name."." );
+        $c->stash( default_backref =>
+        $c->uri_for_action( "managerrequest/list" ) );
+        $c->detach('/follow_backref');
+    }
+
     #Cambia lo stato dell'managerrequest
-    $c->stash->{object}->state($IPAdmin::ACTIVE);
-    my $ret1 =$c->stash->{object}->update;
+    $req->state($IPAdmin::ACTIVE);
+    $req->date_in(time);
+    my $ret1 =$req->update;
+
+    #aggiunge referente all'area
+    $req->area->manager($req->user->id);
+    $req->area->update;
     my $ret2;
      #Add new roles
      my $user_role_id = $c->model('IPAdminDB::Role')->search( { 'role' => "manager"} )->single;
@@ -318,20 +386,32 @@ sub process_activate : Private {
 
 
 =head2 delete
-il delete deve archiviare prima la richiesta e poi cancellarla. 
-(quindi spostare la richiesta in ArchivedRequest). Successivamente elimina l'assegnazione IP
+
 =cut
 
 sub delete : Chained('object') : PathPart('delete') : Args(0) {
      my ( $self, $c ) = @_;
     my $req = $c->stash->{'object'};
-    $c->stash( default_backref => $c->uri_for_action( "managerrequest/view",[$req->id] ));
+    $c->stash( default_backref => $c->uri_for_action( "managerrequest/list" ));
     my $user = $req->user;
   
+    if($req->state == $IPAdmin::ARCHIVED){
+        $c->flash( message => 'Richiesta già archiviata.');
+    $c->detach('/follow_backref');
+    }
+
+
     if ( lc $c->req->method eq 'post' ) {
         #Archivia la richiesta
         $req->state($IPAdmin::ARCHIVED);
+        $req->date_out(time);
         $req->update;
+        #resetta referente dell'area in cui l'utente era referente
+        $req->area->manager(undef);
+        $req->area->update;
+
+        #se era l'ultima area gestita, allora elimina il ruolo di manager
+        if(defined($user->managed_area)){
         my $user_role_id = $c->model('IPAdminDB::Role')->search( { 'role' => "manager"} )->single;
         if ($user_role_id) {
         my $ret = $c->model('IPAdminDB::UserRole')->search(
@@ -340,10 +420,12 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
                    role_id => $user_role_id->id,
                }
            )->delete;
-     }
-    $c->flash( message => 'Richiesta IP archiviata. '.$user->fullname." non è più un referente." );
+          }
+        }
+    $c->flash( message => 'Richiesta archiviata. '.$user->fullname." non è più un referente della struttra di "
+        .$req->area->building->name." presso ".$req->area->department->name);
     $c->detach('/follow_backref');
-   }
+    }
    else {
        $c->stash( template => 'generic_delete.tt' );
    }

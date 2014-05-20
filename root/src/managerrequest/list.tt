@@ -47,9 +47,10 @@
 	 </td>
    <td>TODO</td>
 	 <td>
-    <a href="[% c.uri_for_action('managerrequest/edit',[i.id])%]">[% icon('edit') %]</a>
-	  <a href="[% c.uri_for_action('managerrequest/delete',[i.id])%]">[% icon('remove') %]</a> 
-   [%IF i.state == 0%] <a href="[% c.uri_for_action('managerrequest/activate',[i.id])%]">[% icon('ok') %]</a> [%END%]
+	 [%IF i.state != 3%] <a href="[% c.uri_for_action('managerrequest/delete',[i.id])%]">[% icon('remove') %]</a> [%END%]
+   [%IF i.state == 0%] 
+   <a href="[% c.uri_for_action('managerrequest/edit',[i.id])%]">[% icon('edit') %]</a>
+   <a href="[% c.uri_for_action('managerrequest/activate',[i.id])%]">[% icon('ok') %]</a> [%END%]
 	 </td>
          </tr>
   [% IF loop.last %]

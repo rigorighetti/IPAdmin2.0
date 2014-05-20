@@ -5,7 +5,6 @@
 package IPAdmin::Controller::IPRequest;
 use Moose;
 use namespace::autoclean;
-use IPAdmin::Form::IPRequest;
 use Data::Dumper;
 use IPAdmin::Utils;
 
@@ -73,9 +72,8 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
             date        => IPAdmin::Utils::print_short_timestamp($_->date),
             area        => $_->area,
             user        => $_->user,
-            state	=> $_->state,
-	    },
-            $c->stash->{resultset}->search({});
+            state	    => $_->state,
+	    }, $c->stash->{resultset}->search({});
 
    $c->stash( iprequest_table => \@iprequest_table );
    $c->stash( template        => 'iprequest/list.tt' );
