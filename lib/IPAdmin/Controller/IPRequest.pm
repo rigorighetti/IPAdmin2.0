@@ -87,6 +87,8 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
     my ( $self, $c ) = @_;
     my $req = $c->stash->{object};
 
+
+
     #Creare lista di assegnazioni per richiesta IP
     my @assignement =  map +{
             id          => $_->id,
@@ -147,7 +149,7 @@ sub create : Chained('base') : PathPart('create') : Args() {
         $tmpl_param{users} = \@users;
     }
     #TODO ordinamento aree per nome dipartimento
-    my @aree  = $c->model('IPAdminDB::Area')->search({})->all;
+    my @aree  = $c->model('IPAdminDB::Area')->search({},{join => 'department', prefetch => 'department', order_by => 'department.name'})->all;
     my @types = $c->model('IPAdminDB::TypeRequest')->search()->all;
 
 
@@ -158,6 +160,11 @@ sub create : Chained('base') : PathPart('create') : Args() {
     $tmpl_param{types}     = \@types;
     $tmpl_param{data}      = IPAdmin::Utils::print_short_timestamp(time);
     $tmpl_param{template}  = 'iprequest/create.tt';
+    $tmpl_param{location}  = $c->req->param('location') || '';
+    $tmpl_param{mac}       = $c->req->param('mac') || '';
+    $tmpl_param{hostname}  = $c->req->param('hostname') || '';
+    $tmpl_param{area_def}  = $c->req->param('area') || '';
+    $tmpl_param{type_def}  = $c->req->param('type') || '';
 
 
     $c->stash(%tmpl_param);
@@ -173,18 +180,22 @@ sub process_create : Private {
     my $hostname  = $c->req->param('hostname');
     my $error;
 
+    #se l'area non ha assegnato un referente allora abortisci tutto
+    my $check_area = $c->model("IPAdminDB::Area")->find($area);
+
     # check form
     $c->forward('check_ipreq_form') || return 0; 
+
+    if(!defined $check_area->manager){
+    $c->stash->{error_msg} = "Impossibile creare la richiesta. Non è stato ancora assegnato un referente per il dipartimento di ".$check_area->department->name.
+            " presso ".$check_area->building->name.". Contattare l'amministratore di rete.";
+    return 0;
+    }
 
     #state == 0 non validata
     #state == 1 convalidata
     #state == 2 archiviata
 
-    #Se l'utente è già referente per quella struttura non si deve creare
-    #la richiesta 
-    #TODO un referente può avere più managed area?
-    # my $check_area = $c->model("IPAdminDB::UserLDAP")->find($user)->managed_area;
-    
     my $ret = $c->stash->{'resultset'}->create({
                         area        => $area,
                         user        => $user,
@@ -196,7 +207,7 @@ sub process_create : Private {
                         type        => $type,
                            });
     if (! $ret ) {
-    $c->stash->{message} = "Errore nella creazione della richiesta IP";
+    $c->stash->{error_msg} = "Errore nella creazione della richiesta IP";
     return 0;
     } else {
     $c->stash->{message} = "La richiesta IP è stata creata.";
@@ -206,36 +217,36 @@ sub process_create : Private {
 
 sub check_ipreq_form : Private {
     my ( $self, $c) = @_;
-    my $schema = $c->stash->{'resultset'};
-    my $mac = $c->req->param('mac');
-    my $hostname = $c->req->param('hostname');
+    my $schema      = $c->stash->{'resultset'};
+    my $mac         = $c->req->param('mac');
+    my $hostname    = $c->req->param('hostname');
+    my $area        = $c->req->param('area');
     #my $area = $c->req->param('area'); 
     #my $referente = $c->stash->{'resultset'}->search(
 
+    if ( $area eq '' ) {
+        $c->stash->{error_msg} = "Selezionare una struttura!";
+        return 0;
+    }
      if ( $mac eq '' ) {
-     	$c->stash->{message} = "Campo Mac Address obbligatorio!";
+     	$c->stash->{error_msg} = "Campo Mac Address obbligatorio!";
      	return 0;
      }
     #controllo formato mac address (ancora non copre aa:bb:cc:dd:ee:ff) 
      if ( $mac !~ /([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}/ 
 	and $mac =~ /((aa|bb|cc|dd|ee|ff|00|11|22|33|44|55|66|77|88|99):){5}(aa|bb|cc|dd|ee|ff|00|11|22|33|44|55|66|77|88|99){2}/i ) {
-     	$c->stash->{message} = "Errore nel formato del mac address! aa:aa:aa:aa:aa:aa";
+     	$c->stash->{error_msg} = "Errore nel formato del mac address! aa:aa:aa:aa:aa:aa";
      	return 0;
      }
 
      if ( $hostname eq '' ) {
-	$c->stash->{message} = "Campo Hostname obbligatorio!";
+	$c->stash->{error_msg} = "Campo Hostname obbligatorio!";
 	return 0;
      }
 
-    # if ( $name !~ /^\w[\w-]*$/ ) {
-    # $c->stash->{message} = "Invalid name";
-    # return 0;
-    # }
-
      if ($schema->search({ macaddress => $mac})->count() > 0 ) {
-     $c->stash->{message} = "Mac Address già registrato!";
-     $c->log->error("duplicated $mac");
+     $c->stash->{error_msg} = "Mac Address già registrato!";
+     $c->log->error("Duplicated $mac");
      return 0;
      }
 
@@ -467,7 +478,7 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
         #chiude l'ultima assegnazione
         my $ret = $c->model('IPAdminDB::IPAssignement')->search({state=>$IPAdmin::ACTIVE})->single;
 
-        $ret->update({
+        defined $ret and $ret->update({
                         date_out => time,
                         state    => $IPAdmin::INACTIVE,
                      });
