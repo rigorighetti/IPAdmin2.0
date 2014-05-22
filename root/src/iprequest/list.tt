@@ -34,8 +34,9 @@
  	 <td>[% i.area.department.name %] <i>presso</i> [% i.area.building.name %]</td>
  	 <td>[% i.area.manager.fullname %]</td>
 	 <td [% IF i.state == 0 -%] style="background:#d1392b" [% END -%] 
-	     [% IF i.state == 1 -%] style="background:#ffbb00" [% END -%]
+	     [% IF i.state == 1 or i.state == 3 -%] style="background:#ffbb00" [% END -%]
 	     [% IF i.state == 2 -%] style="background:#53db3b" [% END -%]
+	     [% IF i.state == 4 -%] style="background:#7b00ff" [% END -%]
 	     >[% i.state %]
 	 </td>
 	 <td>

@@ -93,7 +93,7 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
     my @assignement =  map +{
             id          => $_->id,
             date_in     => IPAdmin::Utils::print_short_timestamp($_->date_in),
-            date_out    => IPAdmin::Utils::print_short_timestamp($_->date_out),
+            #date_out    => IPAdmin::Utils::print_short_timestamp($_->date_out),
             state       => $_->state,
             },
             $req->map_assignement;
@@ -194,7 +194,9 @@ sub process_create : Private {
 
     #state == 0 non validata
     #state == 1 convalidata
-    #state == 2 archiviata
+    #state == 2 attiva
+    #state == 3 bloccata
+    #state == 4 archiviata
 
     my $ret = $c->stash->{'resultset'}->create({
                         area        => $area,
@@ -203,7 +205,7 @@ sub process_create : Private {
                         macaddress  => $mac,
                         hostname    => $hostname,
                         date        => time,
-                        state       => $IPAdmin::INACTIVE,
+                        state       => $IPAdmin::NEW,
                         type        => $type,
                            });
     if (! $ret ) {
@@ -341,11 +343,13 @@ sub process_validate : Private {
     #Stati IPRequest
     #state == 0 non validata
     #state == 1 convalidata
-    #state == 2 archiviata
+    #state == 2 attiva
+    #state == 3 bloccata
+    #state == 4 archiviata
 
     #stati IPAssignement 
-    #state == 0 prenotato
-    #state == 1 attiva
+    #state == 2 attiva
+    #state == 4 archiviata
 
     #cambiare stato alla ip_request
     #segnare subnet e host in ip_request
@@ -383,13 +387,14 @@ sub unactivate : Chained('object') : PathPart('unactivate') : Args(0) {
  if ( lc $c->req->method eq 'post' ) {
      #TODO invalidare ogni assegnazione associata alla richiesta
 
-        $iprequest->state($IPAdmin::PREACTIVE);
+        $iprequest->state($IPAdmin::INACTIVE);
         $iprequest->update;
         #invalida la vecchia assegnazione IP
-        my $ret = $c->model('IPAdminDB::IPAssignement')->search({state=>$IPAdmin::ACTIVE})->single;
+        my $ret = $c->model('IPAdminDB::IPAssignement')->search({-and =>
+                                                     [ ip_request => $iprequest->id, state=>$IPAdmin::ACTIVE ]})->single;
         $ret->update({
                         date_out => time,
-                        state    => $IPAdmin::INACTIVE,
+                        state    => $IPAdmin::ARCHIVED,
                         });
         #crea la nuova assegnazione (riatticabile dall'utente entro tot giorni)
         $c->model('IPAdminDB::IPAssignement')->create({
@@ -476,11 +481,12 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
         $iprequest->state($IPAdmin::ARCHIVED);
         $iprequest->update;
         #chiude l'ultima assegnazione
-        my $ret = $c->model('IPAdminDB::IPAssignement')->search({state=>$IPAdmin::ACTIVE})->single;
+        my $ret = $c->model('IPAdminDB::IPAssignement')->search({-and =>
+        	  [ ip_request => $iprequest->id, state=>$IPAdmin::ACTIVE ]})->single;
 
         defined $ret and $ret->update({
                         date_out => time,
-                        state    => $IPAdmin::INACTIVE,
+                        state    => $IPAdmin::ARCHIVED,
                      });
        
          $c->flash( message => 'Richiesta IP archiviata.' );

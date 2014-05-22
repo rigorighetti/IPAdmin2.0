@@ -38,12 +38,15 @@
         [% IF object.state == 2 -%]
         <table style="border:solid 1px #53db3b">
         [% END -%]
-	[% IF object.state == 1 -%] 
+	[% IF object.state == 1 or object.state == 3 -%] 
         <table style="border:solid 1px #ffbb00">
 	[% END -%]
 	[% IF object.state == 0 -%]
 	<table style="border:solid 1px #d1392b">
       	[% END -%]
+	[% IF object.state == 4 -%]
+        <table style="border:solid 1px #7b00ff">
+        [% END -%]
 	<tr>
 	 <td>Indirizzo IP: [% IF object.subnet && object.host -%] 151.100.[% object.subnet.id %].[% object.host %] [% END -%] [% IF !object.subnet -%] non assegnato [% END -%] </td>
       </tr>
@@ -57,9 +60,12 @@
 	[% END -%]
 	[% IF object.state == 1 -%] <a href=[%c.uri_for_action('iprequest/activate', [object.id]) %]> [%ui_icon('check')%] Attiva</a>
         [% END -%]
-	<a href=[%c.uri_for_action('iprequest/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica</a>
+	[% IF object.state == 3 -%] <a href=[%c.uri_for_action('iprequest/activate', [object.id]) %]> [%ui_icon('check')%] Riattiva</a>
+        [% END -%]
+	[% IF object.state != 4 -%] <a href=[%c.uri_for_action('iprequest/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica</a>
 	&nbsp;<a href=[% c.uri_for_action('iprequest/delete', [object.id]) %]>
 	[% ui_icon('closethick') %]  Rinuncia</a>
+	[% END -%]
       </div>
     </p>
   </div>
@@ -80,9 +86,8 @@
         [% END %]
         <tr>
           <td><a href=[% c.uri_for_action('/ipassignement/view', [i.id]) %]>[% i.id %]</a></td>
-          <td [% IF i.state == 0 -%] style="background:#d1392b"> stato 0 [% END -%] 
-	      [% IF i.state == 1 -%] style="background:#ffbb00"> stato 1 [% END -%]
-	      [% IF i.state == 2 -%] style="background:#53db3b"> stato 2 [% END -%]
+          <td [% IF i.state == 2 -%] style="background:#53db3b"> stato 2 [% END -%]
+	      [% IF i.state == 4 -%] style="background:#7b00ff"> stato 4 [% END -%]
 	  </td>
 	  <td>[% i.date_in %]</td>
           <td>[% i.date_out %] </td>

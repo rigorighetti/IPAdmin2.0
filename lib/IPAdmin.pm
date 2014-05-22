@@ -43,11 +43,12 @@ our $VERSION = '0.01';
 # with an external configuration file acting as an override for
 # local deployment.
 
-our $INACTIVE  = 0;
+our $NEW       = 0;
 our $PREACTIVE = 1;
 our $ACTIVE    = 2;
-our $ARCHIVED  = 3;
-our $DELETED   = 4;
+our $INACTIVE  = 3;
+our $ARCHIVED  = 4;
+#our $DELETED   = 4;
 
 __PACKAGE__->config(
     name         => 'IPAdmin',
