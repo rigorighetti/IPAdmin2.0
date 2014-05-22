@@ -115,12 +115,11 @@
 </form>
 
 [% fragment = BLOCK -%]
-var array = [
+var hash = {
   [% FOREACH a IN aree -%]
-  	"[%a.manager.fullname%]"
-    [% ',' UNLESS loop.last %]
+   [%IF a.manager.id -%] "[%a.id %]" : "[%a.manager.fullname %]" [% ',' UNLESS loop.last -%] [%END-%]
   [% END -%]
-];
+};
 
  $(function() {    
    $("#area").bind("change",
@@ -129,8 +128,8 @@ var array = [
     if(i==0){
       $("#referente").html("");
       } else {
-      var text = array[i-1];
-      if(text=="") {
+      var text = hash[i];
+      if(text == null ) {
        text = "Non ancora assegnato!";
       }
       $("#referente").html(text) ;       // clear select box

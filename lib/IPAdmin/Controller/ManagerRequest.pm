@@ -214,11 +214,11 @@ sub create : Chained('base') : PathPart('create') : Args() {
     my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
     my @users;
     if($realm eq "normal") {
-        @users = $c->model('IPAdminDB::UserLDAP')->search({})->all;
-        $tmpl_param{users}      = \@users;
+            $c->flash( error_msg => "Spiacente, solo un utente strutturato può fare richiesta di diventare referente." );
+            $c->detach('/follow_backref');
     }
     #TODO ordinamento aree per nome dipartimento
-    my @aree  = $c->model('IPAdminDB::Area')->search({})->all;
+    my @aree  = $c->model('IPAdminDB::Area')->search({},{join => 'department', prefetch => 'department', order_by => 'department.name'})->all;
 
     $tmpl_param{realm}     = $realm;
     $tmpl_param{user}      = $user;
@@ -227,12 +227,7 @@ sub create : Chained('base') : PathPart('create') : Args() {
     $tmpl_param{dir_fullname} = $c->req->param('dir_fullname');
     $tmpl_param{dir_phone}    = $c->req->param('dir_phone');
     $tmpl_param{dir_email}    = $c->req->param('dir_email');
-
-
-
     $tmpl_param{template}  = 'managerrequest/create.tt';
-
-
     $c->stash(%tmpl_param);
 }
 
@@ -352,6 +347,9 @@ sub process_activate : Private {
         $c->uri_for_action( "managerrequest/list" ) );
         $c->detach('/follow_backref');
     }
+
+    #Aggiusta le date
+    ##TODO se la richiestra è scaduta reimposta date
 
     #Cambia lo stato dell'managerrequest
     $req->state($IPAdmin::ACTIVE);
