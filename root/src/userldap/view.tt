@@ -45,7 +45,8 @@
       <thead>
         <tr>
           <th>Id</th>
-          <th>Tipo</th>
+          <th>Data</th>
+	  <th>Tipo</th>
 	  <th>Area</th>
 	  <th>Stato</th>
           <th>Referente di Rete</th>
@@ -55,6 +56,7 @@
         [% END %]
         <tr>
           <td><a href=[% c.uri_for_action('/iprequest/view', [i.id]) %]>[% i.id %]</a></td>
+	  <td>[% i.date %]</td>
           <td>[% i.type.type %]</td>
 	  <td>[% i.area.department.name %] presso [% i.area.building.name %]</td>
 	  <td[% IF i.state == 0 -%] style="background:#d1392b"[% END -%]
@@ -75,29 +77,31 @@
  <div id="tabs-3">
   [% FOREACH i IN requests %]
     [% IF loop.first %]
-    [% init_table('requests') %]
+    [% init_table('requests', [5,10,5,20,50,10]) %]
     <table class="display" id="requests">
       <thead>
         <tr>
           <th>Id</th>
-          <th>Tipo</th>
+          <th>Data</th>
+	  <th>Tipo</th>
+	  <th>Responsabile</th>
           <th>Area</th>
-	  <th>Stato</th>
           <th>Comandi</th>
 	</tr>
       </thead>
       <tbody>
         [% END %]
-        <tr> 
-	     <td><a href=[% c.uri_for_action('/iprequest/view', [i.id]) %]>[% i.id %]</a></td>
+        <tr [% IF i.state == 0 -%] style="background:#ff9494"[% END -%]
+	   [% IF i.state == 1 or i.state == 3 -%] style="background:#ebe263"[% END -%]
+            [% IF i.state == 2 -%] style="background:#abffa0"[% END -%]
+            [% IF i.state == 4 -%] style="background:#c99cff"[% END -%] > 
+	     
+	<td style="background:white"><a href=[% c.uri_for_action('/iprequest/view', [i.id]) %]>[% i.id %]</a></td>
+	  <td>[% i.date %]</th>
           <td>[% i.type.type %]</td>
+	  <td>[% i.user.fullname %]</td>
           <td>[% i.area.department.name %] presso [% i.area.building.name %]</td>
-          <td [% IF i.state == 0 -%] style="background:#d1392b"[% END -%]
-	      [% IF i.state == 1 or i.state == 3 -%] style="background:#ffbb00"[% END -%]
-	      [% IF i.state == 2 -%] style="background:#53db3b"[% END -%]
-	      [% IF i.state == 4 -%] style="background:#7b00ff"[% END -%]>[% i.state %]</td>
-	     <td>
-        <a href="[% c.uri_for_action('iprequest/delete',[i.id])%]">[% icon('remove') %]</a>
+	  <td>[%IF i.state != 4 -%]<a href="[% c.uri_for_action('iprequest/delete',[i.id])%]">[% icon('remove') %]</a>[% END -%]
           <div class="buttons small_btn">
           [%IF i.state == 0 -%]
 	         <a href="[% c.uri_for_action('iprequest/validate',[i.id], {backref=>c.req.uri } ) %]">Convalida</a>

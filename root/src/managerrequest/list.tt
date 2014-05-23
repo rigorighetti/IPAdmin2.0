@@ -39,7 +39,8 @@
    <td>[% i.dir_fullname %]</td>
  	 <td>[% i.area.department.name %] <i>presso</i> [% i.area.building.name %]</td>
  	 <td>[% i.user.fullname %]</td>
-	 <td>[% i.area.building.vlan.subnet %]</td>
+	<td>[% FOREACH i IN i.area.building.vlan.map_subnet -%]<a href=[% c.uri_for_action('/subnet/view', [i.id]) %]>[% i.id %]</a>
+                 [% UNLESS loop.last %], [% END -%][% END -%]</td>	 
    <td [% IF i.state == 0 -%] style="background:#d1392b" [% END -%] 
 	     [% IF i.state == 1 -%] style="background:#ffbb00" [% END -%]
 	     [% IF i.state == 2 -%] style="background:#53db3b" [% END -%]

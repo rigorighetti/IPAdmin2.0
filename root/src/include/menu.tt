@@ -26,13 +26,9 @@
 [% 
   menu_subsections = {
           Search = [
-  	       {
-		     name = 'Simple', 
-		     path = c.uri_for('/search'),
-	       },
 	       {
-		     name = 'Advanced',
-		     path = c.uri_for('/search',{advanced=>1}),
+		     name = 'Richieste Referente di Rete'
+		     path = c.uri_for('/managerrequest'),
 		},	     
 		{	
 		     name = 'Richieste IP',

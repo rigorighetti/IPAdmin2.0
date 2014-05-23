@@ -86,7 +86,7 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
     my @managed_area = $c->stash->{'object'}->managed_area;
 
     foreach my $area (@managed_area){
-        @requests = $c->model("IPAdminDB::IPRequest")->search({area => $area->id})->all;
+        @requests = $c->model("IPAdminDB::IPRequest")->search({-and => [area => $area->id, state => {"!=" => $IPAdmin::ARCHIVED}]})->all;
 	 }
 
     
