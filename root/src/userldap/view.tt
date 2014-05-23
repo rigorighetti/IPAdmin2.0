@@ -16,17 +16,28 @@
   <div id="tabs-1">
     <table id="info">
       <tr>
-	<td>Nome e Cognome:</td><td>[% object.fullname %]</td>
+	     <td>Nome e Cognome:</td><td>[% object.fullname %]</td>
       </tr>
       <tr>
-	<td>Email:</td><td>[% object.email | html %] </td>
+	     <td>Email:</td><td>[% object.email | html %] </td>
       </tr>
       <tr>
-	<td>Telefono:</td><td>[% object.telephone %] </td>
+	     <td>Telefono:</td><td>[% object.telephone %] </td>
       </tr>
       <tr>
         <td>Fax:</td><td>[% object.fax %] </td>
       </tr>
+      [%IF managed_area.0 %] 
+        <tr>
+        <td>Referente per:</td>
+        <td>
+        [% FOREACH a IN managed_area %]
+          <a href="[%c.uri_for_action("/area/view", [a.id])%]">
+          [%a.department.name%] <i>presso</i> [%a.building.name%]
+          </a> <br>
+        [%END -%]
+        </td></tr>
+      [%END -%]
     </table>
     [% add_css_tableinfo -%]
     <p>

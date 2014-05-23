@@ -11,8 +11,9 @@ use warnings;
 use Carp qw( croak );
 use Exporter 'import';
 our @EXPORT_OK = qw(
-    find_user
+    find_user str_to_time
 );
+use DateTime::Format::Strptime;
 
 use POSIX qw(strftime);
 
@@ -42,3 +43,13 @@ sub find_user {
     return ("ldap",$user);
   }
 }    
+
+sub str_to_time {
+  my $date = shift;
+  my $strp = DateTime::Format::Strptime->new(
+     pattern => '%d/%m/%Y',
+     time_zone => 'local',
+  );
+
+  $strp->parse_datetime("$date")->epoch;
+}
