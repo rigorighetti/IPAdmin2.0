@@ -6,7 +6,7 @@
 
 [%IF realm != "normal"-%]<input type=hidden name="user" value="[% user.id %]" />[%END-%]
 <br>
-<table class="ui-widget-content ui-corner-all manoc-form">
+<table class="ui-widget-content ui-corner-all">
 	<tr>
 		<td><label>Richiesta in data<label></td>
 		<td>[% data %]</td>
@@ -63,7 +63,58 @@
 	  	<td><div id="referente"></div></td>
  	  	<td></td>
  	</tr>
-	<tr>
+
+  <tr>
+    <td>Tempo Determinato</td><td><input type="checkbox" id="fixed" value="fixed" name="fixed" [%IF fix_check %]checked="1"[%END-%] ></td>
+  </tr>
+   <tr class="fixed_time">
+  <td> Posizione Universitaria:</td>
+  <td>
+   <select name="guest_type" id="guest">
+            <option value="">Seleziona posizione</option>
+            [% FOREACH a IN guest_type %] 
+            <option value="[% a %]" [%IF a == guest_def -%] selected="1"[%END -%]>
+            [%a%]</option>
+            [% END %]
+   </select>
+  </td>
+  </tr>
+   <tr class="fixed_time">
+      <td class="label">Data termine:</td>
+      <td colspan="2"> <input type="text" name="guest_date_out" id="datepicker" value="[%guest_date_out%]"></td>
+      <td>
+        [% IF error.guest_date_out %]<span class="error" id="error">[% error.guest_date_out %] </span>[%END%]
+      </td>
+  </tr>
+   <tr class="fixed_time">
+      <td class="label">Nome e Cognome:</td>
+      <td colspan="2"><input type="text" name="guest_name" value="[%guest_name%]" /></td>
+      <td>
+        [% IF error.guest_name %]<span class="error" id="error">[% error.guest_name %] </span>[%END%]
+      </td>
+  </tr>
+  <tr class="fixed_time">
+      <td class="label">Email:</td>
+      <td colspan="2"><input type="text" name="guest_mail" value="[%guest_mail%]" /></td>
+      <td>
+        [% IF error.guest_mail %]<span class="error" id="error">[% error.guest_mail %] </span>[%END%]
+      </td>
+  </tr>
+  <tr class="fixed_time">
+      <td class="label">Telefono:</td>
+      <td colspan="2"><input type="text" name="guest_phone" value="[%guest_phone%]" /></td>
+      <td>
+        [% IF error.guest_phone %]<span class="error" id="error">[% error.guest_phone %] </span>[%END%]
+      </td>
+  </tr>
+  <tr class="fixed_time">
+      <td class="label">Fax:</td>
+      <td colspan="2"><input type="text" name="guest_fax" value="[%guest_fax%]" /></td>
+      <td>
+        [% IF error.guest_fax %]<span class="error" id="error">[% error.guest_fax %] </span>[%END%]
+      </td>
+  </tr>
+  <tr>
 		<td colspan="3">Dati dell'apparato</td>
   <tr>
       <td><label>Tipo di apparato:</label></td>
@@ -122,6 +173,8 @@ var hash = {
 };
 
  $(function() {    
+  [%IF area_def %]$("#referente").html(hash[[%area_def%]]);[%END -%]
+
    $("#area").bind("change",
    function() {
     var i = this.value; 
@@ -135,7 +188,18 @@ var hash = {
       $("#referente").html(text) ;       // clear select box
  		}
    }            // function end
- );             // bind end 
+ ); 
+             // bind end 
+ $(".fixed_time").hide();
+ $("#fixed").bind("change",
+   function() {
+   if ($(this).is(':checked')) {
+    $(".fixed_time").show(500);
+   } else { 
+   $(".fixed_time").hide(500);
+   }
+  }
+  );
 });
 [% END -%]
 [% js_scripts.push(fragment) -%]

@@ -6,7 +6,7 @@ package IPAdmin::Controller::IPRequest;
 use Moose;
 use namespace::autoclean;
 use Data::Dumper;
-use IPAdmin::Utils;
+use IPAdmin::Utils qw(str_to_time);
 
 
 BEGIN { extends 'Catalyst::Controller'; }
@@ -148,11 +148,13 @@ sub create : Chained('base') : PathPart('create') : Args() {
         @users =  $c->model('IPAdminDB::UserLDAP')->search({})->all;
         $tmpl_param{users} = \@users;
     }
-    #TODO ordinamento aree per nome dipartimento
+    #ordinamento aree per nome dipartimento
     my @aree  = $c->model('IPAdminDB::Area')->search({},{join => 'department', prefetch => 'department', order_by => 'department.name'})->all;
     my @types = $c->model('IPAdminDB::TypeRequest')->search()->all;
 
-
+    $tmpl_param{guest_type}= ["Studente laureando", "Dottorando", "Studente specializzando", "Borsista", 
+                              "Assegnista di ricerca", "Collaboratore a contratto", "Profressore visitatore", 
+                              "Professore a contratto", "Ospite"];
     $tmpl_param{realm}     = $realm;
     $tmpl_param{user}      = $user;
     $tmpl_param{fullname}  = $user->fullname;
@@ -178,6 +180,15 @@ sub process_create : Private {
     my $mac       = $c->req->param('mac');
     my $type      = $c->req->param('type');
     my $hostname  = $c->req->param('hostname');
+    my $fixed     = $c->req->param('fixed');
+    my $guest_type= $c->req->param('guest_type');
+    my $guest_date_out = $c->req->param('guest_date_out');
+    my $guest_name  = $c->req->param('guest_name');
+    my $guest_fax   = $c->req->param('guest_fax');
+    my $guest_phone = $c->req->param('guest_phone');
+    my $guest_mail  = $c->req->param('guest_mail');
+
+    $guest_date_out and $guest_date_out = str_to_time($guest_date_out);
     my $error;
 
     #se l'area non ha assegnato un referente allora abortisci tutto
@@ -197,8 +208,9 @@ sub process_create : Private {
     #state == 2 attiva
     #state == 3 bloccata
     #state == 4 archiviata
-
-    my $ret = $c->stash->{'resultset'}->create({
+    my $ret;
+    if(!$fixed) {
+    $ret = $c->stash->{'resultset'}->create({
                         area        => $area,
                         user        => $user,
                         location    => $location,
@@ -208,6 +220,28 @@ sub process_create : Private {
                         state       => $IPAdmin::NEW,
                         type        => $type,
                            });
+    } else{
+        $ret = $c->model("IPAdminDB::Guest")->create({
+            fullname => $guest_name,
+            email    => $guest_mail,
+            telephone=> $guest_phone,
+            type     => $guest_type,
+            fax      => $guest_fax,
+            date_out => $guest_date_out
+            });
+        $ret = $c->stash->{'resultset'}->create({
+                        area        => $area,
+                        user        => $user,
+                        location    => $location,
+                        macaddress  => $mac,
+                        hostname    => $hostname,
+                        date        => time,
+                        state       => $IPAdmin::NEW,
+                        type        => $type,
+                        guest       => $ret->id,
+                           });
+    }
+
     if (! $ret ) {
     $c->stash->{error_msg} = "Errore nella creazione della richiesta IP";
     return 0;
@@ -220,11 +254,19 @@ sub process_create : Private {
 sub check_ipreq_form : Private {
     my ( $self, $c) = @_;
     my $schema      = $c->stash->{'resultset'};
-    my $mac         = $c->req->param('mac');
-    my $hostname    = $c->req->param('hostname');
-    my $area        = $c->req->param('area');
-    #my $area = $c->req->param('area'); 
-    #my $referente = $c->stash->{'resultset'}->search(
+    my $area      = $c->req->param('area');
+    my $user      = $c->req->param('user');
+    my $location  = $c->req->param('location');
+    my $mac       = $c->req->param('mac');
+    my $type      = $c->req->param('type');
+    my $hostname  = $c->req->param('hostname');
+    my $fixed     = $c->req->param('fixed');
+    my $guest_type= $c->req->param('guest_type');
+    my $guest_date_out = $c->req->param('guest_date_out');
+    my $guest_name  = $c->req->param('guest_name');
+    my $guest_fax   = $c->req->param('guest_fax');
+    my $guest_phone = $c->req->param('guest_phone');
+    my $guest_mail  = $c->req->param('guest_mail');
 
     if ( $area eq '' ) {
         $c->stash->{error_msg} = "Selezionare una struttura!";
@@ -235,8 +277,8 @@ sub check_ipreq_form : Private {
      	return 0;
      }
     #controllo formato mac address (ancora non copre aa:bb:cc:dd:ee:ff) 
-     if ( $mac !~ /([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}/ 
-	and $mac =~ /((aa|bb|cc|dd|ee|ff|00|11|22|33|44|55|66|77|88|99):){5}(aa|bb|cc|dd|ee|ff|00|11|22|33|44|55|66|77|88|99){2}/i ) {
+     if ( $mac !~ /([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}/
+	&& $mac =~ /((aa|bb|cc|dd|ee|ff|00|11|22|33|44|55|66|77|88|99):){5}(aa|bb|cc|dd|ee|ff|00|11|22|33|44|55|66|77|88|99){2}/i ) {
      	$c->stash->{error_msg} = "Errore nel formato del mac address! aa:aa:aa:aa:aa:aa";
      	return 0;
      }
@@ -251,6 +293,30 @@ sub check_ipreq_form : Private {
      $c->log->error("Duplicated $mac");
      return 0;
      }
+
+     if($fixed){
+        if ( $guest_type eq '' ) {
+         $c->stash->{error_msg} = "Posizione dell'utente obbligatoria!";
+        return 0;
+        }
+       if ( $guest_phone eq '' ) {
+         $c->stash->{error_msg} = "Telefono dell'utente obbligatorio!";
+        return 0;
+        }
+        if ( $guest_mail eq '' ) {
+         $c->stash->{error_msg} = "Email dell'utente obbligatoria!";
+        return 0;
+        }
+        if ( $guest_name eq '' ) {
+         $c->stash->{error_msg} = "Nome completo dell'utente obbligatorio!";
+        return 0;
+        }
+        if ( $guest_date_out eq '' ) {
+        $c->stash->{error_msg} = "Indicare una data di scadenza!";
+        return 0;
+        }
+    }
+
 
     return 1;
 }

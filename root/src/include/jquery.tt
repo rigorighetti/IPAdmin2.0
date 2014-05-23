@@ -42,6 +42,11 @@ $(function() {
 		 });
 	 }
 
+	 if ( $(".datepicker").datepicker  ) {
+	     $("#datepicker").datepicker();
+	     $("#datepicker").datepicker("option", "dateFormat", "dd/mm/yy");
+	 }
+
 	 //Buttons
 	 $( "button, input:submit, a", ".buttons").button();
 	 $("#disabled", ".buttons" ).button("disable");
