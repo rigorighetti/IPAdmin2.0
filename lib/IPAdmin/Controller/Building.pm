@@ -65,7 +65,7 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
 
     my $build_schema = $c->stash->{resultset};
 
-    my @building_table = $build_schema->search({}, {prefetch => ['vlan']});
+    my @building_table = $build_schema->search({});
 
     $c->stash( building_table => \@building_table );
     $c->stash( template       => 'building/list.tt' );

@@ -65,7 +65,7 @@
  	</tr>
 
   <tr>
-    <td>Tempo Determinato</td><td><input type="checkbox" id="fixed" value="fixed" name="fixed" [%IF fix_check %]checked="1"[%END-%] ></td>
+    <td>Tempo Determinato</td><td><input type="checkbox" id="fixed" value="fixed" name="fixed" [%IF fixed %]checked="1"[%END-%] ></td>
   </tr>
    <tr class="fixed_time">
   <td> Posizione Universitaria:</td>
@@ -190,7 +190,12 @@ var hash = {
    }            // function end
  ); 
              // bind end 
+
+[%IF fixed %]  
+ $(".fixed_time").show(); 
+[%ELSE%]
  $(".fixed_time").hide();
+[%END -%]
  $("#fixed").bind("change",
    function() {
    if ($(this).is(':checked')) {

@@ -167,7 +167,13 @@ sub create : Chained('base') : PathPart('create') : Args() {
     $tmpl_param{hostname}  = $c->req->param('hostname') || '';
     $tmpl_param{area_def}  = $c->req->param('area') || '';
     $tmpl_param{type_def}  = $c->req->param('type') || '';
-
+    $tmpl_param{guest_type} = $c->req->param('guest_type');
+    $tmpl_param{guest_date_out} = $c->req->param('guest_date_out');
+    $tmpl_param{guest_name}  = $c->req->param('guest_name');
+    $tmpl_param{guest_fax}   = $c->req->param('guest_fax');
+    $tmpl_param{guest_phone} = $c->req->param('guest_phone');
+    $tmpl_param{guest_mail}  = $c->req->param('guest_mail');
+    $tmpl_param{fixed}  = $c->req->param('fixed');
 
     $c->stash(%tmpl_param);
 }

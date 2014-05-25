@@ -7,7 +7,7 @@
 <input type=hidden name="user" value="[% user.id %]" />
 
 <br>
-<table class="ui-widget-content ui-corner-all manoc-form">
+<table class="ui-widget-content ui-corner-all ">
 	  <tr>
         <td><label>Struttura:</label></td>
         <td>
@@ -24,7 +24,7 @@
 		 [%END%]
         </td>
     </tr>
-	<p> Dati del Responsabile della struttura </p>
+	<tr><td colspan="3"> Dati del Responsabile della struttura </td></tr>
 	<tr>
 		<td><label>Richiesta in data<label></td>
 		<td>[% data %]</td>
