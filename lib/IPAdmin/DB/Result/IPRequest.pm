@@ -69,6 +69,11 @@ __PACKAGE__->add_columns(
         is_nullable => 1,
         is_foreign_key => 1,
     },
+    #alias => {
+    #    data_type   => 'int',
+    #    is_nullable => 1,
+    #    is_foreign_key => 1,
+    #},
 );
 
 __PACKAGE__->set_primary_key(qw(id));
@@ -81,7 +86,7 @@ __PACKAGE__->belongs_to( user       => 'IPAdmin::DB::Result::UserLDAP' );
 __PACKAGE__->belongs_to( type       => 'IPAdmin::DB::Result::TypeRequest' );
 __PACKAGE__->belongs_to( subnet     => 'IPAdmin::DB::Result::Subnet' );
 __PACKAGE__->belongs_to( guest      => 'IPAdmin::DB::Result::Guest' );
-
+#__PACKAGE__->belongs_to( alias      => 'IPAdmin::DB::Result::Alias' );
 
 
 =head1 NAME

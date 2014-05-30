@@ -1,0 +1,43 @@
+[% META 
+   use_table=1
+   section = 'Istruzioni' 
+%]
+
+<div id="tabs">	 
+  <ul>
+    <li><a href="#tabs-1">Informazioni</a></li>
+    <li><a href="#tabs-2">Guida alla Richiesta di un Indirizzo IP</a></li>
+    [% IF object.managed_area -%]
+     <li><a href="#tabs-3">Guida di IPAdmin per il Referente di Rete</a></li>
+    [% END -%]
+    <li><a href="#tabs-4">F.A.Q.</a></li>
+  </ul>
+
+  <div id=tabs-1>
+  	Questa sarà la guida all'utilizzo di IPAdmin v2
+	*Sezione Utente
+	*Sezione Referente
+
+	S.
+  </div>
+
+  <div id=tabs-2>
+  	* Nuova Richiesta di Indirizzo IP
+  	* Modifica dati di una richiesta IP già esistente
+  	* Rinuncia di un indirizzo IP
+  	* Nuova richiesta di Alias per indirizzo IP già registrato
+
+  </div>
+
+  <div id=tabs-3>
+  	* Il ruolo del referente di rete
+  	* Come validare una richiesta IP
+
+  </div>
+
+  <div id=tabs-4>
+  	*FAQ generiche
+
+  </div>
+
+</div>

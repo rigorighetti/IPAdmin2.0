@@ -1,0 +1,41 @@
+[% META 
+   title='Alias'
+   use_table=1
+   section='Richieste'
+-%]
+<div id="tabs">	 
+  <ul>
+    <li><a href="#tabs-1">Informazioni</a></li>
+  </ul>
+  		
+
+  <div id="tabs-1">
+    <table id="info">
+      <tr>
+	<td>Alias:</td><td>[% object.cname %].uniroma1.it</td>
+      </tr>
+      <tr>
+	<td>Indirizzo IP:</td>[% object.iprequest.subnet.id %].[% object.iprequest.host %]<td></td>
+      <tr>
+	<td>Hostname:</td><td>[% object.iprequest.hostname | html%].uniroma1.it</td>
+      </tr>
+    </table>
+    [% add_css_tableinfo -%]
+    <p>
+      <div class="buttons">	
+	<a href=[%c.uri_for_action('alias/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica</a>
+	&nbsp;<a href=[% c.uri_for_action('alias/delete', [object.id]) %]>
+	[% ui_icon('closethick') %]  Elimina</a>
+	&nbsp; 
+<!--
+	<a href="[% c.uri_for('/alias/create', object.id,{backref=>c.req.uri}) %]">
+		[% ui_icon('plusthick') %] Aggiungi Alias</a> 
+-->
+      </div>
+    </p>
+  [% add_css_tableinfo %]
+  </div>
+ 
+</div>
+
+

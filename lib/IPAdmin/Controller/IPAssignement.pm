@@ -26,74 +26,74 @@ Catalyst Controller.
 
 =cut
 
-sub index : Path : Args(0) {
-    my ( $self, $c ) = @_;
-    $c->response->redirect('ipassignement/list');
-    $c->detach();
-}
+#sub index : Path : Args(0) {
+#    my ( $self, $c ) = @_;
+#    $c->response->redirect('ipassignement/list');
+#    $c->detach();
+#}
 
 =head2 base
 
 =cut
 
-sub base : Chained('/') : PathPart('ipassignement') : CaptureArgs(0) {
-    my ( $self, $c ) = @_;
-    $c->stash( resultset => $c->model('IPAdminDB::IPAssignement') );
-}
+#sub base : Chained('/') : PathPart('ipassignement') : CaptureArgs(0) {
+#    my ( $self, $c ) = @_;
+#    $c->stash( resultset => $c->model('IPAdminDB::IPAssignement') );
+#}
 
 =head2 object
 
 =cut
 
-sub object : Chained('base') : PathPart('id') : CaptureArgs(1) {
-    my ( $self, $c, $id ) = @_;
-
-    $c->stash( object => $c->stash->{resultset}->find($id) );
-
-    if ( !$c->stash->{object} ) {
-        $c->stash( error_msg => "Object $id not found!" );
-        $c->detach('/error/index');
-    }
-}
+#sub object : Chained('base') : PathPart('id') : CaptureArgs(1) {
+#    my ( $self, $c, $id ) = @_;
+#
+#    $c->stash( object => $c->stash->{resultset}->find($id) );
+#
+#    if ( !$c->stash->{object} ) {
+#        $c->stash( error_msg => "Object $id not found!" );
+#        $c->detach('/error/index');
+#    }
+#}
 
 =head2 list
 
 =cut
 
-sub list : Chained('base') : PathPart('list') : Args(0) {
-   my ( $self, $c ) = @_;
-
-   my @ipassignement_table =  map +{
-            id          => $_->id,
-            date_in     => IPAdmin::Utils::print_short_timestamp($_->date_in),
-            state       => $_->state,
-            ip_request  => $_->ip_request,
-            },
-            $c->stash->{resultset}->search({});
-
-   $c->stash( ipassignement_table => \@ipassignement_table );
-   $c->stash( template        => 'ipassignement/list.tt' );
-}
+#sub list : Chained('base') : PathPart('list') : Args(0) {
+#   my ( $self, $c ) = @_;
+#
+#   my @ipassignement_table =  map +{
+#            id          => $_->id,
+#            date_in     => IPAdmin::Utils::print_short_timestamp($_->date_in),
+#            state       => $_->state,
+#            ip_request  => $_->ip_request,
+#            },
+#            $c->stash->{resultset}->search({});
+#
+#   $c->stash( ipassignement_table => \@ipassignement_table );
+#   $c->stash( template        => 'ipassignement/list.tt' );
+#}
 
 =head2 view
 
 =cut
 
-sub view : Chained('object') : PathPart('view') : Args(0) {
-    my ( $self, $c ) = @_;
-    my $req = $c->stash->{object};
-    $c->stash( date_in => IPAdmin::Utils::print_short_timestamp($req->date_in));
-    $c->stash( template => 'ipassignement/view.tt' );
-}
+#sub view : Chained('object') : PathPart('view') : Args(0) {
+#    my ( $self, $c ) = @_;
+#    my $req = $c->stash->{object};
+#    $c->stash( date_in => IPAdmin::Utils::print_short_timestamp($req->date_in));
+#    $c->stash( template => 'ipassignement/view.tt' );
+#}
 
 =head2 edit
 
 =cut
 
-sub edit : Chained('object') : PathPart('edit') : Args(0) {
-    my ( $self, $c ) = @_;     
-    $c->forward('save');
-}
+#sub edit : Chained('object') : PathPart('edit') : Args(0) {
+#    my ( $self, $c ) = @_;     
+#    $c->forward('save');
+#}
 
 =head2 save
 

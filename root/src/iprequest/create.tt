@@ -2,47 +2,45 @@
     section='Asset'
  %]
 
+<style>
+td.data {padding-left:20px;}
+</style>
+
 <form name="form1" method="POST">
 
 [%IF realm != "normal"-%]<input type=hidden name="user" value="[% user.id %]" />[%END-%]
 <br>
-<table class="ui-widget-content ui-corner-all">
-	<tr>
-		<td><label>Richiesta in data<label></td>
-		<td>[% data %]</td>
-		<td></td> 
-	<tr>
-		<td colspan="3">Dati dell'utente</td>
-	</tr>
-	<tr>
-	  <td><label>Utente:</label></td>
-      <td>
-      [%IF realm == "normal" -%]
-       <select name="user">
-       		 <option value="[% a.id %]">
+
+<div id="infoipreq">
+      <div class="right">Data Richiesta: [% data %]</div>
+      <hr style="clear:both">
+      <div class="title">Dati del Responsabile</div>
+      <div class="section">
+        <span class="left data">Nome e Cognome:</span> <span class="right">
+         [%IF realm == "normal" -%]
+          <select name="user">
+           <option value="[% a.id %]">
             [% FOREACH a IN users %]
-                <option value="[% a.id %]">
-                [%a.fullname%]</option>
+              <option value="[% a.id %]">[%a.fullname%]</option>
             [% END %]
-       </select>
-      [%ELSE -%]
-        [% fullname%]
-      [%END -%]
-      </td>
- 		<td></td>
-	</tr>
-   <tr>
-      <td><label>Telephone:</label></td>
-      <td>[% user.telephone %]</td>
-      <td></td>
-  </tr>
-  <tr>
-      <td><label>Fax:</label></td>
-      <td>[% user.fax %]</td>
-      <td></td>
+          </select>
+         [%ELSE -%]
+          [% fullname%]
+         [%END -%]
+        </span><br>
+        <span class="left">Telefono:</span> <span class="right">[% user.telephone %]</span><br>
+        <span class="left">Fax:</span> <span class="right">[% user.fax %]</span><br>
+        <span class="left">Email:</span> <span class="right">[% user.email %]</span><br>
+
+</div>
+
+<table class="ui-widget-content ui-corner-all">
+	
+	  
+  
   </tr>
     <tr>
-        <td><label>Struttura:</label></td>
+        <td class="data"><label>Struttura:</label></td>
         <td>
 	  	    <select name="area" id="area">
             <option value="">Seleziona Struttura</option>
@@ -59,16 +57,16 @@
         </td>
     </tr>
     <tr>
- 	  	<td><label>Referente:</label></td>
+ 	  	<td class="data"><label>Referente:</label></td>
 	  	<td><div id="referente"></div></td>
  	  	<td></td>
  	</tr>
 
   <tr>
-    <td>Tempo Determinato</td><td><input type="checkbox" id="fixed" value="fixed" name="fixed" [%IF fixed %]checked="1"[%END-%] ></td>
+    <td><b>Tempo Determinato</b></td><td><input type="checkbox" id="fixed" value="fixed" name="fixed" [%IF fixed %]checked="1"[%END-%] ></td>
   </tr>
    <tr class="fixed_time">
-  <td> Posizione Universitaria:</td>
+  <td class="data">Ruolo:</td>
   <td>
    <select name="guest_type" id="guest">
             <option value="">Seleziona posizione</option>
@@ -80,44 +78,44 @@
   </td>
   </tr>
    <tr class="fixed_time">
-      <td class="label">Data termine:</td>
+      <td class="label data">Data termine:</td>
       <td colspan="2"> <input type="text" name="guest_date_out" id="datepicker" value="[%guest_date_out%]"></td>
       <td>
         [% IF error.guest_date_out %]<span class="error" id="error">[% error.guest_date_out %] </span>[%END%]
       </td>
   </tr>
    <tr class="fixed_time">
-      <td class="label">Nome e Cognome:</td>
+      <td class="label data">Nome e Cognome:</td>
       <td colspan="2"><input type="text" name="guest_name" value="[%guest_name%]" /></td>
       <td>
         [% IF error.guest_name %]<span class="error" id="error">[% error.guest_name %] </span>[%END%]
       </td>
   </tr>
   <tr class="fixed_time">
-      <td class="label">Email:</td>
+      <td class="label data">Email:</td>
       <td colspan="2"><input type="text" name="guest_mail" value="[%guest_mail%]" /></td>
       <td>
         [% IF error.guest_mail %]<span class="error" id="error">[% error.guest_mail %] </span>[%END%]
       </td>
   </tr>
   <tr class="fixed_time">
-      <td class="label">Telefono:</td>
+      <td class="label data">Telefono:</td>
       <td colspan="2"><input type="text" name="guest_phone" value="[%guest_phone%]" /></td>
       <td>
         [% IF error.guest_phone %]<span class="error" id="error">[% error.guest_phone %] </span>[%END%]
       </td>
   </tr>
   <tr class="fixed_time">
-      <td class="label">Fax:</td>
+      <td class="label data">Fax:</td>
       <td colspan="2"><input type="text" name="guest_fax" value="[%guest_fax%]" /></td>
       <td>
         [% IF error.guest_fax %]<span class="error" id="error">[% error.guest_fax %] </span>[%END%]
       </td>
   </tr>
   <tr>
-		<td colspan="3">Dati dell'apparato</td>
+		<td colspan="3"><b>Dati dell'apparato</b></td>
   <tr>
-      <td><label>Tipo di apparato:</label></td>
+      <td class="data"><label>Tipo di apparato:</label></td>
         <td>
           <select name="type">
       [% FOREACH a IN types %]
@@ -133,21 +131,21 @@
         </td>
   </tr>
 	</tr>
-  		<td class="label">Stanza:</td>
+  		<td class="label data">Stanza:</td>
   		<td colspan="2"><input type="text" name="location" value="[%location%]" /></td>
   		<td>
     		[% IF error.location %]<span class="error" id="error">[% error.location %] </span>[%END%]
   		</td>
 	</tr>
 	<tr>
-  		<td class="label">Indirizzo ethernet:</td>
+  		<td class="label data">Indirizzo ethernet:</td>
   		<td colspan="2"><input type="text" name="mac" value="[%mac%]" /></td>
   		<td>
     		[% IF error.name %]<span class="error" id="error">[% error.mac %] </span>[%END%]
   		</td>
 	</tr>	
 	<tr>
-  		<td class="label">Nome host:</td>
+  		<td class="label data">Nome host:</td>
   		<td colspan="2"><input type="text" name="hostname" value="[%hostname%]" /></td>
   		<td>
     		[% IF error.hostname %]<span class="error" id="error">[% error.hostname %] </span>[%END%]
@@ -157,12 +155,13 @@
 	<tr>
 	<td colspan="2" class="buttons-form">
 	<div class="buttons">
-	     <input id="submit" type="submit" name="submit" value="Submit">
-	     <input type="submit" name="discard" value="Discard">
+	     <input id="submit" type="submit" name="submit" value="Invia la Richiesta">
+	     <input type="submit" name="discard" value="Annulla">
 	</div>
 	</td>
 	</tr>
 </table>
+[% add_css_tableinfo -%]
 </form>
 
 [% fragment = BLOCK -%]

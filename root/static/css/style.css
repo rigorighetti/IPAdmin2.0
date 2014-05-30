@@ -212,3 +212,80 @@ table.manoc-form tr{
  padding: 0.8em;
  border-spacing:0.2em;
 }
+
+tr.newip {
+ background:#F97A7A !important;
+}
+
+tr.preactive {
+ background:#CDCC30 !important;
+}
+
+tr.active {
+ background:#7FCD31 !important;
+}
+
+tr.archived {
+ background:#A96FDA !important;
+}
+
+td.white {
+ background:white !important;
+}
+
+div#infoipreq {
+ max-width: 600px;
+ max-height: 850px;
+ background: white;
+ padding: 15px;
+ border-radius: 15px;
+}
+
+div#guest {
+    border: dashed 1px black;
+    clear: both;
+    padding: 10px;
+    margin: 10px;
+}
+
+.left {
+    float: left;
+    font-weight: bold;
+}
+
+.right {
+    float: right;
+    clear: right;
+}
+
+.title {
+    text-decoration: underline;
+    font-weight: bold;
+    margin-left: 15px;
+}
+
+div.section {
+    max-width: 400px;
+    margin: 5px auto;
+}
+
+div.newip {
+    margin: 10px;
+    padding: 10px;
+    border: 2px dashed #F97A7A;
+}
+div.preactive {
+    margin: 10px;
+    padding: 10px;
+    border: 2px dashed #CDCC30;
+}
+div.active {
+    margin: 10px;
+    padding: 10px;
+    border: 2px dashed #7FCD31;
+}
+div.archived {
+    margin: 10px;
+    padding: 10px;
+    border: 2px dashed #A96FDA;
+}

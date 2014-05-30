@@ -61,18 +61,23 @@ sub object : Chained('base') : PathPart('id') : CaptureArgs(1) {
 commentata in attesa di capire come fare.
 L'utente deve vedere solo le sue. (23-04-14 implementata come tab per userldap)
 Il referente le sue + quelle di cui è referente divise da tab. (28-04-14 implementata come tab per userldap)
-L'amministratore vede tutte le richieste insieme
+L'amministratore vede tutte le richieste insieme (iprequest/list)
 =cut
 
 sub list : Chained('base') : PathPart('list') : Args(0) {
    my ( $self, $c ) = @_;
 
    my @iprequest_table =  map +{
-            id          => $_->id,
-            date        => IPAdmin::Utils::print_short_timestamp($_->date),
-            area        => $_->area,
-            user        => $_->user,
-            state	    => $_->state,
+        id          => $_->id,
+        date        => IPAdmin::Utils::print_short_timestamp($_->date),
+        area        => $_->area,
+        user        => $_->user,
+        state	    => $_->state,
+	    type	    => $_->type->type,
+	    macaddress	=> $_->macaddress,
+	    hostname	=> $_->hostname,
+        subnet      => $_->subnet,
+        host        => $_->host,
 	    }, $c->stash->{resultset}->search({});
 
    $c->stash( iprequest_table => \@iprequest_table );
@@ -150,7 +155,7 @@ sub create : Chained('base') : PathPart('create') : Args() {
     }
     #ordinamento aree per nome dipartimento
     my @aree  = $c->model('IPAdminDB::Area')->search({},{join => 'department', prefetch => 'department', order_by => 'department.name'})->all;
-    my @types = $c->model('IPAdminDB::TypeRequest')->search()->all;
+    my @types = $c->model('IPAdminDB::TypeRequest')->search({},{order_by => 'type'})->all;    
 
     $tmpl_param{guest_type}= ["Studente laureando", "Dottorando", "Studente specializzando", "Borsista", 
                               "Assegnista di ricerca", "Collaboratore a contratto", "Profressore visitatore", 
@@ -167,7 +172,7 @@ sub create : Chained('base') : PathPart('create') : Args() {
     $tmpl_param{hostname}  = $c->req->param('hostname') || '';
     $tmpl_param{area_def}  = $c->req->param('area') || '';
     $tmpl_param{type_def}  = $c->req->param('type') || '';
-    $tmpl_param{guest_type} = $c->req->param('guest_type');
+    #$tmpl_param{guest_type} = $c->req->param('guest_type');
     $tmpl_param{guest_date_out} = $c->req->param('guest_date_out');
     $tmpl_param{guest_name}  = $c->req->param('guest_name');
     $tmpl_param{guest_fax}   = $c->req->param('guest_fax');
@@ -278,34 +283,33 @@ sub check_ipreq_form : Private {
         $c->stash->{error_msg} = "Selezionare una struttura!";
         return 0;
     }
-     if ( $mac eq '' ) {
+    if ( $mac eq '' ) {
      	$c->stash->{error_msg} = "Campo Mac Address obbligatorio!";
      	return 0;
      }
     #controllo formato mac address (ancora non copre aa:bb:cc:dd:ee:ff) 
-     if ( $mac !~ /([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}/
-	&& $mac =~ /((aa|bb|cc|dd|ee|ff|00|11|22|33|44|55|66|77|88|99):){5}(aa|bb|cc|dd|ee|ff|00|11|22|33|44|55|66|77|88|99){2}/i ) {
+    if ( $mac !~ /([0-9a-f]{2}:){5}[0-9a-f]{2}/i ) {
      	$c->stash->{error_msg} = "Errore nel formato del mac address! aa:aa:aa:aa:aa:aa";
      	return 0;
      }
 
-     if ( $hostname eq '' ) {
+    if ( $hostname eq '' ) {
 	$c->stash->{error_msg} = "Campo Hostname obbligatorio!";
 	return 0;
      }
 
-     if ($schema->search({ macaddress => $mac})->count() > 0 ) {
+    if ($schema->search({ macaddress => $mac})->count() > 0 ) {
      $c->stash->{error_msg} = "Mac Address già registrato!";
      $c->log->error("Duplicated $mac");
      return 0;
-     }
+    }
 
-     if($fixed){
+    if($fixed){
         if ( $guest_type eq '' ) {
          $c->stash->{error_msg} = "Posizione dell'utente obbligatoria!";
         return 0;
         }
-       if ( $guest_phone eq '' ) {
+        if ( $guest_phone eq '' ) {
          $c->stash->{error_msg} = "Telefono dell'utente obbligatorio!";
         return 0;
         }
@@ -468,7 +472,7 @@ sub unactivate : Chained('object') : PathPart('unactivate') : Args(0) {
                         date_out => time,
                         state    => $IPAdmin::ARCHIVED,
                         });
-        #crea la nuova assegnazione (riatticabile dall'utente entro tot giorni)
+        #crea la nuova assegnazione (riattivabile dall'utente entro tot giorni)
         $c->model('IPAdminDB::IPAssignement')->create({
                         date_in     => time,
                         state       => $IPAdmin::ACTIVE,
@@ -519,8 +523,8 @@ sub process_activate : Private {
     #Cambia lo stato dell'iprequest
     $c->stash->{object}->state($IPAdmin::ACTIVE);
     $c->stash->{object}->update;
-    #Aggiorna la data dell'assegnamento 
 
+    #Aggiorna la data dell'assegnamento 
     my $ret = $c->model('IPAdminDB::IPAssignement')->search({state=>$IPAdmin::ACTIVE})->single;
     $ret->update({
                         date_in     => time,
@@ -568,6 +572,75 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
        $c->stash( template => 'generic_delete.tt' );
    }
 }
+
+
+=head2 notify
+invia una notifica via email all'utente per i processi di convalida, attivazione, scadenza e rinuncia.
+=cut
+
+sub process_notify : Private {
+    my ( $self, $c ) = @_;
+    my $error;
+    my $iprequest = $c->stash->{object};
+    my $ret; #status invio messaggio con Mail::Sendmail
+
+    if ($iprequest->state == $IPAdmin::NEW) {
+        #A seguito di iprequest/create, preparo il messaggio per il referente di rete: "C'è una nuova richiesta da validare"
+    }
+    elsif ($iprequest->state == $IPAdmin::PREACTIVE) {
+        #A seguito di iprequest/validate, preparo il messaggio per l'utente: "La tua richiesta è stata validata: stampa, firma ed invia il modulo via fax (o caricamento pdf?)"
+    }
+    elsif ($iprequest->state == $IPAdmin::ACTIVE) {
+        #A seguito di iprequest/activate, preparo il messaggio per l'utente: "Il tuo IP è attivo"
+    } 
+    elsif ($iprequest->state == $IPAdmin::INACTIVE) {
+        #A seguito di iprequest/unactivate, preparo il messaggio per l'utente: "Il tuo IP è stato bloccato. Hai X giorni di tempo per riattivarlo o verrà assegnato a qualcun altro"
+    }
+    elsif ($iprequest->state == $IPAdmin::ARCHIVED) {
+        #A seguito di iprequest/delete, preparo il messaggio per l'utente: "Rinuncia dell'indirizzo IP terminata con successo"
+    }
+    else { #perchè hai richiamato questo metodo?
+    }
+
+    if (! $ret ) {
+    $c->stash->{message} = "Errore nell'invio del messaggio.";
+    return 0;
+    } else {
+    $c->stash->{message} = "Messaggio inviato correttamente.";
+    return 1;
+    }
+}
+
+
+=head2 dnsupdate
+invia un update al dns aggiungendo o rimuovendo un record a seconda dello stato della richiesta
+=cut
+
+sub process_dnsupdate : Private {
+    my ( $self, $c ) = @_;
+    my $error;
+    my $iprequest = $c->stash->{object};
+    my $ret; #status invio update con Net::DNS
+
+    if ($iprequest->state == $IPAdmin::ACTIVE) {
+        #A seguito di iprequest/activate, invio update per aggiungere il record A nella zona corretta
+    } 
+    elsif ($iprequest->state == $IPAdmin::ARCHIVED) {
+        #A seguito di iprequest/delete, invio update per rimuovere il record A dalla zona corretta, e gli eventuali CNAME da qualsiasi zona
+    }
+    else { #perchè hai richiamato questo metodo?
+    }
+
+    if (! $ret ) {
+    $c->stash->{message} = "Errore nell'invio dell'update.";
+    return 0;
+    } else {
+    $c->stash->{message} = "Update inviato correttamente.";
+    return 1;
+    }
+}
+
+
 
 =head1 AUTHOR
 

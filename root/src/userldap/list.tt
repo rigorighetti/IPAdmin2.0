@@ -1,7 +1,7 @@
 [% META 
-   title='Users in LDAP'
+   title='LDAP'
    use_table=1
-   section='Config'
+   section='Utenti'
 -%]
 
 <!--

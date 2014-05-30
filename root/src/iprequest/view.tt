@@ -8,67 +8,85 @@
     <li><a href="#tabs-1">Informazioni</a></li>
     <li><a href="#tabs-2">Assegnazioni IP</a></li>
  </ul>
-  		
 
   <div id="tabs-1">
-    <table id="info">
-      <tr>
-	     <td>Data:</td><td>[% data %]</td>
-      </tr>
-      <tr>
-	     <td>Tipo:</td><td>[% object.type.type %]</td>
-      </tr>
-      <tr>
-	     <td>Responsabile:</td><td>[% object.user.fullname %] </td>
-      </tr>
-      <tr>
-	     <td>Struttura:</td><td>[% object.area.department.name (object.area.building.name)%]</td>
-      </tr>
-      <tr>
-       <td>Referente di rete:</td><td>[% object.area.manager.fullname%]</td>
-      </tr>
-      <tr>
-       <td>Nome a dominio:</td><td>[% object.hostname%].[%object.area.department.domain%].uniroma1.it</td>
-      </tr>
-      <tr>
-       <td>MAC Address:</td><td>[% object.macaddress%]</td>
-      </tr>
-      </table>
-
-        [% IF object.state == 2 -%]
-        <table style="border:solid 1px #53db3b">
+    <div id="infoipreq">
+      <div class="left">Id: </div>[% object.id %] <div class="right">Data Richiesta: [% data %]</div>
+      <hr style="clear:both">
+      <div class="title">Dati del Responsabile</div>
+      <div class="section">
+        <span class="left">Nome e Cognome:</span> <span class="right">[% object.user.fullname %]</span><br>
+        <span class="left">Telefono:</span> <span class="right">[% object.user.telephone %]</span><br>
+          <span class="left">Fax:</span> <span class="right">[% object.user.fax %]</span><br>
+          <span class="left">Email:</span> <span class="right">[% object.user.email %]</span><br>
+        [% IF object.guest -%]
+        <div class="title">Richiedente a Tempo Determinato</div>
+         <div id="guest">
+          <span class="left">Nome a Cognome:</span> <span class="right">[% object.guest.fullname %]</span><br>
+          <span class="left">Posizione:</span> <span class="right">[% object.guest.type %]</span><br>
+          <span class="left">Telefono:</span> <span class="right">[% object.guest.telephone %]</span><br>
+          <span class="left">Fax:</span> <span class="right">[% object.guest.fax %]</span><br>
+          <span class="left">Email:</span> <span class="right">[% object.guest.email %]</span><br>
+         </div>
         [% END -%]
-	[% IF object.state == 1 or object.state == 3 -%] 
-        <table style="border:solid 1px #ffbb00">
-	[% END -%]
-	[% IF object.state == 0 -%]
-	<table style="border:solid 1px #d1392b">
-      	[% END -%]
-	[% IF object.state == 4 -%]
-        <table style="border:solid 1px #7b00ff">
-        [% END -%]
-	<tr>
-	 <td>Indirizzo IP: [% IF object.subnet && object.host -%] 151.100.[% object.subnet.id %].[% object.host %] [% END -%] [% IF !object.subnet -%] non assegnato [% END -%] </td>
-      </tr>
-      </table> 
-      
-
-    [% add_css_tableinfo -%]
-    <p>
-      <div class="buttons">	
-	[% IF object.state == 0 -%] <a href=[%c.uri_for_action('iprequest/validate', [object.id]) %]> [%ui_icon('check')%] Convalida</a>
-	[% END -%]
-	[% IF object.state == 1 -%] <a href=[%c.uri_for_action('iprequest/activate', [object.id]) %]> [%ui_icon('check')%] Attiva</a>
-        [% END -%]
-	[% IF object.state == 3 -%] <a href=[%c.uri_for_action('iprequest/activate', [object.id]) %]> [%ui_icon('check')%] Riattiva</a>
-        [% END -%]
-	[% IF object.state != 4 -%] <a href=[%c.uri_for_action('iprequest/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica</a>
-	&nbsp;<a href=[% c.uri_for_action('iprequest/delete', [object.id]) %]>
-	[% ui_icon('closethick') %]  Rinuncia</a>
-	[% END -%]
       </div>
-    </p>
+      <div class="title">Dati della Struttura</div>
+      <div class="section">
+        <span class="left">Nome:</span> <span class="right">[% object.area.department.name %] <i>presso</i> [% object.area.building.name %]</span><br>
+        <span class="left">Indirizzo:</span> <span class="right">[% object.area.building.address %]</span><br>
+        <span class="left">Referente di Rete:</span> <span class="right">[% object.area.manager.fullname %]</span><br>
+      </div>
+      <div class="title">Dati dell'Apparato</div>
+      <div class="section">
+        <span class="left">Tipo:</span> <span class="right">[% object.type.type %]</span><br>
+        <span class="left">Mac Address:</span> <span class="right">
+          <!-- <a href="https://manoc-ng.uniroma1.it/mac/[% object.macaddress%]"> -->
+           [% object.macaddress%]
+          <!-- </a> -->
+         </span><br>
+        <span class="left">Nome a Dominio:</span> <span class="right">[% object.hostname%].[%object.area.department.domain%].uniroma1.it</span><br>
+      </div>
+        <div class="title">Configurazione della Scheda di Rete</div>
+        <div class="section">
+         <div [% IF object.state == 0 -%]                 class="newip"     [% END -%] 
+              [% IF object.state == 1 or object.state == 3 -%] class="preactive" [% END -%] 
+              [% IF object.state == 2 -%]                 class="active"    [% END -%] 
+              [% IF object.state == 4 -%]                 class="archived"  [% END -%] > 
+           <span class="left">Indirizzo IP:</span> <span class="right"><b>
+            [% IF object.subnet && object.host -%] 151.100.[% object.subnet.id %].[% object.host %] [% END -%] 
+            [% IF !object.subnet -%] non assegnato [% END -%] </b>
+           </span><br>
+           [% IF object.state != 0 and object.host -%]
+            <span class="left">Subnet Mask:</span> <span class="right">255.255.255.0</span><br>
+            <span class="left">Gateway:</span> <span class="right">151.100.[% object.subnet.id %].1</span><br>
+            <span class="left">DNS Primario:</span> <span class="right">151.100.4.2</span><br>
+            <span class="left">DNS Secondario:</span> <span class="right">151.100.4.13</span><br>
+           [% END -%]
+         </div>
+        </div>
+
+    <div class="section">
+      <div class="buttons">	
+	     [% IF object.state == 0 -%] 
+        <a href=[%c.uri_for_action('iprequest/validate', [object.id]) %]> [%ui_icon('check')%] Convalida</a>
+	     [% END -%]
+	     [% IF object.state == 1 -%] 
+        <a href=[%c.uri_for_action('iprequest/activate', [object.id]) %]> [%ui_icon('check')%] Attiva</a>
+       [% END -%]
+	     [% IF object.state == 3 -%] 
+        <a href=[%c.uri_for_action('iprequest/activate', [object.id]) %]> [%ui_icon('check')%] Riattiva</a>
+       [% END -%]
+	     [% IF object.state != 4 -%] 
+        <a href=[%c.uri_for_action('iprequest/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica</a>
+	      &nbsp;<a href=[% c.uri_for_action('iprequest/delete', [object.id]) %]> [% ui_icon('closethick') %]  Rinuncia</a>
+	     [% END -%]
+      </div>
+    </div>
+
+   </div>
   </div>
+
+
   <div id="tabs-2">
   [% FOREACH i IN assignement %]
     [% IF loop.first %]
@@ -77,19 +95,18 @@
       <thead>
         <tr>
           <th>Id</th>
-	  <th>Stato</th>
           <th>Data assegnazione</th>
           <th>Data scadenza</th>
         </tr>
       </thead>
       <tbody>
         [% END %]
-        <tr>
-          <td><a href=[% c.uri_for_action('/ipassignement/view', [i.id]) %]>[% i.id %]</a></td>
-          <td [% IF i.state == 2 -%] style="background:#53db3b"> stato 2 [% END -%]
-	      [% IF i.state == 4 -%] style="background:#7b00ff"> stato 4 [% END -%]
-	  </td>
-	  <td>[% i.date_in %]</td>
+        <tr [% IF i.state == 0 -%]                 class="newip"     [% END -%]
+            [% IF i.state == 1 or i.state == 3 -%] class="preactive" [% END -%]
+            [% IF i.state == 2 -%]                 class="active"    [% END -%]
+            [% IF i.state == 4 -%]                 class="archived"  [% END -%] >
+          <td class="white">[% i.id %]</td>
+	        <td>[% i.date_in %]</td>
           <td>[% i.date_out %] </td>
         </tr>
         [% IF loop.last %]
@@ -100,5 +117,5 @@
 
   </div>
 
-  </div>
+</div>
   

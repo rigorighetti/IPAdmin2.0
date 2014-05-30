@@ -1,82 +1,69 @@
 [% META 
    title='Richiesta Referente di rete'
    use_table=1
-   section='Search'
+   section='Richieste'
 -%]
+
 <div id="tabs">	 
   <ul>
     <li><a href="#tabs-1">Informazioni</a></li>
  </ul>
   		
+<div id="tabs-1">
+    <div id="infoipreq">
+      <div class="left">Id: </div>[% object.id %] <div class="right">Data Richiesta: [% date %]</div>
+      <hr style="clear:both">
+      <div class="title">Dati del Referente</div>
+      <div class="section">
+        <span class="left">Nome e Cognome:</span> <span class="right">[% object.user.fullname %]</span><br>
+        <span class="left">Telefono:</span> <span class="right">[% object.user.telephone %]</span><br>
+        <span class="left">Fax:</span> <span class="right">[% object.user.fax %]</span><br>
+        <span class="left">Email:</span> <span class="right">[% object.user.email %]</span><br>
+        <span class="left">Livello conoscenze di rete:</span> <span class="right">[% object.skill %]</span><br>
+      </div>
+      <div class="title">Dati della Struttura</div>
+      <div class="section">
+        <span class="left">Nome:</span> <span class="right">[% object.area.department.name %] <i>presso</i> [% object.area.building.name %]</span><br>
+        <span class="left">Indirizzo:</span> <span class="right">[% object.area.building.address %]</span><br>
+        <span class="left">Direttore:</span> <span class="right">[% object.dir_fullname %]</span><br>
+        <span class="left">Telefono:</span> <span class="right">[% object.user.dir_phone %]</span><br>
+        <span class="left">Email:</span> <span class="right">[% object.dir_email %]</span><br>
+      </div>
 
-  <div id="tabs-1">
-    <table id="info">
-      <tr>
-       <td>Nome Referente:</td><td>[% object.user.fullname%]</td>
-      </tr>
-      <tr>
-       <td>Telefono Referente:</td><td>[% object.user.telephone%]</td>
-      </tr>
-      <tr>
-       <td>Email Referente:</td><td>[% object.user.email%]</td>
-      </tr>  
-      <tr>
-       <td>Area:</td><td>[% object.area.department.name %]
-        <i>presso</i> [% object.area.building.name %]</td>
-      </tr>  
-      <tr>
-	     <td>Data Richiesta:</td><td>[% date %]</td>
-      </tr>
-      <tr>
-	     <td>Data Validazione:</td><td>[% date_in %]</td>
-      </tr>
-      <tr>
-	     <td>Data Scadenza:</td><td>[% date_out %] </td>
-      </tr>
-      <tr>
-       <td>Nome Direttore:</td><td>[% object.dir_fullname%]</td>
-      </tr>
-      <tr>
-       <td>Telefono Direttore:</td><td>[% object.dir_phone%]</td>
-      </tr>
-      <tr>
-       <td>Email Direttore:</td><td>[% object.dir_email%]</td>
-      </tr>
-      <tr>
-       <td>Livello conoscenze di rete:</td><td>[% object.skill %]</td>
-      </tr>      
-      </table>
+        <div class="title">Stato della Richiesta</div>
+        <div class="section">
+         <div [% IF object.state == 0 -%]
+                class="newip">
+                <span class="left">Stato:</span> <span class="right">In attesa di validazione</span    
+              [% END -%] 
+              [% IF object.state == 2 -%]
+                class="active">   
+                <span class="left">Stato:</span> <span class="right">Valida</span
+              [% END -%] 
+              [% IF object.state == 4 -%] 
+                class="archived">
+              <span class="left">Stato:</span> <span class="right">Archiviata</span  
+              [% END -%] ><br> 
+           [% IF object.state != 0 -%]
+            <span class="left">Data Validazione:</span> <span class="right">[% date_in %]</span><br>
+            <span class="left">Data Scadenza:</span> <span class="right">[% date_out %]</span><br>
+           [% END -%]
+         </div>
+        </div>
 
-  [% IF object.state == 3 -%]
-   <table style="border:solid 1px #d1392b">
-   <tr> <td> Scaduta </td></tr>
-  [% END -%]
-	[% IF object.state == 2 -%] 
-   <table style="border:solid 1px #53db3b">
-	   <tr> <td> Attiva </td></tr>
-  [% END -%]
-	[% IF object.state == 0 -%]
-	  <table style="border:solid 1px #ffbb00">
-     <tr> <td> In attesa di autorizzazione </td></tr>
- 	[% END -%]
-  </table> 
-      
-
-    [% add_css_tableinfo -%]
-    <p>
-      <div class="buttons">	
-	[% IF object.state != 2  -%] 
-   <a href=[%c.uri_for_action('managerrequest/activate', [object.id]) %]> 
-   [%ui_icon('check')%] Attiva</a>
-  [% END -%]
-  [% IF object.state != 3 -%] 
-  <a href=[%c.uri_for_action('managerrequest/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica</a>
-  &nbsp;
-  <a href=[% c.uri_for_action('managerrequest/delete', [object.id]) %]>
-	[% ui_icon('closethick') %]  Archivia</a>
-  [%END -%]
+    <div class="section">
+      <div class="buttons"> 
+       [% IF object.state != 2  -%] 
+        <a href=[%c.uri_for_action('managerrequest/activate', [object.id]) %]> [%ui_icon('check')%] Attiva</a>
+       [% END -%]
+       [% IF object.state != 3 -%] 
+        <a href=[%c.uri_for_action('managerrequest/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica</a>&nbsp;
+        <a href=[% c.uri_for_action('managerrequest/delete', [object.id]) %]> [% ui_icon('closethick') %]  Archivia</a>
+       [%END -%]
+      </div>
     </div>
-    </p>
+
+   </div>
   </div>
-  </div>
-  
+
+</div>

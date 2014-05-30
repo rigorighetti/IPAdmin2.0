@@ -1,17 +1,21 @@
 [%
   menu_sections = [
   		{
-		     name = 'Search', 
+		     name = 'Richieste', 
 		     path = c.uri_for('/iprequest'),
 	        },
 		{
-		     name = 'Asset',
+		     name = 'Configurazione',
 		     path = c.uri_for('/area'),
 		},		     
 		{
-		     name = 'Config',
+		     name = 'Utenti',
      		     path = c.uri_for('/userldap/list'),
  		 },	
+		{	
+		     name = 'Istruzioni',
+     		     path = c.uri_for('/howto'),
+ 		 },		 
 		 {
 		     name = 'About',
      		     path = c.uri_for('/about'),
@@ -25,17 +29,17 @@
 -%]
 [% 
   menu_subsections = {
-          Search = [
+          Richieste = [
 	       {
 		     name = 'Richieste Referente di Rete'
 		     path = c.uri_for('/managerrequest'),
-		},	     
-		{	
+		   },	     
+		   {	
 		     name = 'Richieste IP',
 		     path = c.uri_for('/iprequest'),
-		}
-		],
-	 Asset = [
+		   }
+		   ],
+		  Configurazione = [
   	       {
 		     name = 'Dipartimento', 
 		     path = c.uri_for('/department/list'),
@@ -43,21 +47,25 @@
 	       {
 		     name = 'Edificio',
 		     path = c.uri_for('/building/list'),
-		},
-		{
+		   },
+		   {
 		     name = 'Area',
 		     path = c.uri_for('/area/list'),
-		},
-		{
-                     name = 'Subnet',
-                     path = c.uri_for('/subnet/list'),
-                },
-		{
-                     name = 'Vlan',
-                     path = c.uri_for('/vlan/list'),
-                },		     
+		   },
+		   {
+             name = 'Subnet',
+             path = c.uri_for('/subnet/list'),
+       	   },
+		   {
+             name = 'Vlan',
+             path = c.uri_for('/vlan/list'),
+           },	
+           {
+             name = 'Tipi di Richieste IP',
+             path = c.uri_for('/typerequest/list'),
+           },	     
 		],
-	 Config = [
+	 Utenti = [
   	       {
 		     name = 'Utenti Strutturati', 
 		     path = c.uri_for('/userldap/list'),

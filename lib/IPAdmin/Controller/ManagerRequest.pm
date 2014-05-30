@@ -266,7 +266,7 @@ sub process_create : Private {
                         dir_phone     => $dir_phone,
                         dir_email     => $dir_email,
                         date          => time,
-                        state         => $IPAdmin::INACTIVE,
+                        state         => $IPAdmin::NEW,
                         user          => $user,
                         skill         => 1,#$skill 
                         });
