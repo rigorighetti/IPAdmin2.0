@@ -25,6 +25,11 @@ __PACKAGE__->add_columns(
         is_nullable    => 0,
         is_foreign_key => 1,
     },
+    state =>  {
+        data_type      => 'int',
+        size           => 1,
+        is_nullable    => 0,
+    },
 
 );
 

@@ -80,6 +80,11 @@
         <a href=[%c.uri_for_action('iprequest/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica</a>
 	      &nbsp;<a href=[% c.uri_for_action('iprequest/delete', [object.id]) %]> [% ui_icon('closethick') %]  Rinuncia</a>
 	     [% END -%]
+       [% IF object.state == 2 -%] 
+        <a href=[% c.uri_for_action('alias/create', {def_ipreq=>object.id }) %]> Aggiungi Alias[% ui_icon('circle-plus')%]
+       [% END -%]
+
+
       </div>
     </div>
 

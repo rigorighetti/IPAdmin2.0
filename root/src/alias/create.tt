@@ -1,0 +1,34 @@
+[%  META title='Crea un Alias'    
+    section='Richieste'
+ %]
+
+<form name="form1" method="POST">
+
+<br>
+<table class="ui-widget-content ui-corner-all manoc-form">
+	<tr>
+		<td><label>Indirizzo IP:</label></td>
+		<td>[% ip %]</td>
+ 		<td></td>
+	</tr>
+	<tr>
+		<td><label>Hostname:</label></td>
+		<td>[% hostname %].[%dominio%]</td>
+ 		<td></td>
+	</tr>
+	<tr>
+		<td><label>Alias<label></td>
+		<td><input type="text" name="alias" value="[%alias%]" /></td>
+		<td> [% IF error.alias %]<span class="error" id="error">[% error.alias %] </span>[%END%] </td>
+	</tr>
+	<tr>
+	<td colspan="2" class="buttons-form">
+	<div class="buttons">
+	     <input type="submit" name="submit" value="Submit">
+	     <input type="submit" name="discard" value="Discard">
+	</div>
+	</td>
+	</tr>
+</table>
+</form>
+

@@ -23,6 +23,12 @@ __PACKAGE__->add_columns(
         is_nullable    => 0,
         is_foreign_key => 1,
     },
+    archivable => {
+        data_type      => 'int',
+        is_nullable    => 0,
+        default       => 1,
+    },
+
 );
 
 __PACKAGE__->set_primary_key('id');
