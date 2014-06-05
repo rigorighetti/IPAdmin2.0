@@ -97,15 +97,24 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
     #Creare lista di assegnazioni per richiesta IP
     my @assignement =  map +{
             id          => $_->id,
-            date_in     => IPAdmin::Utils::print_short_timestamp($_->date_in),
-            #date_out    => IPAdmin::Utils::print_short_timestamp($_->date_out),
+            date_in     => $_->date_in  ? IPAdmin::Utils::print_short_timestamp($_->date_in) : '',
+            date_out    => $_->date_out ? IPAdmin::Utils::print_short_timestamp($_->date_out) : '',
             state       => $_->state,
             },
             $req->map_assignement;
 
+    #Creare lista degli alias per richiesta IP
+    my @alias =  map +{
+            id          => $_->id,
+            #state       => $_->state,
+            cname       => $_->cname,
+            },
+            $req->map_alias;
+
 
     $c->stash( data => IPAdmin::Utils::print_short_timestamp($req->date));
     $c->stash( assignement => \@assignement );
+    $c->stash( alias => \@alias );
     $c->stash( template => 'iprequest/view.tt' );
 }
 

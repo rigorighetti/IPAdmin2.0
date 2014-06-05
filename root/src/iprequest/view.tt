@@ -1,12 +1,13 @@
 [% META 
    title='Richiesta IP'
    use_table=1
-   section='Search'
+   section='Richieste'
 -%]
 <div id="tabs">	 
   <ul>
     <li><a href="#tabs-1">Informazioni</a></li>
     <li><a href="#tabs-2">Assegnazioni IP</a></li>
+    <li><a href="#tabs-3">Alias</a></li>
  </ul>
 
   <div id="tabs-1">
@@ -48,10 +49,19 @@
       </div>
         <div class="title">Configurazione della Scheda di Rete</div>
         <div class="section">
-         <div [% IF object.state == 0 -%]                 class="newip"     [% END -%] 
-              [% IF object.state == 1 or object.state == 3 -%] class="preactive" [% END -%] 
-              [% IF object.state == 2 -%]                 class="active"    [% END -%] 
-              [% IF object.state == 4 -%]                 class="archived"  [% END -%] > 
+         [% IF object.state == 0 -%]
+          <div class="newip"><span class="left">Stato:</span> <span class="right">In attesa di convalida del Referente di Rete</span>
+         [% END -%] 
+         [% IF object.state == 1 or object.state == 3 -%] 
+          <div class="preactive"><span class="left">Stato:</span> <span class="right">Convalidata. Inviare il fax per attivare l'IP</span>
+         [% END -%] 
+         [% IF object.state == 2 -%]
+          <div class="active"><span class="left">Stato:</span> <span class="right">Attiva</span>
+         [% END -%] 
+         [% IF object.state == 4 -%]
+          <div class="archived"><span class="left">Stato:</span> <span class="right">Archiviata</span>
+         [% END -%]
+           <br><hr>
            <span class="left">Indirizzo IP:</span> <span class="right"><b>
             [% IF object.subnet && object.host -%] 151.100.[% object.subnet.id %].[% object.host %] [% END -%] 
             [% IF !object.subnet -%] non assegnato [% END -%] </b>
@@ -108,6 +118,36 @@
           <td class="white">[% i.id %]</td>
 	        <td>[% i.date_in %]</td>
           <td>[% i.date_out %] </td>
+        </tr>
+        [% IF loop.last %]
+      </tbody>
+    </table>
+    [% END %]
+    [% END %]
+
+  </div>
+
+  <div id="tabs-3">
+  [% FOREACH a IN alias %]
+    [% IF loop.first %]
+    [% init_table('alias') %]
+    <table class="display" id="alias">
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Cname</th>
+          <th>Hostname</th>
+        </tr>
+      </thead>
+      <tbody>
+        [% END %]
+        <tr [% IF a.state == 0 -%]                 class="newip"     [% END -%]
+            [% IF a.state == 1 or a.state == 3 -%] class="preactive" [% END -%]
+            [% IF a.state == 2 -%]                 class="active"    [% END -%]
+            [% IF a.state == 4 -%]                 class="archived"  [% END -%] >
+          <td class="white">[% a.id %]</td>
+          <td>[% a.cname %]</td>
+          <td> --- </td>
         </tr>
         [% IF loop.last %]
       </tbody>

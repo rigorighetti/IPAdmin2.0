@@ -1,84 +1,60 @@
 [%  META title='Nomina o conferma referente di rete'    
-    section='Asset'
+    section='Richieste'
  %]
 
 <form name="form1" method="POST">
 
 <input type=hidden name="user" value="[% user.id %]" />
 
-<br>
-<table class="ui-widget-content ui-corner-all ">
-	  <tr>
-        <td><label>Struttura:</label></td>
-        <td>
-	  	    <select name="area">
-		        [% FOREACH a IN aree %]
-                    <option value="[% a.id %]">
-                    [%a.department.name%] presso [%a.building.name%]</option>
-		        [% END %]
-            </select>
-        </td>    
-		<td>
-		 [% IF error.area %]
-	      <span class="error" id="error">[% error.area %] </span>
-		 [%END%]
-        </td>
-    </tr>
-	<tr><td colspan="3"> Dati del Responsabile della struttura </td></tr>
-	<tr>
-		<td><label>Richiesta in data<label></td>
-		<td>[% data %]</td>
-		<td></td> 
-	<tr>
-		<td><label>Nome e Cognome:</label></td>
-		<td><input type="text" name="dir_fullname" value="[% dir_fullname %]" /></td>
- 		<td> [% IF error.dir_fullname %]
-	      	 <span class="error" id="error">[% error.dir_fullname %] </span>
-		     [%END%]
-		 </td>
-	</tr>
-    <tr>
- 	  	<td><label>Telefono:</label></td>
-		<td><input type="text" name="dir_phone" value="[% dir_phone %]" /></td>
- 	  	<td> [% IF error.dir_phone %]
-	   	     <span class="error" id="error">[% error.dir_phone %] </span>
-		     [%END%]
-		 </td>
-	</tr>
-	<tr>
- 	  	<td><label>Email:</label></td>
-	  	<td><input type="text" name="dir_email" value="[% dir_email %]" /></td>
- 	  	<td> [% IF error.dir_email %]
-	   	     <span class="error" id="error">[% error.dir_email %] </span>
-		     [%END%]
-		 </td> 	</tr>
-	<tr>
-		<td colspan="3">Dati del referente di rete</td>
-	</tr>
-  	<td class="label">Nome e Cognome:</td>
-  	<td colspan="2">
-  		[% user.fullname -%]
-  	</td>
-  	<td></td>
-	</tr>
-	<tr>
-  		<td><label>Telefono:</label></td>
-        <td>[% user.telephone -%]</td>
-	    <td> </td>
-	</tr>
-	<tr>
-  		<td><label>Email:</label></td>
-        <td>[% user.email -%]</td>
-	    <td> </td>
-	</tr>
-	<tr>
-	<td colspan="2" class="buttons-form">
-	<div class="buttons">
+<div id="infoipreq">
+	<div class="right">Data Richiesta: [% data %]</div>
+    <hr style="clear:both">
+	<div class="title">Dati della Struttura:</div>
+    <div class="section">
+     <span class="left">Struttura:</span>
+     <select class="right" name="area" id="area">
+      <option value="">Seleziona Struttura</option>
+       [% FOREACH a IN aree %] 
+        <option value="[% a.id %]" 
+        [% IF a.id == area_def -%] 
+         selected="1"
+        [% END -%] >
+        [%a.department.name%] presso [%a.building.name%]</option>
+       [% END %]
+      </select><br>
+      [% IF error.area %]
+	   <span class="error" id="error">[% error.area %] </span>
+	  [%END%]
+    </div>
+    <div class="title"> Dati del Responsabile della Struttura </div>
+      <div class="section">
+		<span class="left">Nome e Cognome:</span> <input class="right" type="text" name="dir_fullname" value="[% dir_fullname %]" /><br>
+ 		[% IF error.dir_fullname %]
+	     <span class="error" id="error">[% error.dir_fullname %] </span>
+		[%END%]
+ 	  	<span class="left">Telefono:</span> <input class="right" type="text" name="dir_phone" value="[% dir_phone %]" /><br>
+ 	  	[% IF error.dir_phone %]
+	   	 <span class="error" id="error">[% error.dir_phone %] </span>
+		[%END%]
+ 	  	<span class="left">Email:</span> <input class="right" type="text" name="dir_email" value="[% dir_email %]" /><br>
+ 	  	[% IF error.dir_email %]
+	   	 <span class="error" id="error">[% error.dir_email %] </span>
+		[%END%]
+	  </div>
+     <div class="title">Dati del Referente di Rete</div>
+     <div class="section">
+       <span class="left">Nome e Cognome:</span> <span class="right">[%user.fullname%]</span><br>
+        <span class="left">Telefono:</span> <span class="right">[% user.telephone %]</span><br>
+        <span class="left">Fax:</span> <span class="right">[% user.fax %]</span><br>
+        <span class="left">Email:</span> <span class="right">[% user.email %]</span><br>
+      </div>
+      <br>
+      <div class="buttons section">
 	     <input type="submit" name="submit" value="Submit">
 	     <input type="submit" name="discard" value="Discard">
 	</div>
-	</td>
-	</tr>
-</table>
+
+</div>
+
 </form>
 

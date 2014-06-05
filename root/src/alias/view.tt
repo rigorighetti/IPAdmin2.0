@@ -12,12 +12,12 @@
   <div id="tabs-1">
     <table id="info">
       <tr>
-	<td>Alias:</td><td>[% object.cname %].uniroma1.it</td>
+	     <td>Alias:</td><td>[% object.cname %].uniroma1.it</td>
       </tr>
       <tr>
-	<td>Indirizzo IP:</td>[% object.iprequest.subnet.id %].[% object.iprequest.host %]<td></td>
+	     <td>Indirizzo IP:</td><td>151.100.[% object.ip_request.subnet.id %].[% object.ip_request.host %]</td>
       <tr>
-	<td>Hostname:</td><td>[% object.iprequest.hostname | html%].uniroma1.it</td>
+	     <td>Hostname:</td><td>[% object.ip_request.hostname %].[% object.ip_request.area.department.domain %].uniroma1.it</td>
       </tr>
     </table>
     [% add_css_tableinfo -%]
@@ -37,5 +37,3 @@
   </div>
  
 </div>
-
-

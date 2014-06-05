@@ -86,7 +86,7 @@ __PACKAGE__->belongs_to( user       => 'IPAdmin::DB::Result::UserLDAP' );
 __PACKAGE__->belongs_to( type       => 'IPAdmin::DB::Result::TypeRequest' );
 __PACKAGE__->belongs_to( subnet     => 'IPAdmin::DB::Result::Subnet' );
 __PACKAGE__->belongs_to( guest      => 'IPAdmin::DB::Result::Guest' );
-#__PACKAGE__->belongs_to( alias      => 'IPAdmin::DB::Result::Alias' );
+__PACKAGE__->has_many( map_alias    => 'IPAdmin::DB::Result::Alias','ip_request');
 
 
 =head1 NAME

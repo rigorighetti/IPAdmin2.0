@@ -1,7 +1,7 @@
 [% META 
-   title='Vlan View'
+   title='Vlan'
    use_table=1
-   section='NetDB'
+   section='Configurazione'
 -%]
 
 

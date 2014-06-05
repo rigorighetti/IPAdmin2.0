@@ -1,7 +1,7 @@
 [% META 
-   title='Building'
+   title='Edifici'
    use_table=1
-   section='Asset'
+   section='Configurazione'
 -%]
 
 <div class="buttons create_btn">

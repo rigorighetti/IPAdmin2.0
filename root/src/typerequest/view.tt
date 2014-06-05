@@ -1,7 +1,7 @@
 [% META 
-   title='Type Request'
+   title='Tipi di Richieste IP'
    use_table=1
-   section='Asset'
+   section='Configurazione'
 -%]
 <div id="tabs">	 
   <ul>

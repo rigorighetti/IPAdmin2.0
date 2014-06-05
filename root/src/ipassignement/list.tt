@@ -1,7 +1,7 @@
 [% META 
    title='Assegnazioni IP'
    use_table=1
-   section='Search'
+   section='Richieste'
 -%]
 
 <div class="buttons create_btn">

@@ -1,7 +1,7 @@
 [% META 
-   title='Users'
+   title='Utenti'
    use_table=1
-   section='Config'
+   section='Utenti'
 -%]
 
 <div class="buttons create_btn">

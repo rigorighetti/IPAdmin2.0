@@ -1,5 +1,5 @@
-[%  META title='Modifica richiesta referente di rete'    
-    section='Asset'
+[%  META title='Modifica Richiesta Referente di Rete'    
+    section='Richieste'
  %]
 
 <form name="form1" method="POST">

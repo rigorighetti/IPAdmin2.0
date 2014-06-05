@@ -1,5 +1,5 @@
-[%  META title='Modifica richiesta IP'    
-    section='Asset'
+[%  META title='Modifica Richiesta IP'    
+    section='Richieste'
  %]
 
 <form name="form1" method="POST">

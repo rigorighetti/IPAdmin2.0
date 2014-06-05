@@ -1,46 +1,40 @@
 [% META 
    title='Alias'
    use_table=1
-   section='Configurazione'
+   section='Richieste'
 -%]
 
 <div class="buttons create_btn">
-<a href="[% c.uri_for_action('/area/create') %]" >
-   [% ui_icon('circle-plus') %] Creare Area</a>
+<a href="[% c.uri_for_action('/alias/create') %]" >
+   [% ui_icon('circle-plus') %] Richiedi un Alias</a>
  [% add_css_create_btn %]
 </div>
 
-[% init_table('area_list',[5,15,45,10,10,10,5],{sortby => 2, order => 'desc'}) %]
- <table class="display" id="area_list">
+[% init_table('alias_list',[5,20,30,20,5,5],{sortby => 5, order => 'desc'}) %]
+ <table class="display" id="alias_list">
    <thead>  
      <tr>
-	<th>Id</th>
-        <th>Building</th>
-        <th>Department</th>
-        <th>Manager</th>
-	<th>Email</th>
-	<th>Subnet</th>
-	<th>Comandi</th>
+    	<th>Id</th>
+      <th>Responsabile</th>
+      <th>Cname</th>
+      <th>Hostname</th>
+      <th>IP</th>
+    	<th>Comandi</th>
      </tr>
    </thead>  
    <tbody>
-[% FOREACH a IN area_table %]
-
-         <tr>
-	 <td><a href=[% c.uri_for_action('/area/view', [a.id]) %]>[% a.id %]</a></td>
- 	 <td><a href=[% c.uri_for_action('/building/view', [a.id]) %]>[% a.building.name %]</a> in [% a.building.address %]</td>
- 	 <td><a href=[% c.uri_for_action('/department/view', [a.id]) %]>[% a.department.name %]</a></td>
- 	 <td><a href=[% c.uri_for_action('/userldap/view', [a.manager.username]) %]>[% a.manager.fullname %]</a></td>
-	 <td><a href="mailto:[% a.manager.email %]">[% a.manager.email %]</a></td>
-	 <td>[% FOREACH i IN a.building.vlan.map_subnet -%]<a href=[% c.uri_for_action('/subnet/view', [i.id]) %]>[% i.id %]</a>
-		 [% UNLESS loop.last %], [% END -%][% END -%]</td>
-	  <td>
-          <a href="[% c.uri_for_action('/area/edit',[a.id])%]">[% icon('edit') %]</a>
-          <a href="[% c.uri_for_action('/area/delete',[a.id])%]">[% icon('remove') %]</a>
-         </td>
-
-
-         </tr>
+[% FOREACH a IN alias_table %]
+    <tr>
+	   <td><a href=[% c.uri_for_action('/alias/view', [a.id]) %]>[% a.id %]</a></td>
+ 	   <td><a href=[% c.uri_for_action('/userldap/view', [a.ip_request.user.username]) %]>[% a.ip_request.user.fullname %]</a></td>
+ 	   <td>[% a.cname %]</td>
+ 	   <td>[% a.ip_request.hostname %]</td>
+     <td><a href=[% c.uri_for_action('/iprequest/view', [a.ip_request.id]) %]>[% a.ip_request.subnet.id %].[% a.ip_request.host %]</a></td>     
+     <td>
+      <a href="[% c.uri_for_action('/alias/edit',[a.id])%]">[% icon('edit') %]</a>
+      <a href="[% c.uri_for_action('/alias/delete',[a.id])%]">[% icon('remove') %]</a>
+     </td>
+    </tr>
 [% END %]
    </tbody>
 </table>

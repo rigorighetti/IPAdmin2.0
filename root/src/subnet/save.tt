@@ -1,5 +1,5 @@
-[% META title='Salva o Modifica una Subnet '
-   section='NetDB' %]
+[% META title='Salva o Modifica Subnet '
+   section='Configurazione' %]
 
 <div class="buttons">
 [% form.render %]

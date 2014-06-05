@@ -1,6 +1,6 @@
 [% META 
-   title='Users'
-   section='Config'
+   title='Ruoli Utenti'
+   section='Utenti'
 -%]
 
 <form name="form1" method="POST">

@@ -1,5 +1,5 @@
-[% META title='Create/Edit a User'
-      section='Config'
+[% META title='Crea o Modifica Utente'
+      section='Utenti'
  -%]
 
 <div class="buttons">

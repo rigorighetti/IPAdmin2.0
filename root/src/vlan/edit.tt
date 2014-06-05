@@ -1,5 +1,5 @@
-[% META title='Salva o Modifica una Vlan'
-   section='NetDB' %]
+[% META title='Salva o Modifica Vlan'
+   section='Configurazione' %]
 
 <div class="buttons">
 [% form.render %]

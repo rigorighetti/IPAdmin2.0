@@ -1,7 +1,7 @@
 [% META 
    title='Convalida Richiesta IP'
    use_table=1
-   section='Asset'
+   section='Richieste'
 -%]
   		
 <form name="form2" method="POST">

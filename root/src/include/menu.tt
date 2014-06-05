@@ -37,7 +37,11 @@
 		   {	
 		     name = 'Richieste IP',
 		     path = c.uri_for('/iprequest'),
-		   }
+		   },
+		   {	
+		     name = 'Richieste Alias',
+		     path = c.uri_for('/alias'),
+		   },
 		   ],
 		  Configurazione = [
   	       {
