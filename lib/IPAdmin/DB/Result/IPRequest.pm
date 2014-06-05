@@ -69,11 +69,6 @@ __PACKAGE__->add_columns(
         is_nullable => 1,
         is_foreign_key => 1,
     },
-    #alias => {
-    #    data_type   => 'int',
-    #    is_nullable => 1,
-    #    is_foreign_key => 1,
-    #},
 );
 
 __PACKAGE__->set_primary_key(qw(id));

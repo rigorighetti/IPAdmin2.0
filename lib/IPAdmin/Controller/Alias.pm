@@ -63,9 +63,16 @@ sub object : Chained('base') : PathPart('id') : CaptureArgs(1) {
 sub list : Chained('base') : PathPart('list') : Args(0) {
     my ( $self, $c ) = @_;
 
-    my $build_schema = $c->stash->{resultset};
+    my $alias_schema = $c->stash->{resultset};
 
-    my @alias_table = $build_schema->all;
+    my @alias_table = map +{
+        id          => $_->id,
+        cname       => $_->cname,
+        ip          => "151.100.".$_->ip_request->subnet->id.".".$_->ip_request->host,
+        hostname    => $_->ip_request->hostname,
+        dominio     => $_->ip_request->area->department->domain,
+        state       => $_->state,
+        }, $alias_schema->search({},{join => ['ip_request'], prefetch => ['ip_request']});
 
     $c->stash( alias_table => \@alias_table );
     $c->stash( template       => 'alias/list.tt' );
@@ -100,7 +107,9 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
     my ( $self, $c ) = @_;   
     my $def_ipreq = $c->req->param('def_ipreq') || -1;
     my $item = $c->stash->{object}; 
-
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    
+    $c->stash(user => $user);
     if(!defined $item){ 
         defined $def_ipreq ? $item = $c->stash->{resultset}->new_result( {ip_request => $def_ipreq} ) : $item = $c->stash->{resultset}->new_result( {} );
         delete $c->req->params->{'def_ipreq'} 
@@ -134,37 +143,164 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
 =cut
 
 sub create : Chained('base') : PathPart('create') : Args(0) {
-     my ( $self, $c) = @_;
-     $c->forward('save');
- }
+    my ( $self, $c ) = @_;
+    my $id;
+    $c->stash( default_backref => $c->uri_for_action('/alias/list') );
+
+    my $def_ipreq = $c->req->param('def_ipreq');
+    my $ipreq = $c->model("IPAdminDB::IPRequest")->find($def_ipreq);
+
+    unless (defined $def_ipreq) {
+        $c->flash( message => "Indirizzo IP selezionato non valido" );
+        $c->stash( default_backref =>
+        $c->uri_for_action( "alias/list" ) );
+        $c->detach('/follow_backref');
+    }
+
+    if ( lc $c->req->method eq 'post' ) {
+        if ( $c->req->param('discard') ) {
+            $c->detach('/follow_backref');
+        }
+        my $done = $c->forward('process_create');
+        if ($done) {
+            $c->flash( message => $c->stash->{message} );
+            $c->stash( default_backref =>
+                $c->uri_for_action( "alias/list" ) );
+            $c->detach('/follow_backref');
+        }
+    }
+    #set form defaults
+    my %tmpl_param;
+    my @users;
+
+    $tmpl_param{ip}       ="151.100.".$ipreq->subnet->id.".".$ipreq->host;
+    $tmpl_param{hostname} = $ipreq->hostname;
+    $tmpl_param{dominio}  = $ipreq->area->department->domain;
+    $tmpl_param{alias  }  = $c->req->param('alias');
+
+    $c->stash(%tmpl_param);
+}
+
+sub process_create : Private {
+    my ( $self, $c ) = @_;
+    my $def_ipreq = $c->req->param('def_ipreq');
+    my $alias = $c->req->param('alias');
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+
+    my $ipreq = $c->model("IPAdminDB::IPRequest")->find($def_ipreq);
+
+    my $error;
+
+    # check form
+    $c->forward('check_alias_form') || return 0; 
+
+    #la richiesta ip deve essere attiva
+    if ($ipreq->state ne $IPAdmin::ACTIVE) {
+     $c->stash->{error_msg} = "Per poter definire un alias la richiesta IP deve essere attiva";
+     return 0;
+    }
+    #l'utente che fa richiesta per l'alias deve aver assegnato l'ip
+    if ($realm eq "ldap" and $user->id ne $ipreq->user->id) {
+     $c->stash->{error_msg} = "Solo l'assegnatario di un IP può definire un Alias su quel determinato IP";
+     return 0;
+    }    
+
+    my $ret = $c->stash->{'resultset'}->create({
+                        cname       => $alias,
+                        ip_request  => $def_ipreq,
+                        state       => $IPAdmin::NEW,
+                       });
+    
+    if (! $ret ) {
+    $c->stash->{error_msg} = "Errore nella creazione dell'Alias'";
+    return 0;
+    } else {
+    $c->stash->{message} = "L'Alias è stato creato.";
+    return 1;
+    }
+}
+
+sub check_alias_form : Private {
+    my ( $self, $c) = @_;
+    my $schema      = $c->stash->{'resultset'};
+    my $alias      = $c->req->param('alias');
+
+    if ( $alias eq '' ) {
+        $c->stash(error => {alias => "L'alias non può essere vuoto"});
+        return 0;
+    }
+    return 1;
+}
+
 
 =head2 delete
 
 =cut
 
 sub delete : Chained('object') : PathPart('delete') : Args(0) {
-    my ( $self, $c ) = @_;
-    my $alias = $c->stash->{'object'};
-    my $id       = $alias->id;
+     my ( $self, $c ) = @_;
+   my $alias = $c->stash->{'object'};
+   $c->stash( default_backref => $c->uri_for_action('alias/list') );
 
+  
+    if ( lc $c->req->method eq 'post' ) {
+        #Archivia la richiesta
+        $alias->state($IPAdmin::ARCHIVED);
+        $alias->update;
+
+        #TODO: Cancella il CNAME dal DNS
+
+         $c->flash( message => "L'alias non è più attivo." );
+         $c->detach('/follow_backref');
+   }
+   else {
+       $c->stash( template => 'generic_delete.tt' );
+   }
+}
+
+sub activate : Chained('object') : PathPart('activate') : Args(0) {
+    my ( $self, $c ) = @_;
+    my $req = $c->stash->{'object'};
     $c->stash( default_backref => $c->uri_for_action('alias/list') );
 
     if ( lc $c->req->method eq 'post' ) {
-#        if ( $c->model('IPAdminDB::Rack')->search( { building => $id } )->count ) {
-#            $c->flash( error_msg => 'Building is not empty. Cannot be deleted.' );
-#            $c->stash( default_backref => $c->uri_for_action( 'building/view', [$id] ) );
-#            $c->detach('/follow_backref');
-#        }
-
-        $alias->delete;
-
-        $c->flash( message => 'Success!!  ' . $id . ' successful deleted.' );
-        $c->detach('/follow_backref');
+        if ( $c->req->param('discard') ) {
+            $c->detach('/follow_backref');
+        }
+        my $done = $c->forward('process_activate');
+        if ($done) {
+            $c->flash( message => $c->stash->{message} );
+            $c->stash( default_backref =>
+                $c->uri_for_action( "alias/list" ) );
+            $c->detach('/follow_backref');
+        }
     }
-    else {
-        $c->stash( template => 'generic_delete.tt' );
+    #TODO chiedere conferma
+
+}
+
+
+sub process_activate : Private {
+    my ( $self, $c ) = @_;
+    my $error;
+
+    #Cambia lo stato dell'alias
+    $c->stash->{object}->state($IPAdmin::ACTIVE);
+    $c->stash->{object}->update;
+
+    #TODO: Aggiornamento DNS
+   
+    my $ret = 1;
+    if (! $ret ) {
+    $c->stash->{message} = "Errore nell'aggiornamento dell'Alias";
+    return 0;
+    } else {
+    $c->stash->{message} = "L'Alias è ora attivo.";
+    return 1;
     }
 }
+
+
 
 =head1 AUTHOR
 

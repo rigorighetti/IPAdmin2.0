@@ -8,10 +8,10 @@ package IPAdmin::Utils;
 use strict;
 use warnings;
 
-use Carp qw( croak );
+use Carp qw( croak carp);
 use Exporter 'import';
 our @EXPORT_OK = qw(
-    find_user str_to_time
+    find_user str_to_time str_to_seconds
 );
 use DateTime::Format::Strptime;
 
@@ -52,4 +52,28 @@ sub str_to_time {
   );
 
   $strp->parse_datetime("$date")->epoch;
+}
+
+sub str_to_seconds {
+    my ($str) = @_;
+
+    return unless defined $str;
+
+    return $str if $str =~ m/^[-+]?\d+$/;
+
+    my %map = (
+        's' => 1,
+        'm' => 60,
+        'h' => 3600,
+        'd' => 86400,
+        'w' => 604800,
+        'M' => 2592000,
+        'y' => 31536000
+    );
+    my ( $num, $m ) = $str =~ m/^([+-]?\d+)([smhdwMy])$/;
+
+    ( defined($num) && defined($m) ) or
+        carp "couldn't parse '$str'. Possible invalid syntax";
+
+    return $num * $map{$m};
 }
