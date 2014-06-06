@@ -6,7 +6,7 @@
 
 <div class="buttons create_btn">
 <a href="[% c.uri_for_action('/alias/create') %]" >
-   [% ui_icon('circle-plus') %] Creare Area</a>
+   [% ui_icon('circle-plus') %] Creare un Alias</a>
  [% add_css_create_btn %]
 </div>
 
@@ -32,9 +32,8 @@
  	   <td>[% a.ip %]</a></td>
  	   <td>[% a.hostname %].[% a.dominio %]</a></td>
      <td>
-   <!-- TODO: Comandi per attivazione -->
      <a href="[% c.uri_for_action('/alias/delete',[a.id])%]">[% icon('remove') %]</a>
-     <a href="[% c.uri_for_action('/alias/activate',[a.id])%]">[% icon('ok') %]</a>
+     [%IF a.state == 0%]<a href="[% c.uri_for_action('/alias/activate',[a.id])%]">[% icon('ok') %]</a>[%END%]
    </td>
 
          </tr>

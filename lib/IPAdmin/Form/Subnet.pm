@@ -45,6 +45,12 @@ has_field 'vlan' => (
     required     => 1
 );
 
+has_field 'archivable' => (
+    type  => 'Checkbox',
+    label => 'IP archiviabili automaticamente'
+);
+
+
 has_field 'submit'  => ( type => 'Submit', value => 'Submit' );
 has_field 'discard' => ( type => 'Submit', value => 'Discard' );
 

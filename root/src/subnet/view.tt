@@ -20,7 +20,7 @@
         <th>Name:</th>
         <td>[% object.name %]</td>
     </tr>
-    <tr>
+    <tr align=left> 
         <th>Subnet:</th>
         <td>151.100.[%object.id%].0/24</td>
     </tr>
@@ -28,8 +28,12 @@
       <th>Vlan:</th>
       <td>[%object.vlan.id%]</td>
     </tr>
+    <tr align=left>
+      <th>IP archiviati automaticamente?:</th>
+      <td>[%IF object.archivable-%]Si[%ELSE-%]No[%END%]</td>
+    </tr>
 </table>
-[% add_css_tableinfo -%]
+
 
 <p>
  <div class="buttons">	
