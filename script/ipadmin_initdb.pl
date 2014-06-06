@@ -46,8 +46,8 @@ sub do_reset_admin {
     $schema->resultset('Role')->update_or_create( { role => 'manager', } );
 
     $self->log->info('Creating request types');
-    $schema->resultset('TypeRequest')->update_or_create( { type => 'client', } );
-    $schema->resultset('TypeRequest')->update_or_create( { type => 'server', } );
+    $schema->resultset('TypeRequest')->update_or_create( { type => 'client', archivable => '0',} );
+    $schema->resultset('TypeRequest')->update_or_create( { type => 'server', archivable => '0',} );
 
     $self->log->info('Creating admin user.');
     my $admin_user = $schema->resultset('User')->update_or_create(

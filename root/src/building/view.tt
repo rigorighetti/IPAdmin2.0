@@ -34,7 +34,7 @@
 	&nbsp;
 
 	<a href="[% c.uri_for_action('/area/create',{def_build => object.id, backref=>c.req.uri}) %]">
-		[% ui_icon('plusthick') %] Aggiungi Dipartimento</a> 
+		[% ui_icon('plusthick') %] Aggiungi Dipartimento in questo edificio</a> 
 
       </div>
     </p>

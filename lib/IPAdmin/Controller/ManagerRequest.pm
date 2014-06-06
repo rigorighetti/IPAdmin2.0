@@ -324,11 +324,16 @@ sub activate : Chained('object') : PathPart('activate') : Args(0) {
     $c->stash( default_backref => $c->uri_for_action( "managerrequest/list"));
 
  
-    my $done = $c->forward('process_activate');
-    $c->flash( message => $c->stash->{message} );
-    $c->stash( default_backref =>
-    $c->uri_for_action( "managerrequest/view",[$req->id] ) );
-    $c->detach('/follow_backref');
+     if ( lc $c->req->method eq 'post' ) {
+        my $done = $c->forward('process_activate');
+        $c->flash( message => $c->stash->{message} );
+        $c->stash( default_backref =>
+        $c->uri_for_action( "managerrequest/view",[$req->id] ) );
+        $c->detach('/follow_backref');
+    }
+    else{
+        $c->stash( template => 'generic_confirm.tt' );
+    }
 }
 
 

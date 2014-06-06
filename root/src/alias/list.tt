@@ -24,7 +24,6 @@
    </thead>  
    <tbody>
 [% FOREACH a IN alias_table %]
-<<<<<<< HEAD
     <tr>
 	   <td><a href=[% c.uri_for_action('/alias/view', [a.id]) %]>[% a.id %]</a></td>
  	   <td><a href=[% c.uri_for_action('/userldap/view', [a.ip_request.user.username]) %]>[% a.ip_request.user.fullname %]</a></td>
@@ -45,9 +44,8 @@
  	   <td>[% a.ip %]</a></td>
  	   <td>[% a.hostname %].[% a.dominio %]</a></td>
      <td>
-   <!-- TODO: Comandi per attivazione -->
      <a href="[% c.uri_for_action('/alias/delete',[a.id])%]">[% icon('remove') %]</a>
-     <a href="[% c.uri_for_action('/alias/activate',[a.id])%]">[% icon('ok') %]</a>
+     [%IF a.state == 0%]<a href="[% c.uri_for_action('/alias/activate',[a.id])%]">[% icon('ok') %]</a>[%END%]
    </td>
 
          </tr>

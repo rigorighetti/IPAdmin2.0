@@ -146,16 +146,28 @@ sub create : Chained('base') : PathPart('create') : Args(0) {
     my ( $self, $c ) = @_;
     my $id;
     $c->stash( default_backref => $c->uri_for_action('/alias/list') );
+    my @my_ips;
 
     my $def_ipreq = $c->req->param('def_ipreq');
     my $ipreq = $c->model("IPAdminDB::IPRequest")->find($def_ipreq);
 
-    unless (defined $def_ipreq) {
-        $c->flash( message => "Indirizzo IP selezionato non valido" );
-        $c->stash( default_backref =>
-        $c->uri_for_action( "alias/list" ) );
+    #Controlla che la richiesta sia attiva
+    if(defined $ipreq and $ipreq->state ne $IPAdmin::ACTIVE ){
+        $c->flash( error_msg => "Per creare una richiesta di Alias l'IP deve essere attivo (e la richiesta IP accettata)" );
         $c->detach('/follow_backref');
     }
+
+    if (defined $def_ipreq and !defined($ipreq) ) {
+        $c->flash( error_msg => "Indirizzo IP selezionato non valido" );
+        $c->detach('/follow_backref');
+    }
+
+    if(!defined $def_ipreq){
+        #TODO se non viene indicata la richiesta popolare my_ips 
+        #con tutti gli IP in carico all'utente loggato ora
+        #se è l'admin la lista di tutti gli IP
+    }
+
 
     if ( lc $c->req->method eq 'post' ) {
         if ( $c->req->param('discard') ) {
@@ -173,11 +185,12 @@ sub create : Chained('base') : PathPart('create') : Args(0) {
     my %tmpl_param;
     my @users;
 
+    if(defined $ipreq){
     $tmpl_param{ip}       ="151.100.".$ipreq->subnet->id.".".$ipreq->host;
     $tmpl_param{hostname} = $ipreq->hostname;
     $tmpl_param{dominio}  = $ipreq->area->department->domain;
-    $tmpl_param{alias  }  = $c->req->param('alias');
-
+    }
+    $tmpl_param{alias}  = $c->req->param('alias');
     $c->stash(%tmpl_param);
 }
 
@@ -275,8 +288,9 @@ sub activate : Chained('object') : PathPart('activate') : Args(0) {
             $c->detach('/follow_backref');
         }
     }
-    #TODO chiedere conferma
-
+    else{
+          $c->stash( template => 'generic_confirm.tt' );
+    }
 }
 
 

@@ -45,14 +45,17 @@ sub login : Local : CaptureArgs(0) {
     my $username = lc($c->req->params->{'username'});
 
     if ( defined( $c->req->params->{'username'} ) ) {
-	 if (
-            $c->authenticate(
+	 if ($c->authenticate(
                 {
-                    username => $username,
+                    username => $c->req->params->{'username'},
                     password => $c->req->params->{'password'},
-                }, 'normal_then_ldap'
-            )
-            ){
+                }, 'normal'
+            )  or $c->authenticate(
+                {
+                    id    => $c->req->params->{'username'},
+                    password => $c->req->params->{'password'},
+                }, 'ldap'
+            )){
          	$c->flash( message => 'Logged In!' );
 
 	 	if($c->user_in_realm('normal')){	
