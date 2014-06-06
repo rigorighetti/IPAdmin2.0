@@ -31,15 +31,15 @@
   menu_subsections = {
           Richieste = [
 	       {
-		     name = 'Richieste Referente di Rete'
+		     name = 'Referente di Rete'
 		     path = c.uri_for('/managerrequest'),
 		   },	     
 		   {	
-		     name = 'Richieste IP',
+		     name = 'Indirizzo IP',
 		     path = c.uri_for('/iprequest'),
 		   },
 		   {	
-		     name = 'Richieste Alias',
+		     name = 'Alias',
 		     path = c.uri_for('/alias'),
 		   },
 		   ],
