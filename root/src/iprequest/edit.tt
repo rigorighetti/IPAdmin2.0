@@ -1,97 +1,180 @@
-[%  META title='Modifica Richiesta IP'    
+[%  META title='Modifica una richiesta IP'    
     section='Richieste'
  %]
 
+<style>
+td.data {padding-left:20px;}
+</style>
+
 <form name="form1" method="POST">
 
-<input type=hidden name="user" value="[% user.id %]" />
-
+[%IF realm != "normal"-%]<input type=hidden name="user" value="[% user.id %]" />[%END-%]
 <br>
-<table class="ui-widget-content ui-corner-all manoc-form">
-	<tr>
-		<td><label>Richiesta in data<label></td>
-		<td>[% object.date %]</td>
-		<td></td> 
-	<tr>
-		<td colspan="3">Dati dell'utente</td>
-	</tr>
-	<tr>
-		<td><label>Utente:</label></td>
-		<td>[% object.user.fullname %]</td>
- 		<td></td>
-	</tr>
-    	<tr>
-        	<td><label>Struttura:</label></td>
-        	<td>[%a.department.name%] presso [%a.building.name%]</td>    
-		<td>
-		 [% IF error.type %]
-	      	<span class="error" id="error">[% error.type %] </span>
-		 [%END%]
-        	</td>
-    	</tr>
-    	<tr>
- 	  	<td><label>Referente:</label></td>
-	  	<td></td>
- 	  	<td></td>
- 	</tr>
-    <tr>
- 	  	<td><label>Telephone:</label></td>
-	  	<td>[% user.telephone %]</td>
- 	  	<td></td>
- 	</tr>
-	<tr>
- 	  	<td><label>Fax:</label></td>
-	  	<td>[% user.fax %]</td>
- 	  	<td></td>
- 	</tr>
-	<tr>
-		<td colspan="3">Dati dell'apparato</td>
-	</tr>
-  		<td class="label">Stanza:</td>
-  		<td colspan="2"><input type="text" name="location" value="" /></td>
-  		<td>
-    		[% IF error.location %]<span class="error" id="error">[% error.location %] </span>[%END%]
-  		</td>
-	</tr>
-	<tr>
-  		<td><label>Tipo di apparato:</label></td>
-        <td>
-	  	    <select name="type">
-			[% FOREACH a IN types %]
-                    	<option value="[% a.id %]">
-                    	[%a.type%]</option>
-		        [% END %] 
-            	    </select>
-        </td>
-	    <td>
-		 [% IF error.type %]
-	      <span class="error" id="error">[% error.type %] </span>
-		 [%END%]
-        </td>
-	</tr>
-	<tr>
-  		<td class="label">Indirizzo ethernet:</td>
-  		<td colspan="2"><input type="text" name="mac" value="" /></td>
-  		<td>
-    		[% IF error.name %]<span class="error" id="error">[% error.mac %] </span>[%END%]
-  		</td>
-	</tr>	
-	<tr>
-  		<td class="label">Nome host:</td>
-  		<td colspan="2"><input type="text" name="hostname" value="" /></td>
-  		<td>
-    		[% IF error.hostname %]<span class="error" id="error">[% error.hostname %] </span>[%END%]
-  		</td>
-	</tr>
+<div id="infoipreq">
+      <div class="right">Data Richiesta: [% data %]</div>
+      <hr style="clear:both">
+      <div class="title">Dati del Responsabile</div>
+      <div class="section">
+        <span class="left data">Nome e Cognome:</span> <span class="right">
+         [%IF realm == "normal" -%]
+          <select id="users" name="user">
+           <option value="[% a.id %]">
+            [% FOREACH a IN users %]
+              <option value="[% a.id %]"
+              [% IF a.id == user_def -%] 
+                 selected="1"
+               [% END -%] 
+              >[%a.fullname%]</option>
+            [% END %]
+          </select>
+         [%ELSE -%]
+          [% fullname%]
+         [%END -%]
+        </span><br>
+        <span class="left">Telefono:</span> <span id="user_tel" class="right">[% user.telephone %]</span><br>
+        <span class="left">Fax:</span> <span id="user_fax" class="right">[% user.fax %]</span><br>
+        <span class="left">Email:</span> <span id="user_email" class="right">[% user.email %]</span><br>
+        </div>
+        <div class="title">Dati della Struttura:</div>
+        <div class="section">
+         <span class="left">Struttura:</span>
+           <select [%IF realm == "ldap"%]disabled="1"[%END-%] class="right" name="area" id="area">
+             <option value="">-- Seleziona la Struttura --</option>
+              [% FOREACH a IN aree %] 
+               <option value="[% a.id %]" 
+               [% IF a.id == area_def -%] 
+                 selected="1"
+               [% END -%] >
+               [%a.department.name%] presso [%a.building.name%]</option>
+              [% END %]
+           </select><br>
+           [% IF error.type %]
+             <span class="right error" id="error">[% error.type %] </span><br>
+           [%END%]
+         <span class="left">Referente di Rete:</span> <span class="right" id="referente"></span><br>
+        </div>
+         <div class="left title">Tempo Determinato</div> <span><input [%IF realm == "ldap"%]disabled="1"[%END-%] type="checkbox" id="fixed" value="fixed" name="fixed" [%IF fixed %]checked="1"[%END-%] ></span>
+         <div class="section">
+         <div class="fixed_time">
+         <span class="left data">Ruolo:</span>
+          <select [%IF realm == "ldap"%]disabled="1"[%END-%]  class="right" name="guest_type" id="guest">
+            <option value="">-- Seleziona la Posizione --</option>
+            [% FOREACH a IN guest_type %] 
+             <option value="[% a %]" 
+             [%IF a == guest_def -%] 
+              selected="1"
+             [%END -%]>
+            [%a%]</option>
+            [% END %]
+          </select><br>
+          <span class="left">Data termine:</span> <input [%IF realm == "ldap"%]disabled="1"[%END-%]  class="right" type="text" name="guest_date_out" id="datepicker" ><br>
+          [% IF error.guest_date_out %]<span class="error" id="error">[% error.guest_date_out %] </span>[%END%]
+          <span class="left">Nome e Cognome:</span> <input [%IF realm == "ldap"%]disabled="1"[%END-%] class="right" type="text" name="guest_name" value="[%guest_name%]" /><br>
+          [% IF error.guest_name %]<span class="error" id="error">[% error.guest_name %] </span>[%END%]
+          <span class="left">Email:</span> <input [%IF realm == "ldap"%]disabled="1"[%END-%]  class="right" type="text" name="guest_mail" value="[%guest_mail%]" /><br>
+          [% IF error.guest_mail %]<span class="error" id="error">[% error.guest_mail %] </span>[%END%]
+          <span class="left">Telefono:</span> <input class="right" type="text" name="guest_phone" value="[%guest_phone%]" /><br>
+          [% IF error.guest_phone %]<span class="error" id="error">[% error.guest_phone %] </span>[%END%]
+          <span class="left">Fax:</span> <input class="right" type="text" name="guest_fax" value="[%guest_fax%]" /><br>
+          [% IF error.guest_fax %]<span class="error" id="error">[% error.guest_fax %] </span>[%END%]
+         </div>
+        </div>
 
-	<tr>
-	<td colspan="2" class="buttons-form">
-	<div class="buttons">
-	     <input type="submit" name="submit" value="Submit">
-	     <input type="submit" name="discard" value="Discard">
-	</div>
-	</td>
-	</tr>
-</table>
+        <div class="title">Dati dell'Apparato:</div>
+        <div class="section">
+          <span class="left data">Tipo di Apparato:</span>
+          <select class="right" name="type">
+            <option value="">-- Seleziona il Tipo --</option>
+          [% FOREACH a IN types %]
+            <option value="[% a.id %]" 
+             [%IF a.id == type_def -%] 
+               selected="1"
+             [%END -%]>
+            [%a.type%]</option>
+          [% END %] 
+          </select><br>
+          [% IF error.type %] <span class="error" id="error">[% error.type %] </span>[%END%]
+          <span class="left data">Stanza:</span> <input class="right" type="text" name="location" value="[%location%]" /><br>
+         [% IF error.location %]<span class="error" id="error">[% error.location %] </span>[%END%]
+          <span class="left data">Indirizzo ethernet:</span> <input class="right" type="text" name="mac" value="[%mac%]" /><br>
+         [% IF error.name %]<span class="error" id="error">[% error.mac %] </span>[%END%]
+         <span class="left data">Nome host:</span> <input class="right" type="text" name="hostname" value="[%hostname%]" /><br>
+         [% IF error.hostname %]<span class="error" id="error">[% error.hostname %] </span>[%END%]
+        </div>  
+        <div class="section">
+         <div class="buttons">
+           <input id="submit" type="submit" name="submit" value="Invia la  Richiesta"> 
+           <input type="submit" name="discard" value="Annulla">
+         </div>
+        </div>
+
+</div>
+</div>
 </form>
 
+
+[% fragment = BLOCK -%]
+var hash = {
+  [% FOREACH a IN aree -%]
+   [%IF a.manager.id -%] "[%a.id %]" : "[%a.manager.fullname %]" [% ',' UNLESS loop.last -%] [%END-%]
+  [% END -%]
+};
+/*var hash_user = {
+  [% FOREACH u IN user -%]
+    "[%u.id %]" : "[%u.fullname %]" [% ',' UNLESS loop.last -%] 
+  [% END -%]
+};
+*/
+
+ $(function() {    
+
+  $("#datepicker").datepicker("setDate", "[% guest_date_out %]" );
+
+  [%IF area_def %]$("#referente").html(hash[[%area_def%]]);[%END -%]
+
+   $("#area").bind("change",
+   function() {
+    var i = this.value; 
+    if(i==0){
+      $("#referente").html("");
+      } else {
+      var text = hash[i];
+      if(text == null ) {
+       text = "Non ancora assegnato!";
+      }
+      $("#referente").html(text) ;       // clear select box
+ 		}
+   }            // function end
+ ); 
+             // bind end 
+
+/*$("#user").bind("change",
+   function() {
+    var i = this.value; 
+    if(i==0){
+      $("#user").html("");
+      } else {
+      var text = hash_user[i];
+      $("#referente").html(text) ;       // clear select box
+ 		}
+   }            // function end
+ ); 
+             // bind end 
+*/
+[%IF fixed %]  
+ $(".fixed_time").show(); 
+[%ELSE%]
+ $(".fixed_time").hide();
+[%END -%]
+ $("#fixed").bind("change",
+   function() {
+   if ($(this).is(':checked')) {
+    $(".fixed_time").show(500);
+   } else { 
+   $(".fixed_time").hide(500);
+   }
+  }
+  );
+});
+[% END -%]
+[% js_scripts.push(fragment) -%]

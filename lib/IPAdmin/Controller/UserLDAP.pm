@@ -7,6 +7,8 @@ use Moose;
 use namespace::autoclean;
 use IPAdmin::Form::UserLDAP;
 use IPAdmin::Form::SetManager;
+use IPAdmin::Utils qw(print_short_timestamp);
+
 use Data::Dumper;
 
 BEGIN { extends 'Catalyst::Controller'; }
@@ -82,12 +84,26 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
 sub view : Chained('object') : PathPart('view') : Args(0) {
     my ( $self, $c ) = @_;
     my @requests;     
+    my $date_myreq = {};
+    my $date_req = {};
+    my ($e,$it);
 
     my @managed_area = $c->stash->{'object'}->managed_area;
     foreach my $area (@managed_area){
-        push @requests, $c->model("IPAdminDB::IPRequest")->search({-and => [area => $area->id, state => {"!=" => $IPAdmin::ARCHIVED}]})->all;
+        $it = $c->model("IPAdminDB::IPRequest")->
+            search({-and => [area => $area->id, state => {"!=" => $IPAdmin::ARCHIVED}]});
+        while($e = $it->next){
+            $date_req->{$e->id} = print_short_timestamp($e->date);
+            push @requests, $e;  
+        }
     }
 
+    foreach my $i ($c->stash->{object}->map_user_ipreq){
+        $date_myreq->{$i->id} = print_short_timestamp($i->date);
+    } 
+
+    $c->stash(date_req => $date_req);
+    $c->stash(date_myreq => $date_myreq);
     $c->stash( managed_area => \@managed_area );
     $c->stash( requests => \@requests );
     $c->stash( template => 'userldap/view.tt' );

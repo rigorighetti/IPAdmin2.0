@@ -130,10 +130,191 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
     my $req = $c->stash->{object};
     #TODO recuperare i dati e lasciare solo alcuni campi modificabili
 
+    my $id;
+    $c->stash( default_backref => $c->uri_for_action('/iprequest/list') );
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
 
 
+    if ( lc $c->req->method eq 'post' ) {
+        if ( $c->req->param('discard') ) {
+            $c->detach('/follow_backref');
+        }
+        my $done = $c->forward('process_edit');
+        if ($done) {
+            $c->flash( message => $c->stash->{message} );
+            $c->stash( default_backref =>
+                $c->uri_for_action( "iprequest/list" ) );
+            $c->detach('/follow_backref');
+        }
+    }
+    #set form defaults
+    my %tmpl_param;
+    my @users;
+
+    if($realm eq "normal") {
+        @users =  $c->model('IPAdminDB::UserLDAP')->search({})->all;
+        $tmpl_param{users} = \@users;
+    }
+    #ordinamento aree per nome dipartimento
+    my @aree  = $c->model('IPAdminDB::Area')->search({},{join => 'department', prefetch => 'department', order_by => 'department.name'})->all;
+    my @types = $c->model('IPAdminDB::TypeRequest')->search({},{order_by => 'type'})->all;    
+
+    $tmpl_param{guest_type} = ["Studente laureando", "Dottorando", "Studente specializzando", "Borsista", 
+                              "Assegnista di ricerca", "Collaboratore a contratto", "Profressore visitatore", 
+                              "Professore a contratto", "Ospite"];
+    $tmpl_param{realm}          = $realm;
+    $tmpl_param{user}           = $user;
+    $tmpl_param{fullname}       = $user->fullname;
+    $tmpl_param{aree}           = \@aree;
+    $tmpl_param{types}          = \@types;
+    $tmpl_param{data}           = IPAdmin::Utils::print_short_timestamp(time);
+    $tmpl_param{template}       = 'iprequest/edit.tt';
+    $tmpl_param{subnets}        = $req->area->building->vlan->map_subnet;
+    $tmpl_param{subnet_def}     = $req->subnet;
+    $tmpl_param{host}           = $req->host;
+
+    #user editable
+    $tmpl_param{location}       = $c->req->param('location') || $req->location;
+    $tmpl_param{mac}            = $c->req->param('mac') || $req->macaddress;
+    $tmpl_param{hostname}       = $c->req->param('hostname') || $req->hostname;
+    if(defined $req->guest){
+        $tmpl_param{guest_fax}      = $c->req->param('guest_fax') || $req->guest->fax;
+        $tmpl_param{guest_phone}    = $c->req->param('guest_phone') || $req->guest->telephone;
+        #only root
+        $tmpl_param{guest_date_out} = IPAdmin::Utils::print_short_timestamp($req->guest->date_out);
+        #$tmpl_param{guste_type_def} =  ;
+        $tmpl_param{guest_def} = $req->guest->type;
+
+        $tmpl_param{guest_name}     = $req->guest->fullname;
+        $tmpl_param{guest_mail}     = $req->guest->email;
+    }
+    $tmpl_param{type_def}       = $c->req->param('type') || $req->type->id;
+    $tmpl_param{area_def}       = $req->area->id;
+
+    $c->stash(user_def => $c->stash->{object}->user->id);
+
+   
+
+    if($realm eq "normal"){
+        $c->req->param('area') and $tmpl_param{area_def} = $c->req->param('area');
+        $c->req->param('type') and $tmpl_param{type_def} = $c->req->param('type');
+        $c->req->param('guest_date_out') and $tmpl_param{guest_date_out} = $c->req->param('guest_date_out');
+        $c->req->param('guest_name') and  $tmpl_param{guest_name} = $c->req->param('guest_name');
+        $c->req->param('guest_mail') and $tmpl_param{guest_mail}  = $c->req->param('guest_mail');
+        }
+
+    my $det_time = defined($req->guest) ? 1 : 0;
+    $tmpl_param{fixed}          = $c->req->param('fixed') || $det_time;
+    $c->stash(%tmpl_param);
 }
 
+sub process_edit : Private {
+    my ( $self, $c )   = @_;
+    #user editable fields
+    my $location       = $c->req->param('location');
+    my $mac            = $c->req->param('mac');
+    my $hostname       = $c->req->param('hostname');
+    my $guest_fax      = $c->req->param('guest_fax');
+    my $guest_phone    = $c->req->param('guest_phone');
+    my $type           = $c->req->param('type');
+
+    my $area;
+    my $user;
+    my $fixed;
+    my $subnet; my $host;
+    my $guest_type;
+    my $guest_date_out;
+    my $guest_name;
+    my $guest_mail;
+    if($c->stash->{realm} eq  "normal" ){
+      #root editable fileds
+      $area           = $c->req->param('area');
+      $user           = $c->req->param('user');
+      $fixed          = $c->req->param('fixed');
+      $subnet         = $c->req->param('subnet');
+      $host           = $c->req->param('host');
+      $guest_type     = $c->req->param('guest_type');
+      $guest_date_out = $c->req->param('guest_date_out');
+      $guest_name     = $c->req->param('guest_name');
+      $guest_mail     = $c->req->param('guest_mail');
+    }
+    my $error;
+
+    # check form
+    $c->forward('check_ipreq_form') || return 0; 
+   
+    #state == 0 non validata
+    #state == 1 convalidata
+    #state == 2 attiva
+    #state == 3 bloccata
+    #state == 4 archiviata
+    my $ret;
+    
+    if($c->stash->{realm} eq  "normal" ){
+        if(!$fixed) {
+            $ret = $c->stash->{'object'}->update({
+                                user        => $user,
+                                location    => $location,
+                                subnet      => $subnet,
+                                host        => $host,
+                                macaddress  => $mac,
+                                hostname    => $hostname,
+                                date        => time,
+                                state       => $IPAdmin::NEW,
+                                type        => $type,
+                                   });
+        } else{
+            $ret = $c->stash->{'object'}->guest->update({
+                fullname => $guest_name,
+                email    => $guest_mail,
+                telephone=> $guest_phone,
+                type     => $guest_type,
+                fax      => $guest_fax,
+                date_out => $guest_date_out
+                });
+            $ret = $c->stash->{'object'}->update({
+                            area        => $area,
+                            user        => $user,
+                            location    => $location,
+                            subnet      => $subnet,
+                            host        => $host,
+                            macaddress  => $mac,
+                            hostname    => $hostname,
+                            type        => $type,
+                            guest       => $ret->id,
+                               });
+        }
+    } else{
+    #se l'area non ha assegnato un referente allora abortisci tutto
+    my $check_area = $c->stash->{object}->area->manager;
+    if(!defined $check_area){
+    $c->stash->{error_msg} = "Impossibile modificare la richiesta. In questo momento non esiste un referente per il dipartimento di ".$check_area->department->name.
+            " presso ".$check_area->building->name.". Contattare l'amministratore di rete.";
+    return 0;
+    }
+
+        #user edit
+        $ret = $c->stash->{'object'}->update({
+                                location    => $location,
+                                macaddress  => $mac,
+                                hostname    => $hostname,
+                                type        => $type
+                                });
+        $c->stash->{'object'}->guest and 
+                            $c->stash->{'object'}->guest->update({
+                                              fax   => $guest_fax,
+                                              telephone => $guest_phone,
+                                              });            
+
+    }
+    if (! $ret ) {
+    $c->stash->{error_msg} = "Errore nella creazione della richiesta IP";
+    return 0;
+    } else {
+    $c->stash->{message} = "La richiesta IP è stata modificata.";
+    return 1;
+    }
+}
 
 sub create : Chained('base') : PathPart('create') : Args() {
     my ( $self, $c, $parent ) = @_;
@@ -181,7 +362,7 @@ sub create : Chained('base') : PathPart('create') : Args() {
     $tmpl_param{hostname}  = $c->req->param('hostname') || '';
     $tmpl_param{area_def}  = $c->req->param('area') || '';
     $tmpl_param{type_def}  = $c->req->param('type') || '';
-    #$tmpl_param{guest_type} = $c->req->param('guest_type');
+    #$tmpl_param{guest_def} = $c->req->param('guest_type');
     $tmpl_param{guest_date_out} = $c->req->param('guest_date_out');
     $tmpl_param{guest_name}  = $c->req->param('guest_name');
     $tmpl_param{guest_fax}   = $c->req->param('guest_fax');
@@ -273,22 +454,24 @@ sub process_create : Private {
 
 sub check_ipreq_form : Private {
     my ( $self, $c) = @_;
-    my $schema      = $c->stash->{'resultset'};
-    my $area      = $c->req->param('area');
-    my $user      = $c->req->param('user');
-    my $location  = $c->req->param('location');
-    my $mac       = $c->req->param('mac');
-    my $type      = $c->req->param('type');
-    my $hostname  = $c->req->param('hostname');
-    my $fixed     = $c->req->param('fixed');
-    my $guest_type= $c->req->param('guest_type');
+    my $schema         = $c->stash->{'resultset'};
+    my $area           = $c->req->param('area');
+    my $user           = $c->req->param('user');
+    my $location       = $c->req->param('location');
+    my $mac            = $c->req->param('mac');
+    my $type           = $c->req->param('type');
+    my $hostname       = $c->req->param('hostname');
+    my $subnet         = $c->req->param('subnet');
+    my $host           = $c->req->param('host');
+    my $fixed          = $c->req->param('fixed');
+    my $guest_type     = $c->req->param('guest_type');
     my $guest_date_out = $c->req->param('guest_date_out');
-    my $guest_name  = $c->req->param('guest_name');
-    my $guest_fax   = $c->req->param('guest_fax');
-    my $guest_phone = $c->req->param('guest_phone');
-    my $guest_mail  = $c->req->param('guest_mail');
+    my $guest_name     = $c->req->param('guest_name');
+    my $guest_fax      = $c->req->param('guest_fax');
+    my $guest_phone    = $c->req->param('guest_phone');
+    my $guest_mail     = $c->req->param('guest_mail');
 
-    if ( $area eq '' ) {
+    if ( $area eq '' and !defined($c->stash->{object}) ) {
         $c->stash->{error_msg} = "Selezionare una struttura!";
         return 0;
     }
@@ -305,13 +488,19 @@ sub check_ipreq_form : Private {
     if ( $hostname eq '' ) {
 	$c->stash->{error_msg} = "Campo Hostname obbligatorio!";
 	return 0;
+     }    
+
+    if ( $host ne '' and $subnet ne '' and 
+        $schema->search({subnet=> $subnet, host => $host})->count ) {
+        $c->stash->{error_msg} = "Indirizzo IP già assegnato!";
+        return 0;
      }
 
-    if ($schema->search({ macaddress => $mac})->count() > 0 ) {
-     $c->stash->{error_msg} = "Mac Address già registrato!";
-     $c->log->error("Duplicated $mac");
-     return 0;
-    }
+    # if ($schema->search({ macaddress => $mac})->count() > 0 ) {
+    #  $c->stash->{error_msg} = "Mac Address già registrato!";
+    #  $c->log->error("Duplicated $mac");
+    #  return 0;
+    # }
 
     if($fixed){
         if ( $guest_type eq '' ) {
@@ -377,27 +566,24 @@ sub validate : Chained('object') : PathPart('validate') : Args(0) {
 
     my @availables;
     while(my $subnet = $subnets->next) {
-        #
+        my ($free_ip, $used_ip);
         my $sub_id = $subnet->id;
-        my $lastip = $c->model("IPAdminDB::IPRequest")->search({-and => 
+        foreach $free_ip (6..247){
+            $used_ip = $c->model("IPAdminDB::IPRequest")->search({-and => 
                                                      [ subnet => $sub_id,
-                                                       -or     =>[ state => 1,
-                                                                   state => 2
+                                                       host   => $free_ip,
+                                                       -or     =>[ state => $IPAdmin::PREACTIVE,
+                                                                   state => $IPAdmin::ACTIVE,
+                                                                   state => $IPAdmin::INACTIVE,                
                                                                  ]
                                                      ]},
-                                                    {order_by => {-desc => ['host']}}
                                                     )->single;
-        
-        if (defined $lastip){
-            $lastip = $lastip->host;
-            $lastip += 1;
-        }else{ 
-            $lastip = 6;
+            last unless defined $used_ip;
         }
 
         #TODO spostare tutto in una funzione
         #TODO logica degli ip
-        if ($lastip > 248 ) {
+        if (defined $used_ip ) {
             $c->flash( message => "Non ci sono IP disponibili per la subnet 151.100.$subnet->id.0.
                                    Contattare ipsapienza\@uniroma1.it" );
             #TODO redirigere su userldap/<utente>/view
@@ -406,7 +592,7 @@ sub validate : Chained('object') : PathPart('validate') : Args(0) {
             $c->detach('/follow_backref');
         }
 
-        my $proposed_ip = "151.100.".$subnet->id.".$lastip";
+        my $proposed_ip = "151.100.".$subnet->id.".$free_ip";
         push @availables, $proposed_ip;
     }
 

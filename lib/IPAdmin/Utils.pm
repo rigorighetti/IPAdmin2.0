@@ -11,7 +11,7 @@ use warnings;
 use Carp qw( croak carp);
 use Exporter 'import';
 our @EXPORT_OK = qw(
-    find_user str_to_time str_to_seconds
+    find_user str_to_time str_to_seconds print_short_timestamp
 );
 use DateTime::Format::Strptime;
 
