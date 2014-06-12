@@ -49,6 +49,7 @@ td.data {padding-left:20px;}
            [% IF error.type %]
              <span class="right error" id="error">[% error.type %] </span><br>
            [%END%]
+         <span class="left">Indirizzo dell'edificio:</span> <span class="right" id="address"></span><br>
          <span class="left">Referente di Rete:</span> <span class="right" id="referente"></span><br>
         </div>
          <div class="left title">Tempo Determinato</div> <span><input type="checkbox" id="fixed" value="fixed" name="fixed" [%IF fixed %]checked="1"[%END-%] ></span>
@@ -82,7 +83,7 @@ td.data {padding-left:20px;}
         <div class="section">
           <span class="left data">Tipo di Apparato:</span>
           <select class="right" name="type">
-            <option value="">-- Seleziona il Tipo --</option>
+               <option value="">-- Seleziona il Tipo --</option>
           [% FOREACH a IN types %]
             <option value="[% a.id %]" 
              [%IF a.id == type_def -%] 
@@ -110,32 +111,48 @@ td.data {padding-left:20px;}
 </div>
 </form>
 
-
 [% fragment = BLOCK -%]
-var hash = {
+
+
+var hash_man = {
   [% FOREACH a IN aree -%]
    [%IF a.manager.id -%] "[%a.id %]" : "[%a.manager.fullname %]" [% ',' UNLESS loop.last -%] [%END-%]
   [% END -%]
 };
 
+var hash_addr = {
+  [% FOREACH a IN aree -%]
+   [%IF a.building -%] "[%a.id %]" : "[%a.building.address %]" [% ',' UNLESS loop.last -%] [%END-%]
+  [% END -%]
+};
+
  $(function() {    
-  [%IF area_def %]$("#referente").html(hash[[%area_def%]]);[%END -%]
+  [%IF area_def %]$("#referente").html(hash_man[[%area_def%]]);[%END -%]
+  [%IF area_def %]$("#address").html(hash_addr[[%area_def%]]);[%END -%]
+ 
+  $("#datepicker").datepicker("setDate", "[% guest_date_out %]" );
 
    $("#area").bind("change",
    function() {
     var i = this.value; 
     if(i==0){
       $("#referente").html("");
+      $("#address").html("");
       } else {
-      var text = hash[i];
+      var text = hash_man[i];
+      var addr = hash_addr[i];
       if(text == null ) {
        text = "Non ancora assegnato!";
       }
-      $("#referente").html(text) ;       // clear select box
+      if(addr == null ) {
+       addr = "-";
+      }
+      $("#referente").html(text) ;
+      $("#address").html(addr) ; 
  		}
    }            // function end
  ); 
-             // bind end 
+           
 
 [%IF fixed %]  
  $(".fixed_time").show(); 

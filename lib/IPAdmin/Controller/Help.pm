@@ -35,10 +35,10 @@ sub index : Path : Args(0) {
     $c->detach('/follow_backref');
 }
 
-sub instruction : Path('view') Args(1) {
-    my ( $self, $c, $page ) = @_;
+sub instruction : Path('view') Args(0) {
+    my ( $self, $c ) = @_;
     $c->stash( template => 'help/index.tt' );
-
+    my $page = $c->req->param("page");
     $c->stash(template => "help/$page.tt") if(defined $page);
 }
 
