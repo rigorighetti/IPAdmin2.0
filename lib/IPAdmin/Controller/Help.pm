@@ -37,7 +37,6 @@ sub index : Path : Args(0) {
 
 sub instruction : Path('view') Args(1) {
     my ( $self, $c, $page ) = @_;
-    #my $page = $c->request->param('page');
     $c->stash( template => 'help/index.tt' );
 
     $c->stash(template => "help/$page.tt") if(defined $page);
