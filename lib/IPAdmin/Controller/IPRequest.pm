@@ -7,6 +7,7 @@ use Moose;
 use namespace::autoclean;
 use Data::Dumper;
 use IPAdmin::Utils qw(str_to_time);
+use Email::Send;
 
 
 BEGIN { extends 'Catalyst::Controller'; }
@@ -57,12 +58,28 @@ sub object : Chained('base') : PathPart('id') : CaptureArgs(1) {
     }
 }
 
+
+
+=head2 notify
+
+=cut
+
+sub notify : Chained('object') : PathPart('notify') : Args(0) {
+   my ( $self, $c ) = @_;
+   $c->stash( default_backref =>
+                $c->uri_for_action( "iprequest/view",[$c->stash->{object}->id] ) );
+   $c->forward('process_notify');
+   $c->detach('/follow_backref');
+}
+
 =head2 list
 commentata in attesa di capire come fare.
 L'utente deve vedere solo le sue. (23-04-14 implementata come tab per userldap)
 Il referente le sue + quelle di cui è referente divise da tab. (28-04-14 implementata come tab per userldap)
 L'amministratore vede tutte le richieste insieme (iprequest/list)
+
 =cut
+
 
 sub list : Chained('base') : PathPart('list') : Args(0) {
    my ( $self, $c ) = @_;
@@ -72,13 +89,13 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
         date        => IPAdmin::Utils::print_short_timestamp($_->date),
         area        => $_->area,
         user        => $_->user,
-        state	    => $_->state,
-	    type	    => $_->type->type,
-	    macaddress	=> $_->macaddress,
-	    hostname	=> $_->hostname,
+        state       => $_->state,
+        type        => $_->type->type,
+        macaddress  => $_->macaddress,
+        hostname    => $_->hostname,
         subnet      => $_->subnet,
         host        => $_->host,
-	    }, $c->stash->{resultset}->search({});
+        }, $c->stash->{resultset}->search({});
 
    $c->stash( iprequest_table => \@iprequest_table );
    $c->stash( template        => 'iprequest/list.tt' );
@@ -329,7 +346,9 @@ sub create : Chained('base') : PathPart('create') : Args() {
         }
         my $done = $c->forward('process_create');
         if ($done) {
-            $c->flash( message => $c->stash->{message} );
+            my $msg = $c->stash->{message} ;
+            $c->forward('process_notify');
+            $c->flash(message => $msg." ".$c->stash->{message});
             $c->stash( default_backref =>
                 $c->uri_for_action( "iprequest/list" ) );
             $c->detach('/follow_backref');
@@ -350,25 +369,25 @@ sub create : Chained('base') : PathPart('create') : Args() {
     $tmpl_param{guest_type}= ["Studente laureando", "Dottorando", "Studente specializzando", "Borsista", 
                               "Assegnista di ricerca", "Collaboratore a contratto", "Profressore visitatore", 
                               "Professore a contratto", "Ospite"];
-    $tmpl_param{realm}     = $realm;
-    $tmpl_param{user}      = $user;
-    $tmpl_param{fullname}  = $user->fullname;
-    $tmpl_param{aree}      = \@aree;
-    $tmpl_param{types}     = \@types;
-    $tmpl_param{data}      = IPAdmin::Utils::print_short_timestamp(time);
-    $tmpl_param{template}  = 'iprequest/create.tt';
-    $tmpl_param{location}  = $c->req->param('location') || '';
-    $tmpl_param{mac}       = $c->req->param('mac') || '';
-    $tmpl_param{hostname}  = $c->req->param('hostname') || '';
-    $tmpl_param{area_def}  = $c->req->param('area') || '';
-    $tmpl_param{type_def}  = $c->req->param('type') || '';
-    $tmpl_param{guest_def} = $c->req->param('guest_type');
+    $tmpl_param{realm}          = $realm;
+    $tmpl_param{user}           = $user;
+    $tmpl_param{fullname}       = $user->fullname;
+    $tmpl_param{aree}           = \@aree;
+    $tmpl_param{types}          = \@types;
+    $tmpl_param{data}           = IPAdmin::Utils::print_short_timestamp(time);
+    $tmpl_param{template}       = 'iprequest/create.tt';
+    $tmpl_param{location}       = $c->req->param('location') || '';
+    $tmpl_param{mac}            = $c->req->param('mac') || '';
+    $tmpl_param{hostname}       = $c->req->param('hostname') || '';
+    $tmpl_param{area_def}       = $c->req->param('area') || '';
+    $tmpl_param{type_def}       = $c->req->param('type') || '';
+    $tmpl_param{guest_def}      = $c->req->param('guest_type');
     $tmpl_param{guest_date_out} = $c->req->param('guest_date_out');
-    $tmpl_param{guest_name}  = $c->req->param('guest_name');
-    $tmpl_param{guest_fax}   = $c->req->param('guest_fax');
-    $tmpl_param{guest_phone} = $c->req->param('guest_phone');
-    $tmpl_param{guest_mail}  = $c->req->param('guest_mail');
-    $tmpl_param{fixed}  = $c->req->param('fixed');
+    $tmpl_param{guest_name}     = $c->req->param('guest_name');
+    $tmpl_param{guest_fax}      = $c->req->param('guest_fax');
+    $tmpl_param{guest_phone}    = $c->req->param('guest_phone');
+    $tmpl_param{guest_mail}     = $c->req->param('guest_mail');
+    $tmpl_param{fixed}          = $c->req->param('fixed');
 
     $c->stash(%tmpl_param);
 }
@@ -447,6 +466,7 @@ sub process_create : Private {
     $c->stash->{error_msg} = "Errore nella creazione della richiesta IP";
     return 0;
     } else {
+    $c->stash(object => $ret);
     $c->stash->{message} = "La richiesta IP è stata creata.";
     return 1;
     }
@@ -455,21 +475,21 @@ sub process_create : Private {
 sub check_ipreq_form : Private {
     my ( $self, $c) = @_;
     my $schema         = $c->stash->{'resultset'};
-    my $area           = $c->req->param('area');
-    my $user           = $c->req->param('user');
-    my $location       = $c->req->param('location');
-    my $mac            = $c->req->param('mac');
-    my $type           = $c->req->param('type');
-    my $hostname       = $c->req->param('hostname');
-    my $subnet         = $c->req->param('subnet');
-    my $host           = $c->req->param('host');
-    my $fixed          = $c->req->param('fixed');
-    my $guest_type     = $c->req->param('guest_type');
-    my $guest_date_out = $c->req->param('guest_date_out');
-    my $guest_name     = $c->req->param('guest_name');
-    my $guest_fax      = $c->req->param('guest_fax');
-    my $guest_phone    = $c->req->param('guest_phone');
-    my $guest_mail     = $c->req->param('guest_mail');
+    my $area           = $c->req->param('area') || '';
+    my $user           = $c->req->param('user') || '';
+    my $location       = $c->req->param('location') || '';
+    my $mac            = $c->req->param('mac') || '';
+    my $type           = $c->req->param('type') || '';
+    my $hostname       = $c->req->param('hostname') || '';
+    my $subnet         = $c->req->param('subnet') || '';
+    my $host           = $c->req->param('host') || '';
+    my $fixed          = $c->req->param('fixed') || '';
+    my $guest_type     = $c->req->param('guest_type') || '';
+    my $guest_date_out = $c->req->param('guest_date_out') || '';
+    my $guest_name     = $c->req->param('guest_name') || '';
+    my $guest_fax      = $c->req->param('guest_fax') || '';
+    my $guest_phone    = $c->req->param('guest_phone') || '';
+    my $guest_mail     = $c->req->param('guest_mail') || '';
 
     if ( $area eq '' and !defined($c->stash->{object}) ) {
         $c->stash->{error_msg} = "Selezionare una struttura!";
@@ -489,6 +509,10 @@ sub check_ipreq_form : Private {
 	$c->stash->{error_msg} = "Campo Hostname obbligatorio!";
 	return 0;
      }    
+    if ( $type eq '' ) {
+    $c->stash->{error_msg} = "Tipo di apparato obbligatorio!";
+    return 0;
+     }    
 
     if ( $host ne '' and $subnet ne '' and 
         $schema->search({subnet=> $subnet, host => $host})->count ) {
@@ -502,7 +526,7 @@ sub check_ipreq_form : Private {
     #  return 0;
     # }
 
-    if($fixed){
+    if($fixed ne ''){
         if ( $guest_type eq '' ) {
          $c->stash->{error_msg} = "Posizione dell'utente obbligatoria!";
         return 0;
@@ -776,33 +800,62 @@ invia una notifica via email all'utente per i processi di convalida, attivazione
 sub process_notify : Private {
     my ( $self, $c ) = @_;
     my $error;
-    my $iprequest = $c->stash->{object};
+    my $ipreq = $c->stash->{object};
     my $ret; #status invio messaggio con Mail::Sendmail
+    my ($body, $to, $cc, $subject);
 
-    if ($iprequest->state == $IPAdmin::NEW) {
-        #A seguito di iprequest/create, preparo il messaggio per il referente di rete: "C'è una nuova richiesta da validare"
+
+    if ($ipreq->state == $IPAdmin::NEW) {
+        #A seguito di ipreq/create, preparo il messaggio per il referente
+        #di rete: "C'è una nuova richiesta da validare"
+        my $url = $c->uri_for_action('/iprequest/view',[$ipreq->id]);
+        $body = <<EOF;
+        $url
+EOF
+        #$to = $ipreq->area->manager->email;
+        $to = 'e.liguori@cineca.it';
+        $cc = 's.italiano@cineca.it';  
+        $subject = "test";
+
     }
-    elsif ($iprequest->state == $IPAdmin::PREACTIVE) {
-        #A seguito di iprequest/validate, preparo il messaggio per l'utente: "La tua richiesta è stata validata: stampa, firma ed invia il modulo via fax (o caricamento pdf?)"
+    elsif ($ipreq->state == $IPAdmin::PREACTIVE) {
+        #A seguito di ipreq/validate, preparo il messaggio per l'utente: "La tua richiesta è stata validata: stampa, firma ed invia il modulo via fax (o caricamento pdf?)"
     }
-    elsif ($iprequest->state == $IPAdmin::ACTIVE) {
-        #A seguito di iprequest/activate, preparo il messaggio per l'utente: "Il tuo IP è attivo"
+    elsif ($ipreq->state == $IPAdmin::ACTIVE) {
+        #A seguito di ipreq/activate, preparo il messaggio per l'utente: "Il tuo IP è attivo"
     } 
-    elsif ($iprequest->state == $IPAdmin::INACTIVE) {
-        #A seguito di iprequest/unactivate, preparo il messaggio per l'utente: "Il tuo IP è stato bloccato. Hai X giorni di tempo per riattivarlo o verrà assegnato a qualcun altro"
+    elsif ($ipreq->state == $IPAdmin::INACTIVE) {
+        #A seguito di ipreq/unactivate, preparo il messaggio per l'utente: "Il tuo IP è stato bloccato. Hai X giorni di tempo per riattivarlo o verrà assegnato a qualcun altro"
     }
-    elsif ($iprequest->state == $IPAdmin::ARCHIVED) {
-        #A seguito di iprequest/delete, preparo il messaggio per l'utente: "Rinuncia dell'indirizzo IP terminata con successo"
+    elsif ($ipreq->state == $IPAdmin::ARCHIVED) {
+        #A seguito di ipreq/delete, preparo il messaggio per l'utente: "Rinuncia dell'indirizzo IP terminata con successo"
     }
     else { #perchè hai richiamato questo metodo?
     }
 
-    if (! $ret ) {
-    $c->stash->{message} = "Errore nell'invio del messaggio.";
-    return 0;
+
+    my $email = {
+            #cc      => 's.italiano\@cineca.it',
+            from    => 'infosapienza@uniroma1.it',
+            to      => $to,
+            cc      => $cc,
+            subject => $subject,
+            body    => $body,
+        };
+
+    $c->stash(email => $email);
+    $c->log->info(Dumper($email));
+
+
+    $c->forward( $c->view('Email') );
+
+    if ( scalar( @{ $c->error } ) ) {
+        $c->flash->{message} = "Errore nell'invio del messaggio. ".Dumper($c->error);
+        $c->error(0);
+        return 0;
     } else {
-    $c->stash->{message} = "Messaggio inviato correttamente.";
-    return 1;
+        $c->flash->{message} = "Messaggio inviato correttamente.";
+        return 1;
     }
 }
 
@@ -814,14 +867,14 @@ invia un update al dns aggiungendo o rimuovendo un record a seconda dello stato 
 sub process_dnsupdate : Private {
     my ( $self, $c ) = @_;
     my $error;
-    my $iprequest = $c->stash->{object};
+    my $ipreq = $c->stash->{object};
     my $ret; #status invio update con Net::DNS
 
-    if ($iprequest->state == $IPAdmin::ACTIVE) {
-        #A seguito di iprequest/activate, invio update per aggiungere il record A nella zona corretta
+    if ($ipreq->state == $IPAdmin::ACTIVE) {
+        #A seguito di ipreq/activate, invio update per aggiungere il record A nella zona corretta
     } 
-    elsif ($iprequest->state == $IPAdmin::ARCHIVED) {
-        #A seguito di iprequest/delete, invio update per rimuovere il record A dalla zona corretta, e gli eventuali CNAME da qualsiasi zona
+    elsif ($ipreq->state == $IPAdmin::ARCHIVED) {
+        #A seguito di ipreq/delete, invio update per rimuovere il record A dalla zona corretta, e gli eventuali CNAME da qualsiasi zona
     }
     else { #perchè hai richiamato questo metodo?
     }

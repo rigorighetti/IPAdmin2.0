@@ -45,6 +45,12 @@
       <div id="#content">[% content %]</div>
 </div><!-- end of content-wrapper -->
 
+<div id="footer">
+<hr>
+Centro Infosapienza - Ufficio per le Telecomunicazioni - Settore Reti Dati per le Strutture Periferiche<br>
+Tel: 06 4991 3111 - Fax: 06 4991 3837 - Email: sapienzanet@uniroma1.it<br>
+</div>
+
 [% FOREACH link IN link_js -%]
 <script type="text/javascript" src="[% link %]"></script>
 [% END -%]

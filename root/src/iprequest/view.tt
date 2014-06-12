@@ -93,6 +93,7 @@
        [% IF object.state == 2 -%] 
         <a href=[% c.uri_for_action('alias/create', {def_ipreq=>object.id }) %]> Aggiungi Alias[% ui_icon('circle-plus')%]
        [% END -%]
+       <a href=[%c.uri_for_action('iprequest/notify', [object.id]) %]> [%ui_icon('mail-closed')%]Invia notifica</a>
 
 
       </div>
