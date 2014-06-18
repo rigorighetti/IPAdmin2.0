@@ -16,15 +16,16 @@
      <tr>
         <th>Nome</th>
         <th>Descrizione</th>
+        <th>Archiviabile</th>
      </tr>
    </thead>  
    <tbody>
-[% FOREACH t IN typerequest_table %]
-
-         <tr>
- 	 <td><a href=[% c.uri_for_action('/typerequest/view', [t.id]) %]>[% t.type %]</a></td>
- 	 <td>[% t.description %]</td>
-         </tr>
-[% END %]
+    [% FOREACH t IN typerequest_table %]
+      <tr>
+     	 <td><a href=[% c.uri_for_action('/typerequest/view', [t.id]) %]>[% t.type %]</a></td>
+     	 <td>[% t.description %]</td>
+       <td>[% IF t.archivable == 1 -%] Si [% ELSE -%] No [% END -%]</td>
+      </tr>
+    [% END %]
    </tbody>
 </table>

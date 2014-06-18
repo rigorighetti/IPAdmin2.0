@@ -23,10 +23,15 @@
     [% add_css_tableinfo -%]
     <p>
       <div class="buttons">	
-	<a href=[%c.uri_for_action('alias/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica</a>
-	&nbsp;<a href=[% c.uri_for_action('alias/delete', [object.id]) %]>
-	[% ui_icon('closethick') %]  Elimina</a>
-	&nbsp; 
+  [% IF object.state != 4 -%]
+    [% IF object.state == 0 -%]
+	   <a href=[%c.uri_for_action('alias/activate', [object.id]) %]> [% ui_icon('check') %] Attiva</a>
+    [% END -%]
+    &nbsp;<a href=[%c.uri_for_action('alias/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica</a>
+	  &nbsp;<a href=[% c.uri_for_action('alias/delete', [object.id]) %]>
+	  [% ui_icon('closethick') %]  Elimina</a>
+	  &nbsp;
+  [% END -%] 
 <!--
 	<a href="[% c.uri_for('/alias/create', object.id,{backref=>c.req.uri}) %]">
 		[% ui_icon('plusthick') %] Aggiungi Alias</a> 

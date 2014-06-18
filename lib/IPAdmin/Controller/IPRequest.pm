@@ -566,6 +566,7 @@ sub validate : Chained('object') : PathPart('validate') : Args(0) {
         my $done = $c->forward('process_validate');
         if ($done) {
             $c->flash( message => $c->stash->{message} );
+            $c->forward('process_notify');
             $c->stash( default_backref =>
                 $c->uri_for_action( "/iprequest/list" ) );
             $c->detach('/follow_backref');
@@ -588,22 +589,24 @@ sub validate : Chained('object') : PathPart('validate') : Args(0) {
         return;
     }
 
+    my ($free_ip, $used_ip);
     my @availables;
     while(my $subnet = $subnets->next) {
-        my ($free_ip, $used_ip);
+    	$used_ip = undef;
         my $sub_id = $subnet->id;
-        foreach $free_ip (6..247){
-            $used_ip = $c->model("IPAdminDB::IPRequest")->search({-and => 
+        foreach my $ip (6..247){
+	 $used_ip = $c->model("IPAdminDB::IPRequest")->search({-and => 
                                                      [ subnet => $sub_id,
-                                                       host   => $free_ip,
+                                                       host   => $ip,
                                                        -or     =>[ state => $IPAdmin::PREACTIVE,
                                                                    state => $IPAdmin::ACTIVE,
                                                                    state => $IPAdmin::INACTIVE,                
                                                                  ]
                                                      ]},
                                                     )->single;
-            last unless defined $used_ip;
-        }
+	$free_ip = $ip;
+	last unless defined $used_ip;
+	}
 
         #TODO spostare tutto in una funzione
         #TODO logica degli ip
@@ -616,7 +619,7 @@ sub validate : Chained('object') : PathPart('validate') : Args(0) {
             $c->detach('/follow_backref');
         }
 
-        my $proposed_ip = "151.100.".$subnet->id.".$free_ip";
+        my $proposed_ip = "151.100.".$subnet->id.".".$free_ip;
         push @availables, $proposed_ip;
     }
 
@@ -697,7 +700,7 @@ sub unactivate : Chained('object') : PathPart('unactivate') : Args(0) {
                         state       => $IPAdmin::ACTIVE,
                         ip_request  => $c->stash->{'object'}->id,
                         });
-
+        $c->forward('process_notify');
         $c->flash( message => 'Richiesta IP invalidata.' );
         $c->detach('/follow_backref');
    }
@@ -721,7 +724,8 @@ sub activate : Chained('object') : PathPart('activate') : Args(0) {
             $c->flash( message => $c->stash->{message} );
             $c->stash( default_backref =>
                 $c->uri_for_action( "iprequest/list" ) );
-            $c->detach('/follow_backref');
+            $c->forward('process_notify');
+	    $c->detach('/follow_backref');
         }
     }
 
@@ -785,6 +789,7 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
                      });
        
          $c->flash( message => 'Richiesta IP archiviata.' );
+         $c->forward('process_notify');
          $c->detach('/follow_backref');
    }
    else {
@@ -803,39 +808,76 @@ sub process_notify : Private {
     my $ipreq = $c->stash->{object};
     my $ret; #status invio messaggio con Mail::Sendmail
     my ($body, $to, $cc, $subject);
+    my $url = $c->uri_for_action('/iprequest/view',[$ipreq->id]);
 
+    #default: send email to user
+    $to = $ipreq->user->email;
 
     if ($ipreq->state == $IPAdmin::NEW) {
         #A seguito di ipreq/create, preparo il messaggio per il referente
         #di rete: "C'è una nuova richiesta da validare"
-        my $url = $c->uri_for_action('/iprequest/view',[$ipreq->id]);
         $body = <<EOF;
-        $url
+Gentile referente, 
+c'è una nuova richiesta IP che richiede il suo intervento: $url
 EOF
-        #$to = $ipreq->area->manager->email;
-        $to = 'e.liguori@cineca.it';
-        $cc = 's.italiano@cineca.it';  
-        $subject = "test";
+	if(defined $ipreq->area->manager){
+          $to = $ipreq->area->manager->email;
+	}
+	else{
+ 	  $c->stash( error_msg => 'Impossibile inviare una mail al referente perché Non è stato ancora nominato un referente per quest\'area');
+  	  $c->detach('/follow_backref');	 
+	}
+	$subject = "Nuova richiesta di indirizzo IP id: ".$ipreq->id
 
     }
     elsif ($ipreq->state == $IPAdmin::PREACTIVE) {
         #A seguito di ipreq/validate, preparo il messaggio per l'utente: "La tua richiesta è stata validata: stampa, firma ed invia il modulo via fax (o caricamento pdf?)"
+        $body = <<EOF;
+Gentile Utente, 
+la sua richiesta è stata validata. 
+Per procedere all'attivazione del nuovo indirizzo IP deve seguire il link, stampare e firmare il modulo, ed infine inviarlo via fax al 23837: $url
+EOF
+        $subject = "Richiesta di indirizzo IP id: ".$ipreq->id." convalidata";
+
     }
     elsif ($ipreq->state == $IPAdmin::ACTIVE) {
         #A seguito di ipreq/activate, preparo il messaggio per l'utente: "Il tuo IP è attivo"
+        #Se la richiesta è a tempo determinato invia anche un'email all'ospite
+        $body = <<EOF;
+Gentile Utente, 
+il suo indirizzo IP è stato attivato.
+E' ora possibile configurare la scheda di rete del dispositivo con i dati presenti nel modulo: $url
+EOF
+        $subject = "Richiesta di indirizzo IP id: ".$ipreq->id." attiva";
+        if ($ipreq->guest) {
+            $cc = $ipreq->guest->email;
+        }
     } 
     elsif ($ipreq->state == $IPAdmin::INACTIVE) {
         #A seguito di ipreq/unactivate, preparo il messaggio per l'utente: "Il tuo IP è stato bloccato. Hai X giorni di tempo per riattivarlo o verrà assegnato a qualcun altro"
+        my $ip = "151.100.".$ipreq->subnet->id.".".$ipreq->host;
+        $body = <<EOF;
+Gentile Utente,
+il suo indirizzo IP $ip è stato bloccato in seguito all'inattività di oltre 90 giorni.
+EOF
+        $subject = "Richiesta di indirizzo IP id: ".$ipreq->id." scaduta";
+        if ($ipreq->guest) {
+            $cc = $ipreq->guest->email;
+        }
     }
     elsif ($ipreq->state == $IPAdmin::ARCHIVED) {
         #A seguito di ipreq/delete, preparo il messaggio per l'utente: "Rinuncia dell'indirizzo IP terminata con successo"
+        $body = <<EOF;
+Gentile Utente,
+il suo indirizzo IP, relativo alla richiesta id: $ipreq->id, è stato archiviato.
+EOF
+        $subject = "Richiesta di indirizzo IP id: ".$ipreq->id." archiviata";
     }
     else { #perchè hai richiamato questo metodo?
     }
 
 
     my $email = {
-            #cc      => 's.italiano\@cineca.it',
             from    => 'infosapienza@uniroma1.it',
             to      => $to,
             cc      => $cc,
@@ -844,8 +886,6 @@ EOF
         };
 
     $c->stash(email => $email);
-    $c->log->info(Dumper($email));
-
 
     $c->forward( $c->view('Email') );
 

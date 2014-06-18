@@ -15,6 +15,13 @@
   		
 
   <div id="tabs-1">
+    <div class="right">
+    <div class="rightbox">
+      <a href=[%c.uri_for_action('userldap/edit', [object.username]) %]> [% ui_icon('pencil') %] Modifica Dati Utente</a><br><br>
+      <a href="[% c.uri_for_action('/iprequest/create') %]" >
+      [% ui_icon('circle-plus') %] Nuova Richiesta IP</a>
+    </div>
+  </div>
     <table id="info">
       <tr>
 	     <td>Nome e Cognome:</td><td>[% object.fullname %]</td>
@@ -41,15 +48,16 @@
       [%END -%]
     </table>
     [% add_css_tableinfo -%]
-    <p>
-      <div class="buttons">	
-	<a href=[%c.uri_for_action('userldap/edit', [object.username]) %]> [% ui_icon('pencil') %] Modifica</a>
-      </div>
-    </p>
-  [% add_css_tableinfo %]
   </div>
   
   <div id="tabs-2">
+    <div class="right rightbox">
+      Legenda: 
+      <table>
+        <tr><td bgcolor="#F97A7A" width=20></td><td>Nuova</td><td bgcolor="#DFDD41" width=20></td><td>Convalidata</td>
+            <td bgcolor="#7FCD31" width=20></td><td>Attiva</td><td bgcolor="#A96FDA" width=20></td><td>Archiviata</td>
+        </table>
+    </div>
   [% FOREACH i IN object.map_user_ipreq %]
     [% IF loop.first %]
     [% init_table('iprequest_list',[3,4,8,25,10,7,15,2,6]) %]

@@ -69,9 +69,11 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
         id          => $_->id,
         cname       => $_->cname,
         ip          => "151.100.".$_->ip_request->subnet->id.".".$_->ip_request->host,
+        iprequest   => $_->ip_request,
         hostname    => $_->ip_request->hostname,
         dominio     => $_->ip_request->area->department->domain,
         state       => $_->state,
+        user        => $_->ip_request->user,
         }, $alias_schema->search({},{join => ['ip_request'], prefetch => ['ip_request']});
 
     $c->stash( alias_table => \@alias_table );

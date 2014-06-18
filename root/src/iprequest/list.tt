@@ -44,7 +44,7 @@
  	    <td>[% i.area.manager.fullname %]</td>
 	    <td>[% i.macaddress %]</td>
 	    <td>[% i.hostname %].[% i.area.department.domain %]</td>
-      <td>[% IF i.state != 0 and i.host -%] [% i.subnet.id %].[% i.host %] [% END -%]</td>
+      <td>[% IF i.state != 0 and i.host -%] 151.100.[% i.subnet.id %].[% i.host %] [% END -%]</td>
 	    <td class="white">
        [% IF i.state != 4 -%]
 	     <a href="[% c.uri_for_action('iprequest/edit',[i.id])%]">[% icon('edit') %]</a>

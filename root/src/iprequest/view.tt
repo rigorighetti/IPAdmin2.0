@@ -10,7 +10,13 @@
     <li><a href="#tabs-3">Alias</a></li>
  </ul>
 
+
   <div id="tabs-1">
+    <div class="right">
+      <div id="rightbox">
+        Prova testo sulla destra per pulsanti aggiuntivi.
+      </div>
+    </div>
     <div id="infoipreq">
       <div class="left">Id: </div>[% object.id %] <div class="right">Data Richiesta: [% data %]</div>
       <hr style="clear:both">
@@ -40,6 +46,7 @@
       <div class="title">Dati dell'Apparato</div>
       <div class="section">
         <span class="left">Tipo:</span> <span class="right">[% object.type.type %]</span><br>
+        <span class="left">Stanza:</span> <span class="right">[% object.location %]</span><br>
         <span class="left">Mac Address:</span> <span class="right">
           <!-- <a href="https://manoc-ng.uniroma1.it/mac/[% object.macaddress%]"> -->
            [% object.macaddress%]
@@ -91,7 +98,7 @@
 	      &nbsp;<a href=[% c.uri_for_action('iprequest/delete', [object.id]) %]> [% ui_icon('closethick') %]  Rinuncia</a>
 	     [% END -%]
        [% IF object.state == 2 -%] 
-        <a href=[% c.uri_for_action('alias/create', {def_ipreq=>object.id }) %]> Aggiungi Alias[% ui_icon('circle-plus')%]
+        <a href=[% c.uri_for_action('alias/create', {def_ipreq=>object.id }) %]> Aggiungi Alias[% ui_icon('circle-plus')%]</a>
        [% END -%]
        <a href=[%c.uri_for_action('iprequest/notify', [object.id]) %]> [%ui_icon('mail-closed')%]Invia notifica</a>
 

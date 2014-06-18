@@ -1,0 +1,102 @@
+[% META
+	use_table=1
+	section='Istruzioni'
+%]
+
+<div id="tabs">
+	<ul>
+		<li><a href="#tabs-1">Informazioni</a></li>
+		<li><a href="#tabs-2">Windows</a></li>
+		<li><a href="#tabs-3">Mac OSX</a></li>
+		<li><a href="#tabs-4">Linux</a></li>		
+	</ul>
+
+ <div id="tabs-1">
+ 
+ 	<h1>Il servizio VPN Sapienza</h1>
+ 	<h2>Descrizione sintetica</h2>
+ 	
+ 	<p>Il servizio VPN permette agli utenti connessi a Internet da qualsiasi luogo e per mezzo di un qualsiasi tipo di connettività (ADSL, 3G, LAN) la  	navigazione con indirizzo IP della Sapienza,  godendo dei relativi benefici - ad esempio l'accesso a pubblicazioni riservate alla rete di ateneo. </p>
+ 	<h2>A chi è riservato</h2>
+ 	<p>Al personale docente e tecnico amministrativo dell'Ateneo dotato delle credenziali di posta elettronica d'ateneo.</p>
+ 	
+ 	<h2>Come si accede</h2>
+ 	<p>Per usare il servizio VPN sono necessari:</p>
+ 	<ul>
+ 	<li>un dispositivo dotato di una connessione internet</li>
+ 	<li>un indirizzo di posta elettronica <em>@uniroma1.it</em></li>
+ 	</ul>
+ 	
+ 	<p>Il dispositivo può essere  una postazione fissa, un portatile, un netbook, un tablet o uno smartphone. 
+ 	A seconda del sistema operativo è necessario l'uso di una specifica soluzione software.
+ 	Per l'installazione e la configurazione del software invitiamo a seguire le guide presenti al link sottostante.
+ 	</p>
+ 	<div style="text-align:center"><h2><a href="prorete/vpn/index.asp" target="_blank">Istruzioni e Software</a></h2></div>
+ </div>
+ 
+ <div id="tabs-2">
+ 	<h1>Sistemi Windows</h1>
+
+<p>Il servizio VPN Sapienza supporta i sistemi Windows 2000/XP/Vista/7 (32bit/64bit).</p>
+
+<h3>Installazione</h3>
+Scaricare il vpnclient compatibile con il proprio sistema operativo (32bit o 64bit), il file di configurazione e posizionarli sul Desktop:
+<ul>
+<li><a href="../AccessoRemoto/doc/vpnclient-win-msi-5.0.00.0340-k9.exe">vpnclient-win-msi-5.0.00.0340-k9.exe</a> (versioni di windows a 32 bit) </li>
+<li><a href="../AccessoRemoto/doc/vpnclient-winx64-msi-5.0.07.0440-k9.exe">vpnclient-winx64-msi-5.0.07.0440-k9.exe</a>  (versioni di windows a 64 bit)</li>
+<li><a href="../AccessoRemoto/doc/VPN-Sapienza.pcf">VPN-Sapienza.pcf</a> ( File di configurazione vpn )<br><span class="mini">Per sapere quale versione di Windows è in uso fare clic su Start >> Esegui >> scrivere “winver” e premere invio.</span>
+</li>
+</ul>
+
+<p>L’installazione del Cisco VPN Client offre alcune opzioni: si consiglia per semplicità di rispondere alle domande accettando i default, ovvero lasciare le opzioni preimpostate.
+<br />
+Fare un doppio clic sul file .exe scaricato in precedenza.
+Scegliere la lingua preferita: english è il default.
+Premere “Next”, prendere visione della licenza e accettarla selezionando
+<br />
+<em>"I accept the license agreement"</em>
+<br />
+Premere ancora “Next” 
+<br />
+Il programma sarà installato in C:\Programmi\CiscoSystem\VPN Client. 
+<br />
+Premere next per due volte e attendere l’installazione
+Se l’installazione è andata a buon fine, comparirà la finestra
+<em>Cisco System VPN Client 5.0.00. has been successfully installed</em>
+<br />
+premere “finish” e “yes” per riavviare il pc.</p>
+
+<h3>Configurazione della connessione VPN</h3>
+
+<p>Per la configurazione si utilizzerà il file VPN-Sapienza.pcf, precedentemente scaricato sul Desktop. Lanciare l’applicazione Cisco VPN Client da
+<br />
+Start – Programmi – Cisco System VPN Client – VPN Client.
+<br />
+Cliccare sull’icona “Import”.
+<br />
+Selezionare il file VPN-Sapienza.pcf e premere Open.</p>
+
+<h3>Uso del Cisco VPN Client</h3>
+
+<h4>Connettersi</h4>
+Selezionare la connessione VPN-Sapienza e premere Connect.
+A questo punto occorre inserire username e password, usando le stesse credenziali utilizzate per la posta elettronica (<i>Nome spazio Cognome</i>).
+Una volta stabilita la connessione si noti il lucchetto giallo chiuso in basso a
+destra sul Desktop.
+
+<h4>Nota per gli utenti connessi da Reti Locali.</h4>
+Per gli utenti connessi da una LAN, la vpn rende impossibile l’utilizzo dei servizi della propria rete locale
+(esempio, stampanti di rete, file server, etc. ).
+
+&Egrave; quindi necessario disconnettersi dalla vpn per usare le risorse della propria rete.
+Rimane possibile l’uso di risorse locali, ad esempio una stampante direttamente
+connessa al pc, tramite porta usb o parallela (LPT).
+
+<h4>Disconnettersi</h4>
+Cliccare con il tasto destro sull’icona del lucchetto e scegliere disconnect.
+</div>
+
+ </div>
+
+
+</div>

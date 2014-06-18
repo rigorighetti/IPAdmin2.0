@@ -7,24 +7,25 @@
   <ul>
     <li><a href="#tabs-1">Informazioni</a></li>
     <li><a href="#tabs-2">Guida alla Richiesta di un Indirizzo IP</a></li>
-     <li><a href="#tabs-3">Guida di IPAdmin per il Referente di Rete</a></li>
+    [% # IF object.managed_area -%] 
+      <li><a href="#tabs-3">Guida di IPAdmin per il Referente di Rete</a></li>
+    [% # END -%]
     <li><a href="#tabs-4">F.A.Q.</a></li>
   </ul>
 
   <div id="tabs-1">
   	Questa sarà la guida per il corretto utilizzo di IPAdmin v2
-	  * Sezione Utente
-	  * Sezione Referente
+	   <li>Sezione Utente
+	   <li>Sezione Referente
 
-	  S.
   </div>
 
   <div id="tabs-2">
-  	* Nuova Richiesta di Indirizzo IP
-      - Istruzioni di compilazione del form per la registrazione di un indirizzo IP
+  	<h3>Nuova Richiesta di Indirizzo IP</h3>
+    <h4>Istruzioni di compilazione del form per la registrazione di un indirizzo IP</h4>
+      <i>N.B.: Il requisito fondamentale per richiedere un indirizzo IP è il possesso di un account di posta elettronica di tipo <b>nome.cognome@uniroma1.it</b>, riservato al personale docente e non docente dell'ateneo.</i><br>
 
-      --  Il requisito fondamentale per richiedere un indirizzo IP è il possesso di un account di posta elettronica di tipo <b>nome.cognome@uniroma1.it</b>, riservato al personale docente e non docente dell'ateneo.
-          Il processo prevede i seguenti passaggi:
+      Il processo prevede i seguenti passaggi:<br>
       <ol>
       <li>Autenticazione con le proprie credenziali usate per la posta elettronica: al primo accesso sarà necessario inserire alcuni dati dell'utente.</li>
       <li>Selezione della struttura di riferimento (dipartimento, facoltà o centro servizi) e dell'edificio dove è collocata la struttura.</li>
@@ -44,20 +45,20 @@
       <li><a href="http://www.infosapienza.uniroma1.it/istruzioni/configurazione_ip_linux.html">Linux</a></li>
       </ul>
 
-  	* Modifica dati di una richiesta IP già esistente
-      - E' possibile modificare alcuni campi di una richiesta attiva
-  	* Rinuncia di un indirizzo IP
-      - Per rinunciare ad un indirizzo IP è necessario l'invio di una email da parte del responsabile a ipsapienza@uniroma1.it e in copia a paola.deangelis@uniroma1.it
-        N.B.: si ricorda che da regolamento si è responsabili di un indirizzo IP fino alla formale rinuncia o allo scadere di 90 giorni di inattività di tale indirizzo. Infosapienza non è responsabile di furti di IP o azioni illegali effettuate sulla rete.
-  	* Nuova richiesta di Alias per indirizzo IP già registrato
-      - E' possibile richiedere un nome a dominio di 3° livello (o superiore) su "uniroma1.it" per un indirizzo IP già registrato.
-        N.B.: solo il responsabile dell'indirizzo IP può effettuare la richiesta di Alias. 
-    * Rinuncia di un Alias
+  	<h3>Modifica dati di una richiesta IP già esistente</h3>
+      <p>E' possibile modificare alcuni campi di una richiesta attiva</p>
+  	<h3>Rinuncia di un indirizzo IP</h3>
+      <p>Per rinunciare ad un indirizzo IP è necessario l'invio di una email da parte del responsabile a ipsapienza@uniroma1.it e in copia a paola.deangelis@uniroma1.it</p>
+      <i>N.B.: si ricorda che da regolamento si è responsabili di un indirizzo IP fino alla formale rinuncia o allo scadere di 90 giorni di inattività di tale indirizzo. Infosapienza non è responsabile di furti di IP o azioni illegali effettuate sulla rete.</i>
+  	<h3>Nuova richiesta di Alias per indirizzo IP già registrato</h3>
+      <p>E' possibile richiedere un nome a dominio di 3° livello (o superiore) su "uniroma1.it" per un indirizzo IP già registrato.
+        N.B.: solo il responsabile dell'indirizzo IP può effettuare la richiesta di Alias. </p>
+    <h3>Rinuncia di un Alias</h3>
 
   </div>
 
   <div id="tabs-3">
-  	* Il ruolo del referente di rete
+  	<h3>Il ruolo del referente di rete</h3>
       - <ol>
           <li>E' l'unico interlocutore verso il Settore Reti per le Strutture Periferiche per la notifica di problemi relativi alla rete telematica.</li>
           <li>Autorizza, all'interno della propria struttura, le richieste di indirizzo IP per la connessione alla rete.</li>
@@ -66,7 +67,7 @@
           <li>Interviene, se possibile, sugli apparati della rete locale per assicurare il corretto funzionamento dei collegamenti con il supporto del Settore Reti per le Strutture Periferiche.</li>
           <li>Per esigenze di servizio, la nomina di Referente di Rete è riservata esclusivamente al personale strutturato.</li>
         </ol>
-  	* Come convalidare una richiesta IP
+  	<h3>Come convalidare una richiesta IP</h3>
 
   </div>
 

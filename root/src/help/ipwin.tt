@@ -1,0 +1,66 @@
+[% META 
+   use_table=1
+   section = 'Istruzioni' 
+%]
+
+
+<div>
+<h2>Istruzioni per la configurazione di un indirizzo IP in ambiente Windows</h2>
+
+<div>
+<ul>
+<li><a href="#xp">Windows XP</a></li>
+<li><a href="#vista">Windows Vista</a></li>
+<li><a href="#7">Windows 7</a></li>
+</ul>
+
+<br><hr>
+
+<h4 id="xp">Windows XP</h4>
+<ol>
+<li>Dal pulsante <b>Start</b> selezionare <b>Pannello di controllo</b></li>
+<li>Fare doppio clic sull'icona <b>Connessioni di rete</b></li>
+<li>Fare doppio clic sull'icona <b>Connessione alla rete locale (LAN)</b></li>
+<li>Fare clic sul pulsante <b>Proprietà</b></li>
+<img src="img/ip_xp-1.jpg" />
+<li>Selezionare <b>Protocollo Internet (TCP/IP)</b> e cliccare su <b>Proprieta'</b></li>
+<img src="img/ip_xp-2.jpg" />
+<li>Selezionare <b>Utilizza il seguente indirizzo IP</b> e il campo <b>Utilizza i seguenti indirizzi server DNS</b> e riempire i campi indicati dalla freccia rossa con gli indirizzi assegnati alla fine della procedura di registrazione IP.</li>
+<img src="img/ip_xp-3.jpg" />
+</ol>
+
+<br><hr>
+
+<h4 id="vista">Windows Vista</h4>
+<ol>
+<li>Dal pulsante <b>Start</b> selezionare <b>Pannello di controllo</b></li>
+<li>Fare doppio clic sull'icona <b>Centro connessioni di rete e condivisione</b></li>
+<li>Fare clic su <b>Visualizza stato</b></li>
+<img src="img/ip_vista-1.jpg" />
+<li>Fare clic sul pulsante <b>Proprietà</b></li>
+<img src="img/ip_vista-2.jpg" />
+<li>Selezionare <b>Protocollo Internet versione 4 (TCP/IPv4)</b> e cliccare su <b>Proprieta'</b></li>
+<img src="img/ip_vista-3.jpg" />
+<li>Selezionare <b>Utilizza il seguente indirizzo IP</b> e il campo <b>Utilizza i seguenti indirizzi server DNS</b> e riempire i campi con gli indirizzi assegnati alla fine delle procedura di registrazione IP</li>
+<img src="img/ip_vista-4.jpg" />
+</ol>
+
+<br><hr>
+
+<h4 id="7">Windows 7</h4>
+<ol>
+<li>Fare clic sull'icona della connessione internet vicino all'orologio e successivamente su <b>Apri Centro connessioni di rete e condivisione</b></li>
+<img src="img/ip_7-1.jpg" />
+<li>Fare clic su <b>Connessione alla rete locale (LAN)</b></li>
+<img src="img/ip_7-2.jpg" />
+<li>Fare clic su <b>Proprietà</b></li>
+<img src="img/ip_7-3.jpg" />
+<li>Selezionare <b>Protocollo Internet versione 4 (TCP/IPv4)</b> e cliccare su <b>Proprieta'</b></li>
+<img src="img/ip_7-4.jpg" />
+<li>Selezionare <b>Utilizza il seguente indirizzo IP</b> e il campo <b>Utilizza i seguenti indirizzi server DNS</b> e riempire i campi con gli indirizzi assegnati alla fine delle procedura di registrazione IP</li>
+<img src="img/ip_7-5.jpg" />
+</ol>
+
+</div>
+
+</div>

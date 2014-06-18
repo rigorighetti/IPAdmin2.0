@@ -234,6 +234,17 @@ td.white {
 }
 
 div#infoipreq {
+ min-width: 530px;
+ max-width: 600px;
+ max-height: 850px;
+ background: white;
+ padding: 15px;
+ border-radius: 15px;
+ border:solid 1px black;
+}
+
+div.rightbox {
+ min-width: 350px;
  max-width: 600px;
  max-height: 850px;
  background: white;
@@ -256,7 +267,6 @@ div#guest {
 
 .right {
     float: right;
-    clear: right;
 }
 
 .title {
@@ -293,4 +303,15 @@ div.archived {
 
 div.section br {
     clear:both;
+}
+
+div#tabs {
+    min-width: 1250px;
+}
+
+div#footer {
+    margin:10px auto;
+    text-align: center;
+    min-width: 700px; 
+    max-width:1200px;
 }
