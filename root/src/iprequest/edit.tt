@@ -114,22 +114,6 @@ td.data {padding-left:20px;}
 
 
 [% fragment = BLOCK -%]
-var hash = {
-  [% FOREACH a IN aree -%]
-   [%IF a.manager.id -%] "[%a.id %]" : "[%a.manager.fullname %]" [% ',' UNLESS loop.last -%] [%END-%]
-  [% END -%]
-};
-/*var hash_user = {
-  [% FOREACH u IN user -%]
-    "[%u.id %]" : "[%u.fullname %]" [% ',' UNLESS loop.last -%] 
-  [% END -%]
-};
-*/
-
- $(function() {    
-
-  $("#datepicker").datepicker("setDate", "[% guest_date_out %]" );
-
   var hash_man = {
   [% FOREACH a IN aree -%]
    [%IF a.manager.id -%] "[%a.id %]" : "[%a.manager.fullname %]" [% ',' UNLESS loop.last -%] [%END-%]
@@ -143,6 +127,9 @@ var hash_addr = {
 };
 
  $(function() {    
+
+  $("#datepicker").datepicker("setDate", "[% guest_date_out %]" );
+   
   [%IF area_def %]$("#referente").html(hash_man[[%area_def%]]);[%END -%]
   [%IF area_def %]$("#address").html(hash_addr[[%area_def%]]);[%END -%]
 
@@ -164,8 +151,8 @@ var hash_addr = {
       $("#referente").html(text) ;
       $("#address").html(addr) ; 
     }
-   }            // function end
- ); 
+    }            // function end
+    ); 
  
 [%IF fixed %]  
  $(".fixed_time").show(); 
@@ -181,6 +168,8 @@ var hash_addr = {
    }
   }
   );
+
+
 });
 [% END -%]
 [% js_scripts.push(fragment) -%]

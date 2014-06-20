@@ -9,6 +9,8 @@ use Data::Dumper;
 use IPAdmin::Utils qw(str_to_time);
 use Email::Send;
 
+with 'IPAdmin::ControllerRole::JQDatatable';
+
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -95,7 +97,14 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
         hostname    => $_->hostname,
         subnet      => $_->subnet,
         host        => $_->host,
-        }, $c->stash->{resultset}->search({});
+        }, $c->stash->{resultset}->search({},
+                {prefetch => [qw(type user ),{area => ['building','department']}],
+                 select   => [qw(id date type.type user macaddress user.username 
+                    user.fullname area.department area.building
+                     area.manager user.fullname
+                     area.department  state host )]
+
+                });
 
    $c->stash( iprequest_table => \@iprequest_table );
    $c->stash( template        => 'iprequest/list.tt' );
@@ -828,7 +837,6 @@ EOF
   	  $c->detach('/follow_backref');	 
 	}
 	$subject = "Nuova richiesta di indirizzo IP id: ".$ipreq->id
-
     }
     elsif ($ipreq->state == $IPAdmin::PREACTIVE) {
         #A seguito di ipreq/validate, preparo il messaggio per l'utente: "La tua richiesta è stata validata: stampa, firma ed invia il modulo via fax (o caricamento pdf?)"
@@ -929,6 +937,93 @@ sub process_dnsupdate : Private {
 }
 
 
+=head2 list_js
+
+=cut
+
+sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
+    my ($self, $c) = @_;
+
+    my @col_names = qw(id date type user building department 
+                       manager macaddress hostname domain subnet host);
+
+    $c->stash(col_names => \@col_names);
+    my @col_searchable = qw(  me.id me.date type.type user.fullname building.name department.name 
+                            area.manager me.macaddress me.hostname department.domain subnet host);
+    $c->stash(col_searchable => \@col_searchable);
+
+    $c->stash(resultset_search_opt =>
+                {prefetch => ['type','user',{area => ['building','department', 'manager']}]}
+               );
+
+    $c->stash(col_formatters => {
+        id => sub {
+            my ($c, $rs)= @_;
+            return '<a href="' .
+              $c->uri_for_action('/iprequest/view',  [ $rs->id ]) .
+                '">' . $rs->id . '</a>';
+        },
+        date => sub {
+            my ($c, $rs)= @_;
+            return IPAdmin::Utils::print_short_timestamp($rs->date),
+        },
+        type => sub {
+            my ($c, $rs)= @_;
+            return $rs->type->type;
+        },
+        user => sub {
+            my ($c, $rs)= @_;
+            return '<a href="' .
+              $c->uri_for_action('/userldap/view',  [ $rs->user->username ]) .
+                '">' . $rs->user->fullname . '</a>';
+        },
+        building => sub {
+            my ($c, $rs)= @_;
+            return '<a href="' .
+              $c->uri_for_action('/building/view',  [ $rs->area->building->id ]) .
+                '">' .$rs->area->building->name. '</a>';
+        },
+        department => sub {
+            my ($c, $rs)= @_;
+            return '<a href="' .                
+            $c->uri_for_action('/department/view',  [ $rs->area->department->id ]) .
+            '">' .$rs->area->department->name. '</a>';
+        },        
+        manager => sub {
+            my ($c, $rs)= @_;
+            return $rs->area->manager->fullname;
+        },
+        macaddress => sub {
+            my ($c, $rs)= @_;
+            return $rs->macaddress;
+        },
+        subnet => sub {
+            my ($c, $rs)= @_;
+            defined($rs->subnet) and return $rs->subnet->id;
+            return '';
+        },
+        host => sub {
+            my ($c, $rs)= @_;
+            defined($rs->host) and return $rs->host; 
+            return '';
+        },
+        domain => sub {
+            my ($c, $rs)= @_;
+            defined($rs->area->department->domain) and 
+                return $rs->area->department->domain;
+            return '';
+        },
+        hostname => sub {
+            my ($c, $rs)= @_;
+            defined($rs->hostname) and 
+                return $rs->hostname;
+            return '';
+        },
+
+    });
+
+    $c->detach("datatable_response");
+}
 
 =head1 AUTHOR
 

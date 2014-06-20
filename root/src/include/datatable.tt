@@ -19,40 +19,38 @@
 [%# Init Table -%]
 [%MACRO init_table(id,columns, options) BLOCK -%]
 [% capture = BLOCK -%]
-$(function() { 
-	  if ( $("#[% id  %]").dataTable ) {
-	   
+$(function() {  
  	     /* inizializzazione della tabella */
 	     $("#[% id  %]").dataTable( {
-	       //to use JQuery UI style
 	       "bJQueryUI"       : true,
 	       //to decide which column to sort at the beginning
 	       [% IF options.sortby %]"aaSorting"       : [[ [% options.sortby %] , "[% options.order %]" ]],[%END%]
 	       //pagination button (two_button, full_numbers)
  	       "sPaginationType" : "full_numbers",
 	       "iDisplayLength" : 25,
-	       //to disable sorting
 	        "bSort": [% IF options.disable_sorting %]false[% ELSE %]true[%END%],
-		     //to disable pagination
 	       	"bPaginate": [% IF options.disable_pagination %]false[% ELSE %]true[%END%],
-		 [% IF options.cust_pag -%]
+		    [% IF options.cust_pag -%]
        		 "sDom": '<"H"f<"toolbar">>t<"F"i>',
-      		 [% END -%]
+      		[% END -%]
 	       //in columns trovo l'array per l'inizializzazione delle colonne della tabella
 	       [% IF columns %]
 	       "bAutoWidth": false,
-               "aoColumns" : [
+           "aoColumns" : [
 			     {"sWidth"      : "[% columns.shift %]%"} 
 			     [% FOREACH col IN columns %]
 			     ,{ "sWidth"    : "[% col %]%"}  
 			     [% END %]
-			     ]
-		[% ELSE %]
+			     ],
+		 	[%END%]
+	       [% IF json_url -%]
+ 		   "bProcessing": true,
+       	   "bServerSide": true,
+       	   "sAjaxSource": "[% json_url %]",
+       	   [% ELSE %]
 	        "test": false
-	        [% END %]
-
+	       [% END %]
            	});
-	 }
 });
 [% END -%]
 [% js_scripts.push(capture) -%]
