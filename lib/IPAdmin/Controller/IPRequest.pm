@@ -944,11 +944,11 @@ sub process_dnsupdate : Private {
 sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
     my ($self, $c) = @_;
 
-    my @col_names = qw(id date type user building department 
+    my @col_names = qw(state id date type user building department 
                        manager macaddress hostname domain subnet host);
 
     $c->stash(col_names => \@col_names);
-    my @col_searchable = qw(  me.id me.date type.type user.fullname building.name department.name 
+    my @col_searchable = qw( me.state me.id me.date type.type user.fullname building.name department.name 
                             area.manager me.macaddress me.hostname department.domain subnet host);
     $c->stash(col_searchable => \@col_searchable);
 
@@ -957,9 +957,13 @@ sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
                );
 
     $c->stash(col_formatters => {
+        state => sub {
+            my ($c, $rs)= @_;
+            return $rs->state;
+        },
         id => sub {
             my ($c, $rs)= @_;
-            return '<a href="' .
+            return '<a id="click_ref" href="' .
               $c->uri_for_action('/iprequest/view',  [ $rs->id ]) .
                 '">' . $rs->id . '</a>';
         },
@@ -1019,6 +1023,7 @@ sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
                 return $rs->hostname;
             return '';
         },
+
 
     });
 

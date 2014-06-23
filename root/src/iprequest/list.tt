@@ -11,10 +11,11 @@
 </div>
 
 
-[% init_table("ipreq",null,null,json_url=c.uri_for('list/js')) -%]
-<table class="display" id="ipreq">
+[% init_table("ipreq",null,{sortby => 0},json_url=c.uri_for('list/js')) -%]
+<table class="display dataTable" id="ipreq">
 <thead>
 <tr>
+      <th>Stato</th>
       <th>Id</th>
       <th>Data</th>
       <th>Tipo</th>
@@ -30,4 +31,4 @@
 </tr>
 </thead>
 </table>
-            
+

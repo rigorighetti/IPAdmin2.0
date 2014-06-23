@@ -1,8 +1,11 @@
 [% MACRO init_datatable BLOCK -%]
-[%  link_css.push(c.uri_for('/static/css/table.css'), ) -%]
-[%  link_js.push(c.uri_for('/static/js/jquery.dataTables.js'),
-               c.uri_for('/static/js/dataTables.typeDetectPlugin.js'),
-	       c.uri_for('/static/js/dataTables.typeSortPlugin.js'),	
+[%  link_css.push(c.uri_for('/static/css/jquery.dataTables_themeroller.css'),
+		  c.uri_for('/static/css/dataTables.jqueryui.css') ) -%]
+[%  link_js.push(
+               c.uri_for('/static/js/jquery.dataTables.js'),
+	       c.uri_for('/static/js/dataTables.typeDetectPlugin.js'),
+	       c.uri_for('/static/js/dataTables.typeSortPlugin.js'),
+	       c.uri_for('/static/css/dataTables.jqueryui.js')
               ) 
 -%]
 [% END -%]
@@ -21,7 +24,7 @@
 [% capture = BLOCK -%]
 $(function() {  
  	     /* inizializzazione della tabella */
-	     $("#[% id  %]").dataTable( {
+	     dTable = $("#[% id  %]").dataTable( {
 	       "bJQueryUI"       : true,
 	       //to decide which column to sort at the beginning
 	       [% IF options.sortby %]"aaSorting"       : [[ [% options.sortby %] , "[% options.order %]" ]],[%END%]
@@ -47,11 +50,35 @@ $(function() {
  		   "bProcessing": true,
        	   "bServerSide": true,
        	   "sAjaxSource": "[% json_url %]",
+ 		   "createdRow": function( row, data, dataIndex ) {
+    		  if ( data[0] == 0 ) {
+      				$(row).addClass( 'newip' );
+    		  }
+    		  if ( data[0] == 1 || data[0] == 3) {
+      				$(row).addClass( 'preactive' );
+    		  }
+    		  if ( data[0] == 2) {
+      				$(row).addClass( 'active' );
+    		  }
+    		  if ( data[0] == 4) {
+      				$(row).addClass( 'archived' );
+    		  }
+              $(row).click( function () {
+                    var url = $(row).find("#click_ref").attr('href');
+                    window.location.replace(url);
+               } );
+  			}
        	   [% ELSE %]
 	        "test": false
 	       [% END %]
            	});
+
+	       [% IF json_url -%]
+           	var table = dTable.DataTable().column(0).visible(0);
+	       [% END %]
+
 });
+
 [% END -%]
 [% js_scripts.push(capture) -%]
 [% END -%]
