@@ -84,6 +84,7 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
 sub view : Chained('object') : PathPart('view') : Args(0) {
     my ( $self, $c ) = @_;
     my @requests;     
+    my @myrequests;     
     my $date_myreq = {};
     my $date_req = {};
     my ($e,$it);
@@ -91,14 +92,24 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
     my @managed_area = $c->stash->{'object'}->managed_area;
     foreach my $area (@managed_area){
         $it = $c->model("IPAdminDB::IPRequest")->
-            search({-and => [area => $area->id, state => {"!=" => $IPAdmin::ARCHIVED}]});
+            search({-and => [area => $area->id, state => {"!=" => $IPAdmin::ARCHIVED}]},
+                   {prefetch => [qw(type ),{area => ['building','department','manager']}],
+                    select   => [qw(id date type.type area.department area.building
+                              area.manager macaddress area.department hostname state subnet host )]
+                });
         while($e = $it->next){
             $date_req->{$e->id} = print_short_timestamp($e->date);
             push @requests, $e;  
         }
     }
 
-    foreach my $i ($c->stash->{object}->map_user_ipreq){
+    @myrequests = $c->model("IPAdminDB::IPRequest")->search( {user => $c->stash->{'object'}->id},
+                {prefetch => [qw(type ),{area => ['building','department','manager']}],
+                 select   => [qw(id date type.type area.department area.building
+                              area.manager macaddress area.department hostname state subnet host )]
+                });
+
+    foreach my $i (@myrequests){
         $date_myreq->{$i->id} = print_short_timestamp($i->date);
     } 
 
@@ -106,6 +117,7 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
     $c->stash(date_myreq => $date_myreq);
     $c->stash( managed_area => \@managed_area );
     $c->stash( requests => \@requests );
+    $c->stash( myrequests => \@myrequests );
     $c->stash( template => 'userldap/view.tt' );
 }
 

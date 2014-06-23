@@ -142,6 +142,7 @@ __PACKAGE__->config(
                     host     => 'smtp.googlemail.com', # defaults to localhost
                     ssl      => 1, 
                     port     => 465,
+		                timeout => 10,
                     sasl_username => 'w3.staff@uniroma1.it',
                     sasl_password => 'C1t1c0rd',
             }

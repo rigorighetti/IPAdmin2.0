@@ -51,18 +51,19 @@ $(function() {
        	   "bServerSide": true,
        	   "sAjaxSource": "[% json_url %]",
  		   "createdRow": function( row, data, dataIndex ) {
-    		  if ( data[0] == 0 ) {
+    		  if ( data[1] == "Da Conv" ) {
       				$(row).addClass( 'newip' );
     		  }
-    		  if ( data[0] == 1 || data[0] == 3) {
+    		  if ( data[1] == 'Convalidata' ) {
       				$(row).addClass( 'preactive' );
     		  }
-    		  if ( data[0] == 2) {
-      				$(row).addClass( 'active' );
+    		  if ( data[1] == 'Attiva' ) {
+      				$(row).addClass( 'preactive' );
     		  }
-    		  if ( data[0] == 4) {
+    		  if ( data[1] == 'Archiviata') {
       				$(row).addClass( 'archived' );
     		  }
+
               $(row).click( function () {
                     var url = $(row).find("#click_ref").attr('href');
                     window.location.replace(url);
@@ -74,7 +75,7 @@ $(function() {
            	});
 
 	       [% IF json_url -%]
-           	var table = dTable.DataTable().column(0).visible(0);
+           	//var table = dTable.DataTable().column(0).visible(0);
 	       [% END %]
 
 });

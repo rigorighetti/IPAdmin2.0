@@ -86,27 +86,27 @@ L'amministratore vede tutte le richieste insieme (iprequest/list)
 sub list : Chained('base') : PathPart('list') : Args(0) {
    my ( $self, $c ) = @_;
 
-   my @iprequest_table =  map +{
-        id          => $_->id,
-        date        => IPAdmin::Utils::print_short_timestamp($_->date),
-        area        => $_->area,
-        user        => $_->user,
-        state       => $_->state,
-        type        => $_->type->type,
-        macaddress  => $_->macaddress,
-        hostname    => $_->hostname,
-        subnet      => $_->subnet,
-        host        => $_->host,
-        }, $c->stash->{resultset}->search({},
-                {prefetch => [qw(type user ),{area => ['building','department']}],
-                 select   => [qw(id date type.type user macaddress user.username 
-                    user.fullname area.department area.building
-                     area.manager user.fullname
-                     area.department  state host )]
+   # my @iprequest_table =  map +{
+   #      id          => $_->id,
+   #      date        => IPAdmin::Utils::print_short_timestamp($_->date),
+   #      area        => $_->area,
+   #      user        => $_->user,
+   #      state       => $_->state,
+   #      type        => $_->type->type,
+   #      macaddress  => $_->macaddress,
+   #      hostname    => $_->hostname,
+   #      subnet      => $_->subnet,
+   #      host        => $_->host,
+   #      }, $c->stash->{resultset}->search({},
+   #              {prefetch => [qw(type user ),{area => ['building','department']}],
+   #               select   => [qw(id date type.type user macaddress user.username 
+   #                  user.fullname area.department area.building
+   #                   area.manager user.fullname
+   #                   area.department  state host )]
 
-                });
+   #              });
 
-   $c->stash( iprequest_table => \@iprequest_table );
+   # $c->stash( iprequest_table => \@iprequest_table );
    $c->stash( template        => 'iprequest/list.tt' );
 }
 
@@ -357,7 +357,7 @@ sub create : Chained('base') : PathPart('create') : Args() {
         if ($done) {
             my $msg = $c->stash->{message} ;
             $c->forward('process_notify');
-            $c->flash(message => $msg." ".$c->stash->{message});
+            $c->flash(message => $msg." ".$c->stash->{mail_message});
             $c->stash( default_backref =>
                 $c->uri_for_action( "iprequest/list" ) );
             $c->detach('/follow_backref');
@@ -476,7 +476,7 @@ sub process_create : Private {
     return 0;
     } else {
     $c->stash(object => $ret);
-    $c->stash->{message} = "La richiesta IP è stata creata.";
+    $c->stash->{message} = "La richiesta IP è stata creata ed è ora in attesa di approvazione da parte del referente.";
     return 1;
     }
 }
@@ -898,11 +898,11 @@ EOF
     $c->forward( $c->view('Email') );
 
     if ( scalar( @{ $c->error } ) ) {
-        $c->flash->{message} = "Errore nell'invio del messaggio. ".Dumper($c->error);
+        $c->flash(error_msg => "Errore nell'invio dell'Email. ".Dumper($c->error));
         $c->error(0);
         return 0;
     } else {
-        $c->flash->{message} = "Messaggio inviato correttamente.";
+        $c->stash(mail_message => "Email inviata correttamente a $to");
         return 1;
     }
 }
@@ -944,11 +944,11 @@ sub process_dnsupdate : Private {
 sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
     my ($self, $c) = @_;
 
-    my @col_names = qw(state id date type user building department 
+    my @col_names = qw(id state date type user building department 
                        manager macaddress hostname domain subnet host);
 
     $c->stash(col_names => \@col_names);
-    my @col_searchable = qw( me.state me.id me.date type.type user.fullname building.name department.name 
+    my @col_searchable = qw( me.id me.state me.date type.type user.fullname building.name department.name 
                             area.manager me.macaddress me.hostname department.domain subnet host);
     $c->stash(col_searchable => \@col_searchable);
 
@@ -957,15 +957,21 @@ sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
                );
 
     $c->stash(col_formatters => {
-        state => sub {
-            my ($c, $rs)= @_;
-            return $rs->state;
-        },
         id => sub {
             my ($c, $rs)= @_;
             return '<a id="click_ref" href="' .
               $c->uri_for_action('/iprequest/view',  [ $rs->id ]) .
                 '">' . $rs->id . '</a>';
+        },
+        state => sub {
+            my ($c, $rs)= @_;
+            my $label;
+            $rs->state eq 0 and $label = "Da Conv";
+            $rs->state eq 1 and $label = "Convalidata";
+            $rs->state eq 2 and $label = "Attiva";
+            $rs->state eq 3 and $label = "Convalidata";
+            $rs->state eq 4 and $label = "Archiviata";
+            return $label;
         },
         date => sub {
             my ($c, $rs)= @_;
