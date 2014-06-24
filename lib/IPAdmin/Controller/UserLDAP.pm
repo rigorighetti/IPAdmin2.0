@@ -93,8 +93,8 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
     foreach my $area (@managed_area){
         $it = $c->model("IPAdminDB::IPRequest")->
             search({-and => [area => $area->id, state => {"!=" => $IPAdmin::ARCHIVED}]},
-                   {prefetch => [qw(type ),{area => ['building','department','manager']}],
-                    select   => [qw(id date type.type area.department area.building
+                   {prefetch => [qw(type user ),{area => ['building','department','manager']}],
+                    select   => [qw(id date subnet user.fullname user.id type.type area.department area.building
                               area.manager macaddress area.department hostname state subnet host )]
                 });
         while($e = $it->next){
@@ -104,7 +104,7 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
     }
 
     @myrequests = $c->model("IPAdminDB::IPRequest")->search( {user => $c->stash->{'object'}->id},
-                {prefetch => [qw(type ),{area => ['building','department','manager']}],
+                {prefetch => [qw(type subnet),{area => ['building','department','manager']}],
                  select   => [qw(id date type.type area.department area.building
                               area.manager macaddress area.department hostname state subnet host )]
                 });

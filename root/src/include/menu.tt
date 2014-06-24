@@ -14,7 +14,7 @@
  		 },	
 		{	
 		     name = 'Istruzioni',
-     		     path = c.uri_for('/help/view/howto'),
+     		     path = c.uri_for('/help/view',{page => 'howto'}),
  		 },		 
 		 {
 		     name = 'About',

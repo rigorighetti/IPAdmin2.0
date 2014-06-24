@@ -100,7 +100,8 @@ td.data {padding-left:20px;}
          [% IF error.name %]<span class="error" id="error">[% error.mac %] </span>[%END%]
          <span class="left data">Nome host:</span> <input class="right" type="text" name="hostname" value="[%hostname%]" /><br>
          [% IF error.hostname %]<span class="error" id="error">[% error.hostname %] </span>[%END%]
-        </div>  
+        </div> 
+        <div class="confirm"><a href="[% c.uri_for('/help/view',{page => 'howto'}) %]">Ho preso visione delle norme Sapienza</a><span><input type="checkbox" id="confirm" value="confirm" name="confirm"></span></div> 
         <div class="section">
          <div class="buttons">
            <input id="submit" type="submit" name="submit" value="Invia la  Richiesta"> 

@@ -499,6 +499,8 @@ sub check_ipreq_form : Private {
     my $guest_fax      = $c->req->param('guest_fax') || '';
     my $guest_phone    = $c->req->param('guest_phone') || '';
     my $guest_mail     = $c->req->param('guest_mail') || '';
+    my $confirm        = $c->req->param('confirm') || '';
+
 
     if ( $area eq '' and !defined($c->stash->{object}) ) {
         $c->stash->{error_msg} = "Selezionare una struttura!";
@@ -515,13 +517,17 @@ sub check_ipreq_form : Private {
      }
 
     if ( $hostname eq '' ) {
-	$c->stash->{error_msg} = "Campo Hostname obbligatorio!";
-	return 0;
+	   $c->stash->{error_msg} = "Campo Hostname obbligatorio!";
+	   return 0;
      }    
     if ( $type eq '' ) {
-    $c->stash->{error_msg} = "Tipo di apparato obbligatorio!";
-    return 0;
-     }    
+        $c->stash->{error_msg} = "Tipo di apparato obbligatorio!";
+        return 0;
+     }  
+    if ( $confirm eq '' ) {
+        $c->stash->{error_msg} = "Devi prima aver letto ed accettato le norme";
+        return 0;
+    } 
 
     if ( $host ne '' and $subnet ne '' and 
         $schema->search({subnet=> $subnet, host => $host})->count ) {
@@ -953,7 +959,7 @@ sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
     $c->stash(col_searchable => \@col_searchable);
 
     $c->stash(resultset_search_opt =>
-                {prefetch => ['type','user',{area => ['building','department', 'manager']}]}
+                {prefetch => ['type','user','subnet',{area => ['building','department', 'manager']}]}
                );
 
     $c->stash(col_formatters => {

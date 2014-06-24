@@ -31,7 +31,7 @@
     <meta name="selected-link" value="repo_source" data-pjax-transient />
       <meta name="google-analytics" content="UA-3769691-2">
 
-    <meta content="collector.githubapp.com" name="octolytics-host" /><meta content="collector-cdn.github.com" name="octolytics-script-host" /><meta content="github" name="octolytics-app-id" /><meta content="5D3FFE24:01FD:12E72865:53A83945" name="octolytics-dimension-request_id" />
+    <meta content="collector.githubapp.com" name="octolytics-host" /><meta content="collector-cdn.github.com" name="octolytics-script-host" /><meta content="github" name="octolytics-app-id" /><meta content="5D3FFE24:4016:C9524F7:53A9829F" name="octolytics-dimension-request_id" />
     
 
     
@@ -40,14 +40,14 @@
 
 
     <meta content="authenticity_token" name="csrf-param" />
-<meta content="WA+o8QlrRC9Q9F18RF5pPSQabqxlckZ2IlKvMpNTy/Jk6GvbBVOPC7pJyx+dHRIVNWHNSuEgKhiMfgHhP0M9cA==" name="csrf-token" />
+<meta content="SCEmoUWXcyrZGSi6t98bS6nU9B6bv4vvi3gECWZCJ+pJ6iwvMunwCN/cJMFpzGSRReKQk5ho0mKFAXRoeO5ARg==" name="csrf-token" />
 
-    <link href="https://assets-cdn.github.com/assets/github-eb5c3c423cbc57fa389bbe6f9a4bb3a6ce0cf4cf.css" media="all" rel="stylesheet" type="text/css" />
-    <link href="https://assets-cdn.github.com/assets/github2-17623a85ccf3de21ab65566d4a60a8dc5db55168.css" media="all" rel="stylesheet" type="text/css" />
+    <link href="https://assets-cdn.github.com/assets/github-929b42097301eeca1cda71b81514db02ad186804.css" media="all" rel="stylesheet" type="text/css" />
+    <link href="https://assets-cdn.github.com/assets/github2-56a4b5fe77cda9c841a8bc19ebf8edd02bb3b0ea.css" media="all" rel="stylesheet" type="text/css" />
     
 
 
-    <meta http-equiv="x-pjax-version" content="e977bc197a54cd5b202e0152ad03012e">
+    <meta http-equiv="x-pjax-version" content="153dab39fda657d0bd437e8c01d87c32">
 
       
   <meta name="description" content="Plugins - Plug-ins for DataTables" />
@@ -85,7 +85,7 @@
 
       <ul class="top-nav">
           <li class="explore"><a href="/explore">Explore</a></li>
-        <li class="features"><a href="/features">Features</a></li>
+          <li class="features"><a href="/features">Features</a></li>
           <li class="enterprise"><a href="https://enterprise.github.com/">Enterprise</a></li>
           <li class="blog"><a href="/blog">Blog</a></li>
       </ul>
@@ -98,7 +98,7 @@
     
       data-repo="DataTables/Plugins"
       data-branch="master"
-      data-sha="56d8a979ba9c11c34eed96bb020a4cf1c95327f3"
+      data-sha="18b6b7468d5796e1ed29dbd53b579f2cf8a93971"
   >
   <div class="display hidden"></div>
 </div>
@@ -165,7 +165,7 @@
   </a>
 
     <a class="social-count js-social-count" href="/DataTables/Plugins/stargazers">
-      220
+      221
     </a>
 
   </li>
@@ -178,7 +178,7 @@
         Fork
       </a>
       <a href="/DataTables/Plugins/network" class="social-count">
-        451
+        457
       </a>
     </li>
 </ul>
@@ -313,7 +313,7 @@
           
 
 
-<a href="/DataTables/Plugins/blob/b644af9c803f81a6d6397c3f06e8ef02acfd1aea/integration/jqueryui/dataTables.jqueryui.css" class="hidden js-permalink-shortcut" data-hotkey="y">Permalink</a>
+<a href="/DataTables/Plugins/blob/1e1d517aa416194bbd127189f8e7e68863d3d781/integration/jqueryui/dataTables.jqueryui.css" class="hidden js-permalink-shortcut" data-hotkey="y">Permalink</a>
 
 <!-- blob contrib key: blob_contributors:v21:d86449530def0554270abef7738a1c16 -->
 
@@ -368,7 +368,7 @@
                  data-name="gh-pages"
                  data-skip-pjax="true"
                  rel="nofollow"
-                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 class="js-navigation-open select-menu-item-text css-truncate-target"
                  title="gh-pages">gh-pages</a>
             </div> <!-- /.select-menu-item -->
             <div class="select-menu-item js-navigation-item selected">
@@ -377,7 +377,7 @@
                  data-name="master"
                  data-skip-pjax="true"
                  rel="nofollow"
-                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 class="js-navigation-open select-menu-item-text css-truncate-target"
                  title="master">master</a>
             </div> <!-- /.select-menu-item -->
         </div>
@@ -936,7 +936,7 @@
     </a>
 
     <ul class="site-footer-links">
-      <li>&copy; 2014 <span title="0.03457s from github-fe138-cp1-prd.iad.github.net">GitHub</span>, Inc.</li>
+      <li>&copy; 2014 <span title="0.03814s from github-fe128-cp1-prd.iad.github.net">GitHub</span>, Inc.</li>
         <li><a href="/site/terms">Terms</a></li>
         <li><a href="/site/privacy">Privacy</a></li>
         <li><a href="/security">Security</a></li>
@@ -973,7 +973,7 @@
 
 
       <script crossorigin="anonymous" src="https://assets-cdn.github.com/assets/frameworks-51e3b077e56f2f3244290e430b8d05253607065b.js" type="text/javascript"></script>
-      <script async="async" crossorigin="anonymous" src="https://assets-cdn.github.com/assets/github-8dbe1dbe689fbe0a47e0c61c25c0929ff88ad651.js" type="text/javascript"></script>
+      <script async="async" crossorigin="anonymous" src="https://assets-cdn.github.com/assets/github-f92d49cb0619e2060af322349fe2acfbc9e011fc.js" type="text/javascript"></script>
       
       
         <script async src="https://www.google-analytics.com/analytics.js"></script>
