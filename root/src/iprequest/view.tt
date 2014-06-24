@@ -13,19 +13,35 @@
 
   <div id="tabs-1">
     <div class="right">
-      <div id="rightbox">
-        Prova testo sulla destra per pulsanti aggiuntivi.
+      <div class="rightbox">
+         [% IF object.state == 0 -%] 
+          <a href=[%c.uri_for_action('iprequest/validate', [object.id]) %]> [%ui_icon('check')%] Convalida</a><br>
+         [% END -%]
+         [% IF object.state == 1 -%] 
+          <a href=[%c.uri_for_action('iprequest/activate', [object.id]) %]> [%ui_icon('check')%] Attiva</a><br>
+         [% END -%]
+         [% IF object.state == 3 -%] 
+          <a href=[%c.uri_for_action('iprequest/activate', [object.id]) %]> [%ui_icon('check')%] Riattiva</a><br>
+         [% END -%]
+         [% IF object.state != 4 -%] 
+          <a href=[%c.uri_for_action('iprequest/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica Dati dell'Apparato</a><br>
+          <a href=[% c.uri_for_action('iprequest/delete', [object.id]) %]> [% ui_icon('closethick') %]  Rinuncia</a><br>
+         [% END -%]
+         [% IF object.state == 2 -%] 
+          <a href=[% c.uri_for_action('alias/create', {def_ipreq=>object.id }) %]> Aggiungi Alias[% ui_icon('circle-plus')%]</a><br>
+         [% END -%]
+         <a href=[%c.uri_for_action('iprequest/notify', [object.id]) %]> [%ui_icon('mail-closed')%]Invia notifica</a><br>
       </div>
     </div>
     <div id="infoipreq">
       <div class="left">Id: </div>[% object.id %] <div class="right">Data Richiesta: [% data %]</div>
-      <hr style="clear:both">
+      <br><hr><br>
       <div class="title">Dati del Responsabile</div>
       <div class="section">
         <span class="left">Nome e Cognome:</span> <span class="right">[% object.user.fullname %]</span><br>
         <span class="left">Telefono:</span> <span class="right">[% object.user.telephone %]</span><br>
-          <span class="left">Fax:</span> <span class="right">[% object.user.fax %]</span><br>
-          <span class="left">Email:</span> <span class="right">[% object.user.email %]</span><br>
+        <span class="left">Fax:</span> <span class="right">[% object.user.fax %]</span><br>
+        <span class="left">Email:</span> <span class="right">[% object.user.email %]</span><br>
         [% IF object.guest -%]
         <div class="title">Richiedente a Tempo Determinato</div>
          <div id="guest">

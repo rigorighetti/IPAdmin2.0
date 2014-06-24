@@ -145,7 +145,39 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
 }
 
 
+=head2 view
 
+=cut
+
+sub print : Chained('object') : PathPart('print') : Args(0) {
+    my ( $self, $c ) = @_;
+    my $req = $c->stash->{object};
+
+
+
+    #Creare lista di assegnazioni per richiesta IP
+    my @assignement =  map +{
+            id          => $_->id,
+            date_in     => $_->date_in  ? IPAdmin::Utils::print_short_timestamp($_->date_in) : '',
+            date_out    => $_->date_out ? IPAdmin::Utils::print_short_timestamp($_->date_out) : '',
+            state       => $_->state,
+            },
+            $req->map_assignement;
+
+    #Creare lista degli alias per richiesta IP
+    my @alias =  map +{
+            id          => $_->id,
+            #state       => $_->state,
+            cname       => $_->cname,
+            },
+            $req->map_alias;
+
+
+    $c->stash( data => IPAdmin::Utils::print_short_timestamp($req->date));
+    $c->stash( assignement => \@assignement );
+    $c->stash( alias => \@alias );
+    $c->stash( template => 'iprequest/print.tt' );
+}
 
 =head2 edit
 
@@ -833,7 +865,8 @@ sub process_notify : Private {
         #di rete: "C'è una nuova richiesta da validare"
         $body = <<EOF;
 Gentile referente, 
-c'è una nuova richiesta IP che richiede il suo intervento: $url
+c'è una nuova richiesta IP che richiede il suo intervento: 
+    $url
 EOF
 	if(defined $ipreq->area->manager){
           $to = $ipreq->area->manager->email;
@@ -849,7 +882,8 @@ EOF
         $body = <<EOF;
 Gentile Utente, 
 la sua richiesta è stata validata. 
-Per procedere all'attivazione del nuovo indirizzo IP deve seguire il link, stampare e firmare il modulo, ed infine inviarlo via fax al 23837: $url
+Per procedere all'attivazione del nuovo indirizzo IP deve seguire il link, stampare e firmare il modulo, ed infine inviarlo via fax al 23837: 
+    $url
 EOF
         $subject = "Richiesta di indirizzo IP id: ".$ipreq->id." convalidata";
 
@@ -860,7 +894,8 @@ EOF
         $body = <<EOF;
 Gentile Utente, 
 il suo indirizzo IP è stato attivato.
-E' ora possibile configurare la scheda di rete del dispositivo con i dati presenti nel modulo: $url
+E' ora possibile configurare la scheda di rete del dispositivo con i dati presenti nel modulo: 
+    $url
 EOF
         $subject = "Richiesta di indirizzo IP id: ".$ipreq->id." attiva";
         if ($ipreq->guest) {

@@ -11,6 +11,14 @@
 </div>
 
 
+<div class="right rightbox">
+      Legenda: 
+      <table>
+        <tr><td bgcolor="#F97A7A" width=20></td><td>Nuova</td><td bgcolor="#DFDD41" width=20></td><td>Convalidata</td>
+            <td bgcolor="#7FCD31" width=20></td><td>Attiva</td><td bgcolor="#A96FDA" width=20></td><td>Archiviata</td>
+      </table>
+</div>
+
 [% init_table("ipreq",null,{sortby => 1},json_url=c.uri_for('list/js')) -%]
 <table class="display dataTable" id="ipreq">
 <thead>
