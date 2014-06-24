@@ -248,6 +248,7 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
     }
     $tmpl_param{type_def}       = $c->req->param('type') || $req->type->id;
     $tmpl_param{area_def}       = $req->area->id;
+    $tmpl_param{dom_def}       = $req->area->department->domain;
 
     $c->stash(user_def => $c->stash->{object}->user->id);
 
@@ -1010,7 +1011,7 @@ sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
             $rs->state eq 0 and $label = "Da Conv";
             $rs->state eq 1 and $label = "Convalidata";
             $rs->state eq 2 and $label = "Attiva";
-            $rs->state eq 3 and $label = "Convalidata";
+            $rs->state eq 3 and $label = "Pre-Arch.";
             $rs->state eq 4 and $label = "Archiviata";
             return $label;
         },
