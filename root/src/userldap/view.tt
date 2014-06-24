@@ -58,7 +58,7 @@
             <td bgcolor="#7FCD31" width=20></td><td>Attiva</td><td bgcolor="#A96FDA" width=20></td><td>Archiviata</td>
         </table>
     </div>
-  [% FOREACH i IN object.map_user_ipreq %]
+  [% FOREACH i IN myrequests %]
     [% IF loop.first %]
     [% init_table('iprequest_list',[3,4,8,25,10,7,15,2,6]) %]
     <table class="display" id="iprequest_list">

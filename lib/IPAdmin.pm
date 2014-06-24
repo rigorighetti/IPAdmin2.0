@@ -114,7 +114,7 @@ __PACKAGE__->config(
               },
            }, #realms
      },  #plugin::auth
-      'View::Email' => {
+    'View::Email' => {
             # Where to look in the stash for the email information.
             # 'email' is the default, so you don't have to specify it.
             stash_key => 'email',
@@ -142,10 +142,14 @@ __PACKAGE__->config(
                     host     => 'smtp.googlemail.com', # defaults to localhost
                     ssl      => 1, 
                     port     => 465,
+		                timeout => 10,
                     sasl_username => 'w3.staff@uniroma1.it',
                     sasl_password => 'C1t1c0rd',
             }
           }
+        },
+    'View::JSON' => {
+          expose_stash => 'json_data',
         },
     #remove stale sessions from db
     'Plugin::Session' => {

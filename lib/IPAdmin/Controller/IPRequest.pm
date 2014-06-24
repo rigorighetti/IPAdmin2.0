@@ -9,6 +9,8 @@ use Data::Dumper;
 use IPAdmin::Utils qw(str_to_time);
 use Email::Send;
 
+with 'IPAdmin::ControllerRole::JQDatatable';
+
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -84,20 +86,27 @@ L'amministratore vede tutte le richieste insieme (iprequest/list)
 sub list : Chained('base') : PathPart('list') : Args(0) {
    my ( $self, $c ) = @_;
 
-   my @iprequest_table =  map +{
-        id          => $_->id,
-        date        => IPAdmin::Utils::print_short_timestamp($_->date),
-        area        => $_->area,
-        user        => $_->user,
-        state       => $_->state,
-        type        => $_->type->type,
-        macaddress  => $_->macaddress,
-        hostname    => $_->hostname,
-        subnet      => $_->subnet,
-        host        => $_->host,
-        }, $c->stash->{resultset}->search({});
+   # my @iprequest_table =  map +{
+   #      id          => $_->id,
+   #      date        => IPAdmin::Utils::print_short_timestamp($_->date),
+   #      area        => $_->area,
+   #      user        => $_->user,
+   #      state       => $_->state,
+   #      type        => $_->type->type,
+   #      macaddress  => $_->macaddress,
+   #      hostname    => $_->hostname,
+   #      subnet      => $_->subnet,
+   #      host        => $_->host,
+   #      }, $c->stash->{resultset}->search({},
+   #              {prefetch => [qw(type user ),{area => ['building','department']}],
+   #               select   => [qw(id date type.type user macaddress user.username 
+   #                  user.fullname area.department area.building
+   #                   area.manager user.fullname
+   #                   area.department  state host )]
 
-   $c->stash( iprequest_table => \@iprequest_table );
+   #              });
+
+   # $c->stash( iprequest_table => \@iprequest_table );
    $c->stash( template        => 'iprequest/list.tt' );
 }
 
@@ -380,7 +389,7 @@ sub create : Chained('base') : PathPart('create') : Args() {
         if ($done) {
             my $msg = $c->stash->{message} ;
             $c->forward('process_notify');
-            $c->flash(message => $msg." ".$c->stash->{message});
+            $c->flash(message => $msg." ".$c->stash->{mail_message});
             $c->stash( default_backref =>
                 $c->uri_for_action( "iprequest/list" ) );
             $c->detach('/follow_backref');
@@ -499,7 +508,7 @@ sub process_create : Private {
     return 0;
     } else {
     $c->stash(object => $ret);
-    $c->stash->{message} = "La richiesta IP è stata creata.";
+    $c->stash->{message} = "La richiesta IP è stata creata ed è ora in attesa di approvazione da parte del referente.";
     return 1;
     }
 }
@@ -861,7 +870,6 @@ EOF
   	  $c->detach('/follow_backref');	 
 	}
 	$subject = "Nuova richiesta di indirizzo IP id: ".$ipreq->id
-
     }
     elsif ($ipreq->state == $IPAdmin::PREACTIVE) {
         #A seguito di ipreq/validate, preparo il messaggio per l'utente: "La tua richiesta è stata validata: stampa, firma ed invia il modulo via fax (o caricamento pdf?)"
@@ -925,11 +933,11 @@ EOF
     $c->forward( $c->view('Email') );
 
     if ( scalar( @{ $c->error } ) ) {
-        $c->flash->{message} = "Errore nell'invio del messaggio. ".Dumper($c->error);
+        $c->flash(error_msg => "Errore nell'invio dell'Email. ".Dumper($c->error));
         $c->error(0);
         return 0;
     } else {
-        $c->flash->{message} = "Messaggio inviato correttamente.";
+        $c->stash(mail_message => "Email inviata correttamente a $to");
         return 1;
     }
 }
@@ -964,6 +972,104 @@ sub process_dnsupdate : Private {
 }
 
 
+=head2 list_js
+
+=cut
+
+sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
+    my ($self, $c) = @_;
+
+    my @col_names = qw(id state date type user building department 
+                       manager macaddress hostname domain subnet host);
+
+    $c->stash(col_names => \@col_names);
+    my @col_searchable = qw( me.id me.state me.date type.type user.fullname building.name department.name 
+                            area.manager me.macaddress me.hostname department.domain subnet host);
+    $c->stash(col_searchable => \@col_searchable);
+
+    $c->stash(resultset_search_opt =>
+                {prefetch => ['type','user',{area => ['building','department', 'manager']}]}
+               );
+
+    $c->stash(col_formatters => {
+        id => sub {
+            my ($c, $rs)= @_;
+            return '<a id="click_ref" href="' .
+              $c->uri_for_action('/iprequest/view',  [ $rs->id ]) .
+                '">' . $rs->id . '</a>';
+        },
+        state => sub {
+            my ($c, $rs)= @_;
+            my $label;
+            $rs->state eq 0 and $label = "Da Conv";
+            $rs->state eq 1 and $label = "Convalidata";
+            $rs->state eq 2 and $label = "Attiva";
+            $rs->state eq 3 and $label = "Convalidata";
+            $rs->state eq 4 and $label = "Archiviata";
+            return $label;
+        },
+        date => sub {
+            my ($c, $rs)= @_;
+            return IPAdmin::Utils::print_short_timestamp($rs->date),
+        },
+        type => sub {
+            my ($c, $rs)= @_;
+            return $rs->type->type;
+        },
+        user => sub {
+            my ($c, $rs)= @_;
+            return '<a href="' .
+              $c->uri_for_action('/userldap/view',  [ $rs->user->username ]) .
+                '">' . $rs->user->fullname . '</a>';
+        },
+        building => sub {
+            my ($c, $rs)= @_;
+            return '<a href="' .
+              $c->uri_for_action('/building/view',  [ $rs->area->building->id ]) .
+                '">' .$rs->area->building->name. '</a>';
+        },
+        department => sub {
+            my ($c, $rs)= @_;
+            return '<a href="' .                
+            $c->uri_for_action('/department/view',  [ $rs->area->department->id ]) .
+            '">' .$rs->area->department->name. '</a>';
+        },        
+        manager => sub {
+            my ($c, $rs)= @_;
+            return $rs->area->manager->fullname;
+        },
+        macaddress => sub {
+            my ($c, $rs)= @_;
+            return $rs->macaddress;
+        },
+        subnet => sub {
+            my ($c, $rs)= @_;
+            defined($rs->subnet) and return $rs->subnet->id;
+            return '';
+        },
+        host => sub {
+            my ($c, $rs)= @_;
+            defined($rs->host) and return $rs->host; 
+            return '';
+        },
+        domain => sub {
+            my ($c, $rs)= @_;
+            defined($rs->area->department->domain) and 
+                return $rs->area->department->domain;
+            return '';
+        },
+        hostname => sub {
+            my ($c, $rs)= @_;
+            defined($rs->hostname) and 
+                return $rs->hostname;
+            return '';
+        },
+
+
+    });
+
+    $c->detach("datatable_response");
+}
 
 =head1 AUTHOR
 

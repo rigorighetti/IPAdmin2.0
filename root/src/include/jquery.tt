@@ -2,7 +2,7 @@
       c.uri_for('/static/css/theme/jquery-ui-1.10.4.custom.css'),
       )
 -%]
-[% link_js.push(c.uri_for('/static/js/jquery-1.10.2.js'), 
+[% link_js.push(c.uri_for('/static/js/jquery.js'), 
                c.uri_for('/static/js/jquery-ui-1.10.4.custom.js'),
                 ) 
 -%]

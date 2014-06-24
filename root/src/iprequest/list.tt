@@ -1,7 +1,7 @@
-[% META 
-   title='IP'
+[% META
+   title="IP"
    use_table=1
-   section='Richieste'
+   section="Richieste"
 -%]
 
 <div class="buttons create_btn">
@@ -10,7 +10,6 @@
 [% add_css_create_btn %]
 </div>
 
-<div style="background:#f5f5f5">
 
 <div class="right rightbox">
       Legenda: 
@@ -20,55 +19,24 @@
       </table>
 </div>
 
-[% FOREACH i IN iprequest_table %]
-   [% IF loop.first %] 
-   [%init_table('iprequest') %]  
-   <table class="display" id="iprequest">
-    <thead>  
-	   <tr>
-	    <th>Id</th>
- 	    <th>Data</th>
-	    <th>Tipo</th>
-	    <th>Responsabile</th>
-      <th>Area</th>
- 	    <th>Referente di Rete</th>
-	    <th>Mac Address</th>
-	    <th>Nome a Dominio</th>
-      <th>IP</th>
-	    <th>Commands</th>
-     </tr>
-    </thead>  
-    <tbody>
-  [% END %]
-     <tr [% IF i.state == 0 -%]                 class="newip"     [% END -%]
-         [% IF i.state == 1 or i.state == 3 -%] class="preactive" [% END -%]
-         [% IF i.state == 2 -%]                 class="active"    [% END -%]
-         [% IF i.state == 4 -%]                 class="archived"  [% END -%] > 
-	    <td class="white"><a href=[% c.uri_for_action('/iprequest/view', [i.id]) %]>[% i.id %]</a></td>
- 	    <td>[% i.date %]</td>
-	    <td>[% i.type %]</td>
-	    <td><a href="[% c.uri_for_action('/userldap/view', [i.user.username]) %]">[% i.user.fullname %]</a></td>
- 	    <td>[% i.area.department.name %] <i>presso</i> [% i.area.building.name %]</td>
- 	    <td>[% i.area.manager.fullname %]</td>
-	    <td>[% i.macaddress %]</td>
-	    <td>[% i.hostname %].[% i.area.department.domain %]</td>
-      <td>[% IF i.state != 0 and i.host -%] 151.100.[% i.subnet.id %].[% i.host %] [% END -%]</td>
-	    <td class="white">
-       [% IF i.state != 4 -%]
-	     <a href="[% c.uri_for_action('iprequest/edit',[i.id])%]">[% icon('edit') %]</a>
-	     <a href="[% c.uri_for_action('iprequest/delete',[i.id])%]">[% icon('remove') %]</a>
-	     <div class="buttons small_btn">
-             [%IF i.state == 0 -%]
-                    <a href="[% c.uri_for_action('iprequest/validate',[i.id], {backref=>c.req.uri } ) %]">Convalida</a>
-             [%END -%]
-       </div>
-       [% END -%]
-	    </td>
-     </tr>
-  [% IF loop.last %]
-    </tbody>
-  </table>
-  [% END %]
-[% END %]
+[% init_table("ipreq",null,{sortby => 1},json_url=c.uri_for('list/js')) -%]
+<table class="display dataTable" id="ipreq">
+<thead>
+<tr>
+      <th>Id</th>
+      <th>Stato</th>
+      <th>Data</th>
+      <th>Tipo</th>
+      <th>Responsabile</th>
+      <th>Edificio</th>
+      <th>Struttura</th>
+      <th>Referente di Rete</th>
+      <th>Mac Address</th>
+      <th>Hostname</th>
+      <th>Nome Dominio</th>
+      <th>Subnet</th>
+      <th>Host</th>
+</tr>
+</thead>
+</table>
 
-</div>
