@@ -267,7 +267,7 @@ div#infoipreq {
  border:solid 1px black;
 }
 
-div#printipreq {
+div#printreq {
  min-width: 530px;
  max-width: 600px;
  max-height: 850px;
@@ -284,6 +284,10 @@ div.rightbox {
  padding: 15px;
  border-radius: 15px;
  border:solid 1px black;
+}
+
+div.rightbox span {
+    margin-top: 1px;
 }
 
 div#guest {

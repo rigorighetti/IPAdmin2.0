@@ -31,6 +31,7 @@
           <a href=[% c.uri_for_action('alias/create', {def_ipreq=>object.id }) %]> Aggiungi Alias[% ui_icon('circle-plus')%]</a><br>
          [% END -%]
          <a href=[%c.uri_for_action('iprequest/notify', [object.id]) %]> [%ui_icon('mail-closed')%]Invia notifica</a><br>
+         <a href=[%c.uri_for_action('iprequest/print', [object.id]) %]> [%ui_icon('print')%]Stampa</a><br>
       </div>
     </div>
     <div id="infoipreq">
@@ -98,30 +99,6 @@
          </div>
         </div>
 
-    <div class="section">
-      <div class="buttons">	
-	     [% IF object.state == 0 -%] 
-        <a href=[%c.uri_for_action('iprequest/validate', [object.id]) %]> [%ui_icon('check')%] Convalida</a>
-	     [% END -%]
-	     [% IF object.state == 1 -%] 
-        <a href=[%c.uri_for_action('iprequest/activate', [object.id]) %]> [%ui_icon('check')%] Attiva</a>
-       [% END -%]
-	     [% IF object.state == 3 -%] 
-        <a href=[%c.uri_for_action('iprequest/activate', [object.id]) %]> [%ui_icon('check')%] Riattiva</a>
-       [% END -%]
-	     [% IF object.state != 4 -%] 
-        <a href=[%c.uri_for_action('iprequest/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica</a>
-	      &nbsp;<a href=[% c.uri_for_action('iprequest/delete', [object.id]) %]> [% ui_icon('closethick') %]  Rinuncia</a>
-	     [% END -%]
-       [% IF object.state == 2 -%] 
-        <a href=[% c.uri_for_action('alias/create', {def_ipreq=>object.id }) %]> Aggiungi Alias[% ui_icon('circle-plus')%]</a>
-       [% END -%]
-       <a href=[%c.uri_for_action('iprequest/notify', [object.id]) %]> [%ui_icon('mail-closed')%]Invia notifica</a>
-
-
-      </div>
-    </div>
-
    </div>
   </div>
 
@@ -157,7 +134,7 @@
   </div>
 
   <div id="tabs-3">
-  [% FOREACH a IN alias %]
+  [% FOREACH a IN object.map_alias %]
     [% IF loop.first %]
     [% init_table('alias') %]
     <table class="display" id="alias">
@@ -176,7 +153,7 @@
             [% IF a.state == 4 -%]                 class="archived"  [% END -%] >
           <td class="white">[% a.id %]</td>
           <td>[% a.cname %]</td>
-          <td> --- </td>
+          <td>[% a.ip_request.hostname %].[% a.ip_request.area.department.domain %].uniroma1.it </td>
         </tr>
         [% IF loop.last %]
       </tbody>

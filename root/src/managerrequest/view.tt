@@ -53,10 +53,10 @@
 
     <div class="section">
       <div class="buttons"> 
-       [% IF object.state != 2  -%] 
+       [% IF object.state == 0  -%] 
         <a href=[%c.uri_for_action('managerrequest/activate', [object.id]) %]> [%ui_icon('check')%] Attiva</a>
        [% END -%]
-       [% IF object.state != 3 -%] 
+       [% IF object.state != 3 AND object.state != 4 -%] 
         <a href=[%c.uri_for_action('managerrequest/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica</a>&nbsp;
         <a href=[% c.uri_for_action('managerrequest/delete', [object.id]) %]> [% ui_icon('closethick') %]  Archivia</a>
        [%END -%]

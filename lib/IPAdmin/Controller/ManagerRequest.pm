@@ -95,7 +95,15 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
     $c->stash( template => 'managerrequest/view.tt' );
 }
 
+sub print : Chained('object') : PathPart('print') : Args(0) {
+    my ( $self, $c ) = @_;
+    my $req = $c->stash->{object};
+    $c->stash( date    => IPAdmin::Utils::print_short_timestamp($req->date));
+    $req->date_in  and $c->stash( date_in => IPAdmin::Utils::print_short_timestamp($req->date_in));
+    $req->date_out and $c->stash( date_out => IPAdmin::Utils::print_short_timestamp($req->date_out));
 
+    $c->stash( template => 'managerrequest/print.tt' );
+}
 
 
 =head2 edit
@@ -359,6 +367,7 @@ sub process_activate : Private {
     #Cambia lo stato dell'managerrequest
     $req->state($IPAdmin::ACTIVE);
     $req->date_in(time);
+    $req->date_out(time + 63113852);
     my $ret1 =$req->update;
 
     #aggiunge referente all'area

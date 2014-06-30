@@ -1,4 +1,4 @@
- <div id="printipreq">
+ <div id="printreq">
       <div class="left">Id: </div>[% object.id %] <div class="right">Data Richiesta: [% data %]</div>
       <hr style="clear:both">
       <div class="title">Dati del Responsabile</div>

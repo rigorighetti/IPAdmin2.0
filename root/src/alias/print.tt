@@ -1,0 +1,32 @@
+<div id="printreq">
+  <div class="left">Id: </div>[% object.id %]
+    <hr style="clear:both">
+    <div class="title">Dati della Struttura</div>
+      <div class="section">
+	     <span class="left">Struttura:</span><span class="right">[% object.ip_request.area.department.name %] presso [% object.ip_request.area.building.name %]</span><br>
+      </div>
+    <div class="title">Dati del Responsabile</div>
+      <div class="section">
+        <span class="left">Nome e Cognome:</span> <span class="right">[% object.ip_request.user.fullname %]</span><br>
+        <span class="left">Telefono:</span> <span class="right">[% object.ip_request.user.telephone %]</span><br>
+        <span class="left">Fax:</span> <span class="right">[% object.ip_request.user.fax %]</span><br>
+        <span class="left">Email:</span> <span class="right">[% object.ip_request.user.email %]</span><br>
+      </div>
+    <div class="title">Dati dell'Alias</div>
+      <div class="section">
+        <span class="left">Alias:</span><span class="right">[% object.cname %].uniroma1.it</span><br>
+        <span class="left">Indirizzo IP:</span><span class="right">151.100.[% object.ip_request.subnet.id %].[% object.ip_request.host %]</span><br>
+        <span class="left">Hostname:</span><span class="right">[% object.ip_request.hostname %].[% object.ip_request.area.department.domain %].uniroma1.it</span><br>
+      </div>
+    <br><br>
+    <span class="right"><b>Firma del Responsabile</b></span><br><br><br>
+    <span class="right">_____________________________</span><br><br>
+  </div>
+  
+  <div style="margin:1px auto; text-align:center">
+    <hr>
+    Stampare la pagina ed inviarla firmata via <b>FAX</b> allo <b>06.4991.3837</b> (int <b>23837</b>). <br><br>
+    <button onclick="window.print()">Stampa</button>
+  </div>
+</div>
+</div>

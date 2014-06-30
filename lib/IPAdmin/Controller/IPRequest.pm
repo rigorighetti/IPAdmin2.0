@@ -129,18 +129,9 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
             },
             $req->map_assignement;
 
-    #Creare lista degli alias per richiesta IP
-    my @alias =  map +{
-            id          => $_->id,
-            #state       => $_->state,
-            cname       => $_->cname,
-            },
-            $req->map_alias;
-
 
     $c->stash( data => IPAdmin::Utils::print_short_timestamp($req->date));
     $c->stash( assignement => \@assignement );
-    $c->stash( alias => \@alias );
     $c->stash( template => 'iprequest/view.tt' );
 }
 
@@ -898,16 +889,18 @@ E' ora possibile configurare la scheda di rete del dispositivo con i dati presen
     $url
 EOF
         $subject = "Richiesta di indirizzo IP id: ".$ipreq->id." attiva";
-        if ($ipreq->guest) {
-            $cc = $ipreq->guest->email;
-        }
+        #Se il richiedente è a tempo determinato invia un'email anche al guest (ma come fa a vedere il modulo? Forse l'email non serve...)
+        #if ($ipreq->guest) {
+        #    $cc = $ipreq->guest->email;
+        #}
     } 
     elsif ($ipreq->state == $IPAdmin::INACTIVE) {
         #A seguito di ipreq/unactivate, preparo il messaggio per l'utente: "Il tuo IP è stato bloccato. Hai X giorni di tempo per riattivarlo o verrà assegnato a qualcun altro"
         my $ip = "151.100.".$ipreq->subnet->id.".".$ipreq->host;
         $body = <<EOF;
 Gentile Utente,
-il suo indirizzo IP $ip è stato bloccato in seguito all'inattività di oltre 90 giorni.
+il suo indirizzo IP $ip è stato bloccato in seguito ad una richiesta di rinuncia di indirizzo IP o all'inattività di oltre 90 giorni.
+    $url
 EOF
         $subject = "Richiesta di indirizzo IP id: ".$ipreq->id." scaduta";
         if ($ipreq->guest) {
@@ -918,7 +911,8 @@ EOF
         #A seguito di ipreq/delete, preparo il messaggio per l'utente: "Rinuncia dell'indirizzo IP terminata con successo"
         $body = <<EOF;
 Gentile Utente,
-il suo indirizzo IP, relativo alla richiesta id: $ipreq->id, è stato archiviato.
+il suo indirizzo IP, relativo alla richiesta id: ".$ipreq->id.", è stato archiviato.
+    $url
 EOF
         $subject = "Richiesta di indirizzo IP id: ".$ipreq->id." archiviata";
     }

@@ -4,19 +4,21 @@
    section="Richieste"
 -%]
 
-<div class="buttons create_btn">
+
+<div class="right rightbox">
+      Legenda: <br><br>
+      <table>
+        <tr>
+         <td bgcolor="#F97A7A" width=20></td><td>Nuova</td><td bgcolor="#DFDD41" width=20></td><td>Convalidata</td>
+         <td bgcolor="#7FCD31" width=20></td><td>Attiva</td><td bgcolor="#A96FDA" width=20></td><td>Archiviata</td>
+        </tr>
+      </table>
+</div>
+
+<div class="buttons create_btn left">
    <a href="[% c.uri_for_action('/iprequest/create') %]" >
    [% ui_icon('circle-plus') %] Nuova Richiesta IP</a>
 [% add_css_create_btn %]
-</div>
-
-
-<div class="right rightbox">
-      Legenda: 
-      <table>
-        <tr><td bgcolor="#F97A7A" width=20></td><td>Nuova</td><td bgcolor="#DFDD41" width=20></td><td>Convalidata</td>
-            <td bgcolor="#7FCD31" width=20></td><td>Attiva</td><td bgcolor="#A96FDA" width=20></td><td>Archiviata</td>
-      </table>
 </div>
 
 [% init_table("ipreq",null,{sortby => 1},json_url=c.uri_for('list/js')) -%]
