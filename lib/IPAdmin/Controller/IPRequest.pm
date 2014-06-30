@@ -129,6 +129,32 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
             },
             $req->map_assignement;
 
+
+    $c->stash( data => IPAdmin::Utils::print_short_timestamp($req->date));
+    $c->stash( assignement => \@assignement );
+    $c->stash( template => 'iprequest/view.tt' );
+}
+
+
+=head2 view
+
+=cut
+
+sub print : Chained('object') : PathPart('print') : Args(0) {
+    my ( $self, $c ) = @_;
+    my $req = $c->stash->{object};
+
+
+
+    #Creare lista di assegnazioni per richiesta IP
+    my @assignement =  map +{
+            id          => $_->id,
+            date_in     => $_->date_in  ? IPAdmin::Utils::print_short_timestamp($_->date_in) : '',
+            date_out    => $_->date_out ? IPAdmin::Utils::print_short_timestamp($_->date_out) : '',
+            state       => $_->state,
+            },
+            $req->map_assignement;
+
     #Creare lista degli alias per richiesta IP
     my @alias =  map +{
             id          => $_->id,
@@ -141,11 +167,8 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
     $c->stash( data => IPAdmin::Utils::print_short_timestamp($req->date));
     $c->stash( assignement => \@assignement );
     $c->stash( alias => \@alias );
-    $c->stash( template => 'iprequest/view.tt' );
+    $c->stash( template => 'iprequest/print.tt' );
 }
-
-
-
 
 =head2 edit
 
@@ -216,6 +239,7 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
     }
     $tmpl_param{type_def}       = $c->req->param('type') || $req->type->id;
     $tmpl_param{area_def}       = $req->area->id;
+    $tmpl_param{dom_def}       = $req->area->department->domain;
 
     $c->stash(user_def => $c->stash->{object}->user->id);
 
@@ -499,6 +523,8 @@ sub check_ipreq_form : Private {
     my $guest_fax      = $c->req->param('guest_fax') || '';
     my $guest_phone    = $c->req->param('guest_phone') || '';
     my $guest_mail     = $c->req->param('guest_mail') || '';
+    my $confirm        = $c->req->param('confirm') || '';
+
 
     if ( $area eq '' and !defined($c->stash->{object}) ) {
         $c->stash->{error_msg} = "Selezionare una struttura!";
@@ -515,13 +541,17 @@ sub check_ipreq_form : Private {
      }
 
     if ( $hostname eq '' ) {
-	$c->stash->{error_msg} = "Campo Hostname obbligatorio!";
-	return 0;
+	   $c->stash->{error_msg} = "Campo Hostname obbligatorio!";
+	   return 0;
      }    
     if ( $type eq '' ) {
-    $c->stash->{error_msg} = "Tipo di apparato obbligatorio!";
-    return 0;
-     }    
+        $c->stash->{error_msg} = "Tipo di apparato obbligatorio!";
+        return 0;
+     }  
+    if ( $confirm eq '' ) {
+        $c->stash->{error_msg} = "Devi prima aver letto ed accettato le norme";
+        return 0;
+    } 
 
     if ( $host ne '' and $subnet ne '' and 
         $schema->search({subnet=> $subnet, host => $host})->count ) {
@@ -827,7 +857,8 @@ sub process_notify : Private {
         #di rete: "C'è una nuova richiesta da validare"
         $body = <<EOF;
 Gentile referente, 
-c'è una nuova richiesta IP che richiede il suo intervento: $url
+c'è una nuova richiesta IP che richiede il suo intervento: 
+    $url
 EOF
 	if(defined $ipreq->area->manager){
           $to = $ipreq->area->manager->email;
@@ -843,7 +874,8 @@ EOF
         $body = <<EOF;
 Gentile Utente, 
 la sua richiesta è stata validata. 
-Per procedere all'attivazione del nuovo indirizzo IP deve seguire il link, stampare e firmare il modulo, ed infine inviarlo via fax al 23837: $url
+Per procedere all'attivazione del nuovo indirizzo IP deve seguire il link, stampare e firmare il modulo, ed infine inviarlo via fax al 23837: 
+    $url
 EOF
         $subject = "Richiesta di indirizzo IP id: ".$ipreq->id." convalidata";
 
@@ -854,19 +886,22 @@ EOF
         $body = <<EOF;
 Gentile Utente, 
 il suo indirizzo IP è stato attivato.
-E' ora possibile configurare la scheda di rete del dispositivo con i dati presenti nel modulo: $url
+E' ora possibile configurare la scheda di rete del dispositivo con i dati presenti nel modulo: 
+    $url
 EOF
         $subject = "Richiesta di indirizzo IP id: ".$ipreq->id." attiva";
-        if ($ipreq->guest) {
-            $cc = $ipreq->guest->email;
-        }
+        #Se il richiedente è a tempo determinato invia un'email anche al guest (ma come fa a vedere il modulo? Forse l'email non serve...)
+        #if ($ipreq->guest) {
+        #    $cc = $ipreq->guest->email;
+        #}
     } 
     elsif ($ipreq->state == $IPAdmin::INACTIVE) {
         #A seguito di ipreq/unactivate, preparo il messaggio per l'utente: "Il tuo IP è stato bloccato. Hai X giorni di tempo per riattivarlo o verrà assegnato a qualcun altro"
         my $ip = "151.100.".$ipreq->subnet->id.".".$ipreq->host;
         $body = <<EOF;
 Gentile Utente,
-il suo indirizzo IP $ip è stato bloccato in seguito all'inattività di oltre 90 giorni.
+il suo indirizzo IP $ip è stato bloccato in seguito ad una richiesta di rinuncia di indirizzo IP o all'inattività di oltre 90 giorni.
+    $url
 EOF
         $subject = "Richiesta di indirizzo IP id: ".$ipreq->id." scaduta";
         if ($ipreq->guest) {
@@ -877,7 +912,8 @@ EOF
         #A seguito di ipreq/delete, preparo il messaggio per l'utente: "Rinuncia dell'indirizzo IP terminata con successo"
         $body = <<EOF;
 Gentile Utente,
-il suo indirizzo IP, relativo alla richiesta id: $ipreq->id, è stato archiviato.
+il suo indirizzo IP, relativo alla richiesta id: ".$ipreq->id.", è stato archiviato.
+    $url
 EOF
         $subject = "Richiesta di indirizzo IP id: ".$ipreq->id." archiviata";
     }
@@ -953,7 +989,7 @@ sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
     $c->stash(col_searchable => \@col_searchable);
 
     $c->stash(resultset_search_opt =>
-                {prefetch => ['type','user',{area => ['building','department', 'manager']}]}
+                {prefetch => ['type','user','subnet',{area => ['building','department', 'manager']}]}
                );
 
     $c->stash(col_formatters => {
@@ -969,7 +1005,7 @@ sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
             $rs->state eq 0 and $label = "Da Conv";
             $rs->state eq 1 and $label = "Convalidata";
             $rs->state eq 2 and $label = "Attiva";
-            $rs->state eq 3 and $label = "Convalidata";
+            $rs->state eq 3 and $label = "Pre-Arch.";
             $rs->state eq 4 and $label = "Archiviata";
             return $label;
         },

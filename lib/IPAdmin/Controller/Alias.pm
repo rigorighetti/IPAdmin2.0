@@ -7,6 +7,7 @@ use Moose;
 use namespace::autoclean;
 use IPAdmin::Form::Alias;
 use Data::Dumper;
+use Email::Send;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -331,6 +332,88 @@ sub process_activate : Private {
     }
 }
 
+=head2 print
+
+=cut
+
+sub print : Chained('object') : PathPart('print') : Args(0) {
+    my ( $self, $c ) = @_;
+    my $req = $c->stash->{object};
+
+
+    $c->stash( template => 'alias/print.tt' );
+}
+
+=head2 notify
+
+=cut
+
+sub notify : Chained('object') : PathPart('notify') : Args(0) {
+   my ( $self, $c ) = @_;
+   $c->stash( default_backref =>
+                $c->uri_for_action( "alias/view",[$c->stash->{object}->id] ) );
+   $c->forward('process_notify');
+   $c->detach('/follow_backref');
+}
+
+sub process_notify : Private {
+    my ( $self, $c ) = @_;
+    my $error;
+    my $alias = $c->stash->{object};
+    my $alias_id = $alias->id;
+    my $alias_cname = $alias->cname;
+    my $ipreq_id = $alias->ip_request->id;
+    my $ret; #status invio messaggio con Mail::Sendmail
+    my ($body, $to, $cc, $subject);
+    my $url = $c->uri_for_action('/alias/view',[$alias->id]);
+
+    #default: send email to user
+    $to = $alias->ip_request->user->email;
+
+    if ($alias->state == $IPAdmin::ACTIVE) {
+        #A seguito di alias/activate, preparo il messaggio per l'utente: "Il tuo IP è attivo"
+        $body = <<EOF;
+Gentile Utente, 
+il suo indirizzo IP è stato attivato.
+E' ora possibile configurare la scheda di rete del dispositivo con i dati presenti nel modulo: 
+    $url
+EOF
+        $subject = "Richiesta Alias id: $alias_id attiva";
+    } 
+    elsif ($alias->state == $IPAdmin::ARCHIVED) {
+        #A seguito di alias/delete, preparo il messaggio per l'utente: "Rinuncia dell'Alias relativa all'indirizzo IP terminata con successo"
+        $body = <<EOF;
+Gentile Utente,
+l'Alias $alias_cname.uniroma1.it, relativo alla richiesta id: $ipreq_id, è stato archiviato.
+    $url
+EOF
+        $subject = "Richiesta Alias id: ".$alias->id." archiviata";
+    }
+    else { #perchè hai richiamato questo metodo?
+    }
+
+
+    my $email = {
+            from    => 'infosapienza@uniroma1.it',
+            to      => $to,
+            cc      => $cc,
+            subject => $subject,
+            body    => $body,
+        };
+
+    $c->stash(email => $email);
+
+    $c->forward( $c->view('Email') );
+
+    if ( scalar( @{ $c->error } ) ) {
+        $c->flash(error_msg => "Errore nell'invio dell'Email. ".Dumper($c->error));
+        $c->error(0);
+        return 0;
+    } else {
+        $c->stash(mail_message => "Email inviata correttamente a $to");
+        return 1;
+    }
+}
 
 
 =head1 AUTHOR

@@ -216,16 +216,40 @@ table.manoc-form tr{
 tr.newip {
  background:#F97A7A !important;
 }
+tr.newip.odd td.sorting_1 {
+ background:#E2667A !important;
+}
+tr.newip.even td.sorting_1 {
+ background:#F97A7A !important;
+}
 
 tr.preactive {
+ background:#DFDD41 !important;
+}
+tr.preactive.odd td.sorting_1 {
+ background:#C8C841 !important;
+}
+tr.preactive.even td.sorting_1 {
  background:#DFDD41 !important;
 }
 
 tr.active {
  background:#7FCD31 !important;
 }
+tr.active.odd td.sorting_1 {
+ background:#68B831 ! important;
+}
+tr.active.even td.sorting_1 {
+ background:#7FCD31 !important;
+}
 
 tr.archived {
+ background:#A96FDA !important;
+}
+tr.archived.odd td.sorting_1{
+ background:#925ADA !important;
+}
+tr.archived.even td.sorting_1{
  background:#A96FDA !important;
 }
 
@@ -243,6 +267,15 @@ div#infoipreq {
  border:solid 1px black;
 }
 
+div#printreq {
+ min-width: 530px;
+ max-width: 600px;
+ max-height: 850px;
+ background: white;
+ padding: 15px;
+ margin:0px auto;
+}
+
 div.rightbox {
  min-width: 350px;
  max-width: 600px;
@@ -251,6 +284,10 @@ div.rightbox {
  padding: 15px;
  border-radius: 15px;
  border:solid 1px black;
+}
+
+div.rightbox span {
+    margin-top: 1px;
 }
 
 div#guest {
@@ -314,4 +351,16 @@ div#footer {
     text-align: center;
     min-width: 700px; 
     max-width:1200px;
+}
+
+@media print {
+    div#banner {
+        display: none;
+    }
+    div#footer {
+        display: none;
+    }
+    button {
+        display: none;
+    }
 }

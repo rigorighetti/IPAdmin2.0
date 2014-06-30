@@ -65,7 +65,7 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
 
     my $build_schema = $c->stash->{resultset};
 
-    my @typerequest_table = $build_schema->search({});
+    my @typerequest_table = $build_schema->search({})->all;
 
     $c->stash( typerequest_table => \@typerequest_table );
     $c->stash( template       => 'typerequest/list.tt' );

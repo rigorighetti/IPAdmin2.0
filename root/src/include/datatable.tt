@@ -5,7 +5,7 @@
                c.uri_for('/static/js/jquery.dataTables.js'),
 	       c.uri_for('/static/js/dataTables.typeDetectPlugin.js'),
 	       c.uri_for('/static/js/dataTables.typeSortPlugin.js'),
-	       c.uri_for('/static/css/dataTables.jqueryui.js')
+	       c.uri_for('/static/js/dataTables.jqueryui.js')
               ) 
 -%]
 [% END -%]
@@ -54,11 +54,11 @@ $(function() {
     		  if ( data[1] == "Da Conv" ) {
       				$(row).addClass( 'newip' );
     		  }
-    		  if ( data[1] == 'Convalidata' ) {
+    		  if ( data[1] == 'Convalidata' || data[1] == 'Pre-Arch.' ) {
       				$(row).addClass( 'preactive' );
     		  }
     		  if ( data[1] == 'Attiva' ) {
-      				$(row).addClass( 'preactive' );
+      				$(row).addClass( 'active' );
     		  }
     		  if ( data[1] == 'Archiviata') {
       				$(row).addClass( 'archived' );

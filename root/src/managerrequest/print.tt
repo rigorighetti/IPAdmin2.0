@@ -1,0 +1,52 @@
+<div id="printreq">
+      <div class="left">Id: </div>[% object.id %] <div class="right">Data Richiesta: [% data %]</div>
+      <hr style="clear:both">
+      <div class="title">Dati del Responsabile</div>
+      <div class="section">
+        <span class="left">Nome e Cognome:</span> <span class="right">[% object.user.fullname %]</span><br>
+        <span class="left">Telefono:</span> <span class="right">[% object.user.telephone %]</span><br>
+        <span class="left">Fax:</span> <span class="right">[% object.user.fax %]</span><br>
+        <span class="left">Email:</span> <span class="right">[% object.user.email %]</span><br>
+        <span class="left">Livello conoscenza di rete:</span> <span class="right">[% object.skill %]</span><br>
+      </div>
+      <div class="title">Dati della Struttura</div>
+      <div class="section">
+        <span class="left">Nome:</span> <span class="right">[% object.area.department.name %] <i>presso</i> [% object.area.building.name %]</span><br>
+        <span class="left">Indirizzo:</span> <span class="right">[% object.area.building.address %]</span><br>
+        <span class="left">Direttore:</span> <span class="right">[% object.dir_fullname %]</span><br>
+        <span class="left">Telefono:</span> <span class="right">[% object.user.dir_phone %]</span><br>
+        <span class="left">Email:</span> <span class="right">[% object.dir_email %]</span><br>      
+      </div>
+      <div class="title">Stato della Richiesta</div>
+        <div class="section">
+         <div [% IF object.state == 0 -%]
+                class="newip">
+                <span class="left">Stato:</span> <span class="right">In attesa di validazione</span    
+              [% END -%] 
+              [% IF object.state == 2 -%]
+                class="active">   
+                <span class="left">Stato:</span> <span class="right">Valida</span
+              [% END -%] 
+              [% IF object.state == 4 -%] 
+                class="archived">
+              <span class="left">Stato:</span> <span class="right">Archiviata</span  
+              [% END -%] ><br> 
+           [% IF object.state != 0 -%]
+            <span class="left">Data Validazione:</span> <span class="right">[% date_in %]</span><br>
+            <span class="left">Data Scadenza:</span> <span class="right">[% date_out %]</span><br>
+           [% END -%]
+         </div>
+         <br>
+
+          [% IF object.state == 0 -%]
+            <span class="right"><b>Firma del Responsabile</b></span><br><br><br>
+            <span class="right">_____________________________</span><br><br>
+          [% END -%]
+
+  </div>
+  <div style="margin:1px auto; text-align:center">
+    <hr>
+    Stampare la pagina ed inviarla firmata via <b>FAX</b> allo <b>06.4991.3837</b> (int <b>23837</b>). <br><br>
+    <button onclick="window.print()">Stampa</button>
+  </div>
+</div>

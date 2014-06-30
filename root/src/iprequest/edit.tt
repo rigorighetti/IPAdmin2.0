@@ -100,7 +100,9 @@ td.data {padding-left:20px;}
          [% IF error.name %]<span class="error" id="error">[% error.mac %] </span>[%END%]
          <span class="left data">Nome host:</span> <input class="right" type="text" name="hostname" value="[%hostname%]" /><br>
          [% IF error.hostname %]<span class="error" id="error">[% error.hostname %] </span>[%END%]
-        </div>  
+         <span class="left data">Dominio:</span><span class="right" id="domain">[%dom_def%].uniroma1.it</span><br>
+        </div> 
+        <div class="confirm"><a href="[% c.uri_for('/help/view',{page => 'howto'}) %]">Ho preso visione delle norme Sapienza</a><span><input type="checkbox" id="confirm" value="confirm" name="confirm"></span></div> 
         <div class="section">
          <div class="buttons">
            <input id="submit" type="submit" name="submit" value="Invia la  Richiesta"> 
@@ -130,8 +132,7 @@ var hash_addr = {
 
   $("#datepicker").datepicker("setDate", "[% guest_date_out %]" );
    
-  [%IF area_def %]$("#referente").html(hash_man[[%area_def%]]);[%END -%]
-  [%IF area_def %]$("#address").html(hash_addr[[%area_def%]]);[%END -%]
+ 
 
    $("#area").bind("change",
    function() {
