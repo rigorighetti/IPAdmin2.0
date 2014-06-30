@@ -4,12 +4,6 @@
    section='Richieste'
 -%]
 
-<div class="buttons create_btn">
-<a href="[% c.uri_for_action('/alias/create') %]" >
-   [% ui_icon('circle-plus') %] Richiedi un Alias</a>
- [% add_css_create_btn %]
-</div>
-
 [% init_table('alias_list',[5,20,30,20,5,5],{sortby => 5, order => 'desc'}) %]
  <table class="display" id="alias_list">
    <thead>  

@@ -5,5 +5,11 @@
 -%]
 [% PROCESS 'macros.tt' -%]
 [% PROCESS 'jquery.tt' -%]
-[% PROCESS 'menu.tt' -%]
+
+[%IF c.user_in_realm("normal") %]
+	[% PROCESS 'menu.tt' -%]
+[%ELSE%]
+	[% PROCESS 'user_menu.tt' -%]
+[%END -%]
+
 [% PROCESS 'datatable.tt' -%]

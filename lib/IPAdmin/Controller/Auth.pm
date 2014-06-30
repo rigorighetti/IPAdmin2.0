@@ -41,7 +41,7 @@ sub login : Local : CaptureArgs(0) {
     $c->stash( template => 'auth/login.tt' );
     $c->keep_flash("backref");
 
-    $c->stash( default_backref => $c->uri_for('/building/list') );
+    $c->stash( default_backref => $c->uri_for('/userldap/list') );
     my $username = lc($c->req->params->{'username'});
 
     if ( defined( $c->req->params->{'username'} ) ) {
@@ -63,7 +63,7 @@ sub login : Local : CaptureArgs(0) {
         	}
 		if($c->user_in_realm('ldap') ){
 		$c->response->redirect(
-                             $c->uri_for_action( '/userldap/view', [$username] ) );
+          $c->uri_for_action( '/userldap/view', [$username] ) );
       		$c->detach();
 		}
           }

@@ -31,7 +31,10 @@ Catalyst Controller.
 
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
-    $c->response->redirect($c->uri('userldap/list'));
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    $c->stash( default_backref => $c->uri_for_action( 'userldap/view', [$user->username] ) );
+    $realm eq "normal" and $c->stash( default_backref => $c->uri_for_action('iprequest/list'));
+    $c->detach('/follow_backref');
     $c->detach();
 }
 
@@ -109,16 +112,22 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
                               area.manager macaddress area.department hostname state subnet host )]
                 });
 
+    my @myaliases;
     foreach my $i (@myrequests){
         $date_myreq->{$i->id} = print_short_timestamp($i->date);
-    } 
+        foreach my $alias ($i->map_alias){
+            push @myaliases, $alias;
+        }
+    }
 
-    $c->stash(date_req => $date_req);
-    $c->stash(date_myreq => $date_myreq);
+
+    $c->stash(date_req      => $date_req);
+    $c->stash(date_myreq    => $date_myreq);
     $c->stash( managed_area => \@managed_area );
-    $c->stash( requests => \@requests );
-    $c->stash( myrequests => \@myrequests );
-    $c->stash( template => 'userldap/view.tt' );
+    $c->stash( requests     => \@requests );
+    $c->stash( myrequests   => \@myrequests );
+    $c->stash( myaliases    => \@myaliases );
+    $c->stash( template     => 'userldap/view.tt' );
 }
 
 =head2 edit

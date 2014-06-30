@@ -95,7 +95,22 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
 =cut
 
 sub edit : Chained('object') : PathPart('edit') : Args(0) {
-    my ( $self, $c ) = @_;     
+    my ( $self, $c ) = @_;      
+    my $req = $c->stash->{'object'};
+    my $def_br ; 
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    if($realm eq "normal"){
+        $def_br = $c->uri_for_action('alias/list');
+    } else {
+        $def_br = $c->uri_for_action('userldap/view', [$user->username]);
+    }
+
+    if($req->state != $IPAdmin::NEW){
+        $c->flash( message => 'Solo le richieste non ancora validate possono essere modificate.');
+        $c->stash( default_backref => $def_br );
+        $c->detach('/follow_backref');
+    }
+
     $c->forward('save');
 }
 

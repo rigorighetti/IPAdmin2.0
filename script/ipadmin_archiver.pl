@@ -11,7 +11,7 @@ package IPAdmin::Archiver;
 use Moose;
 use IPAdmin::Logger;
 use IPAdmin::Utils;
-
+use IPAdmin::Manoc;
 use Data::Dumper;
 
 extends 'IPAdmin::App';
@@ -21,6 +21,25 @@ our $PREACTIVE = 1;
 our $ACTIVE    = 2;
 our $INACTIVE  = 3;
 our $ARCHIVED  = 4;
+
+has 'manoc_schema' => (
+    traits  => ['NoGetopt'],
+    is      => 'ro',
+    lazy    => 1,
+    builder => '_build_manoc_schema'
+);
+
+sub _build_manoc_schema {
+    my $self = shift;
+
+    my $config       = $self->config;
+    my $connect_info = $config->{'Model::ManocDB'}->{connect_info};
+    my $schema       = IPAdmin::Manoc->connect(@$connect_info);
+
+
+    return $schema;
+}
+
 
 
 sub archive_new {
@@ -132,18 +151,24 @@ sub archive_active {
     #TODO CONNESSIONE MANOC
     #ARCHIVIA l'indirizzo IP se
     #1)non trova niente dentro manoc
-    #2)il lastseen di quell'IP e quel mac è > di 90 giorni
-
+    #2)o il lastseen di quell'IP e quel mac è > di 90 giorni
+    my @archived;
+    while(my $i = $it->next){
+        next if(!defined($i->subnet) or !defined($i->host));
+        my $check_ip = "151.100.".$i->subnet->id.".".$i->host;
+        my $check_mac= $i->macaddr;
+        my $result = $self->manoc_schema->resultset('Arp')->search({
+                       ipaddr => $check_ip, 
+                       macaddr => $check_mac,
+                       lastseen => {">", $archive_date} })->single;
+        !defined ($result) and     
+                push @archived, {$i->user->fullname, $i->user->email, $i->subnet->id, $i->host}; 
+    }
 
     #TODO se è a tempo determinato e è scaduto archivia 
     #controlla solo su ipassignement.date_out e state==2
 
-    my @archived;
-    while(my $i = $it->next){
-       #TODO richiamare azione iprequest/unactivate
-       #mandare email (ma già lo fa l'azione)
-       push @archived, {$i->user->fullname, $i->user->email, $i->subnet->id, $i->host};
-    }
+
     return \@archived;
 }
 

@@ -184,36 +184,67 @@ sub set_backref : Private {
 
 after setup_finalize => sub {
 
-    #default admin ACL for full CRUD resources
-    my @CRUD        = qw/create edit delete/;
-    my @controllers = qw/department building area/;
+
+    #default admin ACL for full CRUD and only root resources
+    my @CRUD        = qw/create edit delete view list/;
+    my @controllers = qw/department user building area subnet vlan typerequest/;
 
     foreach my $ctrl (@controllers) {
         foreach (@CRUD) {
             __PACKAGE__->allow_access_if( "$ctrl/$_",  sub {
                my $c = shift;
-               return $c->user->username eq "admin";
+               return $c->user_in_realm( "normal" );             
              }
             );
             __PACKAGE__->deny_access_unless( "$ctrl/$_", [qw/admin/] );
         }
     }
 
-    #Additional acl for admin privileges
+
+
+    my @actions = qw{ userldap/list iprequest/list managerrequest/list 
+    managerrequest/delete managerrequest/activate managerrequest/edit  };
+
+    #additional ACL for admin
+    foreach my $ctrl (@actions) {
+      __PACKAGE__->allow_access_if( "$ctrl",  sub {
+         my $c = shift;
+         return $c->user_in_realm( "normal" ); 
+      }
+    );
+    
+      __PACKAGE__->deny_access_unless( "$ctrl", [qw/admin/] );
+    }
+
+
+    # #ACL to view only own userldap/view
+    # __PACKAGE__->allow_access_if( "userldap/view",  sub {
+    #      my $c        = shift;
+    #      my $username = $c->user->username;
+    #      my $action   = $c->req->path;
+    #      $action =~ m{ userldap\/username\/(.+)\/view }m and $c->log->debug("ECCC $user_in_action");
+    #      return $username eq $user_in_action; ;
+    #      my $user_in_action = $1;
+          
+    #   });
+    #   __PACKAGE__->deny_access_unless( "userldap/view", [qw/admin/] );
+
+
+    # Additional acl for admin privileges
     # my @admin_acl =
-    #     qw{ 
+    #     qw{ building/view
     # };
     # foreach my $acl (@admin_acl) {
     #     __PACKAGE__->deny_access_unless( $acl, [qw/admin/] );
     # }
 
-    # #Acl for manager privileges
-    # my @manager_acl =
-    #     qw{ 
-    # };
-    # foreach my $acl (@manager_acl) {
-    #     __PACKAGE__->deny_access_unless( $acl, [qw/admin manager/] );
-    # }
+    #Acl for manager privileges
+    my @manager_acl =
+        qw{ 
+    };
+    foreach my $acl (@manager_acl) {
+        __PACKAGE__->deny_access_unless( $acl, [qw/admin manager/] );
+    }
 };
 
 

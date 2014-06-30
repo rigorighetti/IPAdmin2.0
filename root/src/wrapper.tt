@@ -20,7 +20,6 @@
 
 <body>
 [% UNLESS show_popup -%]
-[% PROCESS 'menu.tt' %]
 <div id="wrapper">
    <div id="banner" class="ui-widget-header">
       <h1 class="logo"><a href="/" title="IPAdmin"><span>IPAdmin</span></a></h1>

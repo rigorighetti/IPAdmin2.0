@@ -57,6 +57,20 @@ sub object : Chained('base') : PathPart('id') : CaptureArgs(1) {
     }
 }
 
+
+sub tot_assigned_ip :Private {
+    my ( $self, $c, $area ) = @_;
+    my $count = 0;
+    return 0 unless(defined $area->building->vlan);
+
+    foreach my $subnet ($area->building->vlan->map_subnet){
+        $count += $c->model("IPAdminDB::IPRequest")->search({state => $IPAdmin::ACTIVE,
+                                                            subnet => $subnet->id})->count;
+    }
+
+    return $count;
+}
+
 =head2 list
 
 =cut
@@ -75,6 +89,7 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
             dir_email    => $_->dir_email,
             user         => $_->user,
             state   	 => $_->state,
+            n_ip         => $self->tot_assigned_ip($c,$_->area),
 	    },  $c->stash->{resultset}->search({});
    
    $c->stash( request_table => \@managerrequest_table );
@@ -109,7 +124,7 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
 
     $c->stash( default_backref => $c->uri_for_action('/managerrequest/list') );
 
-    if($req->state != $IPAdmin::INACTIVE){
+    if($req->state != $IPAdmin::NEW){
         $c->flash( message => 'Solo le richieste non ancora validate possono essere modificate.');
         $c->detach('/follow_backref');
     }
@@ -195,7 +210,8 @@ sub process_edit : Private {
 sub create : Chained('base') : PathPart('create') : Args() {
     my ( $self, $c, $parent ) = @_;
     my $id;
-    $c->stash( default_backref => $c->uri_for_action('/managerrequest/list') );
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    $c->stash( default_backref => $c->uri_for_action('userldap/view',[$user->username]) );
 
     if ( lc $c->req->method eq 'post' ) {
         if ( $c->req->param('discard') ) {
@@ -204,17 +220,15 @@ sub create : Chained('base') : PathPart('create') : Args() {
         my $done = $c->forward('process_create');
         if ($done) {
             $c->flash( message => $c->stash->{message} );
-            $c->stash( default_backref =>
-                $c->uri_for_action( "managerrequest/list" ) );
             $c->detach('/follow_backref');
         }
     }
     #set form defaults
     my %tmpl_param;
-    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
     my @users;
     if($realm eq "normal") {
             $c->flash( error_msg => "Spiacente, solo un utente strutturato può fare richiesta di diventare referente." );
+            $c->stash( default_backref => $c->uri_for_action('iprequest/list') );
             $c->detach('/follow_backref');
     }
     #TODO ordinamento aree per nome dipartimento
@@ -251,8 +265,6 @@ sub process_create : Private {
     if(defined  $result->manager){
         $c->flash( message => "Non è stato possibile creare la richiesta. Esiste già un referente per il dipartimento di ".$result->department->name.
         " presso ".$result->building->name."." );
-        $c->stash( default_backref =>
-        $c->uri_for_action( "managerrequest/list" ) );
         $c->detach('/follow_backref');
     }
 
@@ -282,37 +294,27 @@ sub process_create : Private {
 sub check_manreq_form : Private {
     my ( $self, $c) = @_;
     my $schema = $c->stash->{'resultset'};
-    #my $hostname = $c->req->param('hostname');
-    #my $area = $c->req->param('area'); 
-    #my $referente = $c->stash->{'resultset'}->search(
+    my $name   = $c->req->param('dir_fullname');
+    my $tel    = $c->req->param('dir_phone');
+    my $email  = $c->req->param('dir_email'); 
+    my %error;
 
- #    if ( $mac eq '' ) {
- #     	$c->stash->{message} = "Campo Mac Address obbligatorio!";
- #     	return 0;
- #     }
- #    #controllo formato mac address (ancora non copre aa:bb:cc:dd:ee:ff) 
- #     if ( $mac !~ /([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}/ 
-	# and $mac =~ /((aa|bb|cc|dd|ee|ff|00|11|22|33|44|55|66|77|88|99):){5}(aa|bb|cc|dd|ee|ff|00|11|22|33|44|55|66|77|88|99){2}/i ) {
- #     	$c->stash->{message} = "Errore nel formato del mac address! aa:aa:aa:aa:aa:aa";
- #     	return 0;
- #     }
+    if ( $name eq '' ) {
+        $error{dir_fullname} = "Indicare un nome del responsabile della struttura";
+    }
+    if ( $name !~ /^\w+[\s\w]+$/ ) {
+        $error{dir_fullname} = "Il nome non può contenere caratteri speciali";
+    }
 
- #     if ( $hostname eq '' ) {
-	# $c->stash->{message} = "Campo Hostname obbligatorio!";
-	# return 0;
- #     }
+    if ( $tel !~ /^\d+$/ ) {
+        $error{dir_phone} = "Formato non valido";
+    }
+    if ( $email !~ /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/ ) {
+        $error{dir_email} = "Formato non valido";
+    }
 
-    # if ( $name !~ /^\w[\w-]*$/ ) {
-    # $c->stash->{message} = "Invalid name";
-    # return 0;
-    # }
-
-     # if ($schema->search({ macaddress => $mac})->count() > 0 ) {
-     # $c->stash->{message} = "Mac Address già registrato!";
-     # $c->log->error("duplicated $mac");
-     # return 0;
-     # }
-
+    $c->stash(error => \%error) and return 0 if(scalar keys(%error));
+    
     return 1;
 }
 

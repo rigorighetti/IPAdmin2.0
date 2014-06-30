@@ -28,18 +28,21 @@
     </div>
     <div class="title"> Dati del Responsabile della Struttura </div>
       <div class="section">
-		<span class="left">Nome e Cognome:</span> <input class="right" type="text" name="dir_fullname" value="[% dir_fullname %]" /><br>
+		<span class="left">Nome e Cognome:</span> <input class="right" type="text" name="dir_fullname" value="[% dir_fullname %]" />
  		[% IF error.dir_fullname %]
 	     <span class="error" id="error">[% error.dir_fullname %] </span>
 		[%END%]
- 	  	<span class="left">Telefono:</span> <input class="right" type="text" name="dir_phone" value="[% dir_phone %]" /><br>
+      <br>
+ 	  	<span class="left">Telefono:</span> <input class="right" type="text" name="dir_phone" value="[% dir_phone %]" />
  	  	[% IF error.dir_phone %]
 	   	 <span class="error" id="error">[% error.dir_phone %] </span>
 		[%END%]
- 	  	<span class="left">Email:</span> <input class="right" type="text" name="dir_email" value="[% dir_email %]" /><br>
+      <br>
+ 	  	<span class="left">Email:</span> <input class="right" type="text" name="dir_email" value="[% dir_email %]" />
  	  	[% IF error.dir_email %]
 	   	 <span class="error" id="error">[% error.dir_email %] </span>
 		[%END%]
+      <br>
 	  </div>
      <div class="title">Dati del Referente di Rete</div>
      <div class="section">

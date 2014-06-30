@@ -30,8 +30,7 @@ The root page (/)
 
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
-
-    $c->response->redirect('/building/list');
+    $c->response->redirect('/userldap');
     $c->detach();
 }
 

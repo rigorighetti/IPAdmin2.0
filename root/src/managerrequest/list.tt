@@ -41,14 +41,14 @@
       <td>[% i.dir_fullname %]</td>
  	    <td>[% i.area.department.name %] <i>presso</i> [% i.area.building.name %]</td>
  	    <td>[% i.user.fullname %]</td>
-	    <td>[% FOREACH j IN j.area.building.vlan.map_subnet -%]
+	    <td>[% FOREACH j IN i.area.building.vlan.map_subnet -%]
            <a href=[% c.uri_for_action('/subnet/view', [j.id]) %]>[% j.id %]</a>
            [% UNLESS loop.last %]
             , 
            [% END -%]
           [% END -%]
       </td>	 
-      <td>TODO</td>
+      <td>[%i.n_ip%]</td>
 	    <td class="white">
 	     [% IF i.state != 4 %] 
         <a href="[% c.uri_for_action('managerrequest/delete',[i.id])%]">[% icon('remove') %]</a> [% END -%]

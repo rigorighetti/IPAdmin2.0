@@ -1,0 +1,39 @@
+[%
+  menu_sections = [
+		{	
+		     name = 'Istruzioni',
+     		 path = c.uri_for('/help/view',{page => 'howto'}),
+ 		 },		 
+		 {
+		     name = 'About',
+     		     path = c.uri_for('/about'),
+ 		 },
+		 {
+		     name = 'Logout',
+     		     path = c.uri_for('/auth/logout'),
+ 		 },
+
+		 ]
+-%]
+[% 
+  menu_subsections = {
+
+	 }		
+-%]
+[% MACRO menu_dock BLOCK -%]
+<ul>
+[% FOREACH s IN menu_sections %]
+   <li [% "class=\"selected\"" IF s.name == template.section %]>
+   <a href="[% s.path %]">[% s.name %]</a></li>
+[%END -%]
+</ul>
+[% END -%]
+[% MACRO menu_navigation BLOCK -%]
+<ul>
+  [% name = template.section -%]
+  [% FOREACH s IN menu_subsections.$name %]
+  <li [% "class=\"selected\"" IF s.name == template.title %]>   
+  <a href="[% s.path %]">[% s.name %]</a></li>
+  [% END -%]
+</ul>
+[% END -%]

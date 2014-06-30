@@ -22,7 +22,8 @@
 	     <td>Indirizzo:</td><td>[% object.address %] </td>
       </tr>
       <tr>
-       <td>Vlan:</td><td>[% object.vlan.id %] </td>
+       <td>Vlan:</td><td><a href="[% c.uri_for_action('vlan/view',[object.vlan.id]) %]"> 
+            [%object.vlan.id%]</a></td>
       </tr>
     </table>
     [% add_css_tableinfo -%]
