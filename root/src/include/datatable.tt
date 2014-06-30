@@ -54,7 +54,7 @@ $(function() {
     		  if ( data[1] == "Da Conv" ) {
       				$(row).addClass( 'newip' );
     		  }
-    		  if ( data[1] == 'Convalidata' ) {
+    		  if ( data[1] == 'Convalidata' || data[1] == 'Pre-Arch.' ) {
       				$(row).addClass( 'preactive' );
     		  }
     		  if ( data[1] == 'Attiva' ) {

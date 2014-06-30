@@ -99,6 +99,7 @@ td.data {padding-left:20px;}
          [% IF error.name %]<span class="error" id="error">[% error.mac %] </span>[%END%]
          <span class="left data">Nome host:</span> <input class="right" type="text" name="hostname" value="[%hostname%]" /><br>
          [% IF error.hostname %]<span class="error" id="error">[% error.hostname %] </span>[%END%]
+         <span class="left data">Dominio:</span><span class="right" id="domain"></span><br>
         </div>  
         <div class="section">
         <div class="confirm"><a href="[% c.uri_for('/help/view',{page => 'howto'}) %]"> Ho preso visione delle norme Sapienza </a><span><input type="checkbox" id="confirm" value="confirm" name="confirm"></span></div>
@@ -127,6 +128,12 @@ var hash_addr = {
   [% END -%]
 };
 
+var hash_dom = {
+  [% FOREACH a IN aree -%]
+   [%IF a.department.id -%] "[%a.id %]" : "[%a.department.domain %].uniroma1.it" [% ',' UNLESS loop.last -%] [%END-%]
+  [% END -%]
+};
+
  $(function() {    
   [%IF area_def %]$("#referente").html(hash_man[[%area_def%]]);[%END -%]
   [%IF area_def %]$("#address").html(hash_addr[[%area_def%]]);[%END -%]
@@ -139,15 +146,21 @@ var hash_addr = {
     if(i==0){
       $("#referente").html("");
       $("#address").html("");
+      $("#domain").html("");
       } else {
       var text = hash_man[i];
       var addr = hash_addr[i];
+      var dom  = hash_dom[i];
       if(text == null ) {
        text = "Non ancora assegnato!";
       }
       if(addr == null ) {
        addr = "-";
       }
+      if(dom == null ) {
+       dom = "-";
+      }
+      $("#domain").html(dom) ;
       $("#referente").html(text) ;
       $("#address").html(addr) ; 
  		}
