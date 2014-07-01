@@ -86,6 +86,18 @@ sub logout : Local : CaptureArgs(0) {
     $c->stash( message => 'You have been logged out.' );
 }
 
+=head2 access_denied
+
+=cut
+
+sub access_denied : Local {
+    my ( $self, $c ) = @_;
+    $c->flash( backref => $c->req->uri );
+    $c->stash( template  => 'auth/access_denied.tt' );
+    $c->stash( error_msg => "Sorry, you are not allowed to see this page!" );
+}
+
+
 =head1 AUTHOR
 
 Rigo

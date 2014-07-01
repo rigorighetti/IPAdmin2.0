@@ -70,7 +70,8 @@ sub notify : Chained('object') : PathPart('notify') : Args(0) {
    my ( $self, $c ) = @_;
    $c->stash( default_backref =>
                 $c->uri_for_action( "iprequest/view",[$c->stash->{object}->id] ) );
-   $c->forward('process_notify');
+   my $done = $c->forward('process_notify');
+   $c->flash(message => "Email inviata correttamente") if($done);
    $c->detach('/follow_backref');
 }
 
@@ -180,8 +181,11 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
     #TODO recuperare i dati e lasciare solo alcuni campi modificabili
 
     my $id;
-    $c->stash( default_backref => $c->uri_for_action('/iprequest/list') );
+
     my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    $c->stash( default_backref => $c->uri_for_action('userldap/view',[$user->username]) );
+    $c->stash( default_backref => $c->uri_for_action('iprequest/list') ) if( $realm eq  "normal" );
+
 
 
     if ( lc $c->req->method eq 'post' ) {
@@ -191,8 +195,6 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
         my $done = $c->forward('process_edit');
         if ($done) {
             $c->flash( message => $c->stash->{message} );
-            $c->stash( default_backref =>
-                $c->uri_for_action( "iprequest/list" ) );
             $c->detach('/follow_backref');
         }
     }
@@ -369,8 +371,9 @@ sub process_edit : Private {
 sub create : Chained('base') : PathPart('create') : Args() {
     my ( $self, $c, $parent ) = @_;
     my $id;
-    $c->stash( default_backref => $c->uri_for_action('/iprequest/list') );
     my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    $c->stash( default_backref => $c->uri_for_action('userldap/view',[$user->username]) );
+    $c->stash( default_backref => $c->uri_for_action('iprequest/list') ) if( $realm eq  "normal" );
 
 
     if ( lc $c->req->method eq 'post' ) {
@@ -596,7 +599,9 @@ sub validate : Chained('object') : PathPart('validate') : Args(0) {
     my ( $self, $c ) = @_;
     my $req = $c->stash->{'object'};
 
-    $c->stash( default_backref => $c->uri_for_action('/iprequest/list') );
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    $c->stash( default_backref => $c->uri_for_action('userldap/view',[$user->username]) );
+    $c->stash( default_backref => $c->uri_for_action('iprequest/list') ) if( $realm eq  "normal" );
 
     if ( lc $c->req->method eq 'post' ) {
         if ( $c->req->param('discard') ) {
@@ -606,8 +611,6 @@ sub validate : Chained('object') : PathPart('validate') : Args(0) {
         if ($done) {
             $c->flash( message => $c->stash->{message} );
             $c->forward('process_notify');
-            $c->stash( default_backref =>
-                $c->uri_for_action( "/iprequest/list" ) );
             $c->detach('/follow_backref');
         }
     }
@@ -720,7 +723,9 @@ sub unactivate : Chained('object') : PathPart('unactivate') : Args(0) {
  my ( $self, $c ) = @_;
  my $iprequest = $c->stash->{'object'};
 
- 
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    $c->stash( default_backref => $c->uri_for_action('userldap/view',[$user->username]) );
+    $c->stash( default_backref => $c->uri_for_action('iprequest/list') ) if( $realm eq  "normal" );
  if ( lc $c->req->method eq 'post' ) {
      #TODO invalidare ogni assegnazione associata alla richiesta
 
@@ -752,7 +757,9 @@ sub unactivate : Chained('object') : PathPart('unactivate') : Args(0) {
 sub activate : Chained('object') : PathPart('activate') : Args(0) {
     my ( $self, $c ) = @_;
     my $req = $c->stash->{'object'};
-    $c->stash( default_backref => $c->uri_for_action('iprequest/list') );
+   my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    $c->stash( default_backref => $c->uri_for_action('userldap/view',[$user->username]) );
+    $c->stash( default_backref => $c->uri_for_action('iprequest/list') ) if( $realm eq  "normal" );
 
     if ( lc $c->req->method eq 'post' ) {
         if ( $c->req->param('discard') ) {
@@ -761,8 +768,6 @@ sub activate : Chained('object') : PathPart('activate') : Args(0) {
         my $done = $c->forward('process_activate');
         if ($done) {
             $c->flash( message => $c->stash->{message} );
-            $c->stash( default_backref =>
-                $c->uri_for_action( "iprequest/list" ) );
             $c->forward('process_notify');
 	    $c->detach('/follow_backref');
         }
@@ -809,9 +814,11 @@ il delete deve archiviare prima la richiesta e poi cancellarla.
 =cut
 
 sub delete : Chained('object') : PathPart('delete') : Args(0) {
-     my ( $self, $c ) = @_;
-   my $iprequest = $c->stash->{'object'};
-   $c->stash( default_backref => $c->uri_for_action('iprequest/list') );
+    my ( $self, $c ) = @_;
+    my $iprequest = $c->stash->{'object'};
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    $c->stash( default_backref => $c->uri_for_action('userldap/view',[$user->username]) );
+    $c->stash( default_backref => $c->uri_for_action('iprequest/list') ) if( $realm eq  "normal" );
 
   
     if ( lc $c->req->method eq 'post' ) {
@@ -827,8 +834,10 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
                         state    => $IPAdmin::ARCHIVED,
                      });
        
-         $c->flash( message => 'Richiesta IP archiviata.' );
          $c->forward('process_notify');
+         $c->flash( message => 'Richiesta IP archiviata. '. $c->stash->{mail_message} );
+
+         $c->flash( default_backref => $c->uri_for_action('userldap/view') );
          $c->detach('/follow_backref');
    }
    else {
@@ -931,6 +940,7 @@ EOF
 
     $c->stash(email => $email);
 
+    $c->log->debug(Dumper($email));
     $c->forward( $c->view('Email') );
 
     if ( scalar( @{ $c->error } ) ) {
@@ -938,7 +948,7 @@ EOF
         $c->error(0);
         return 0;
     } else {
-        $c->stash(mail_message => "Email inviata correttamente a $to");
+        $c->flash(mail_message => "Email inviata correttamente a $to");
         return 1;
     }
 }

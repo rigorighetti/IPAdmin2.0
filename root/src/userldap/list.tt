@@ -28,8 +28,8 @@
        </thead>  
        <tbody>
   [% END %]
-         <tr>
- 	 <td><a href=[% c.uri_for_action('/userldap/view', [u.username]) %]>[% u.username %]</a></td>
+         <tr class="row">
+ 	 <td><a id="click_ref"  href=[% c.uri_for_action('/userldap/view', [u.username]) %]>[% u.username %]</a></td>
  	 <td>[% u.fullname %]</td>
  	 <td>[% u.email %]</td>
 	 <td>

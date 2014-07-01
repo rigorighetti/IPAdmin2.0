@@ -22,8 +22,8 @@
   </thead>  
   <tbody>
   [% END %]
-   <tr>
- 	  <td><a href="[%c.uri_for_action('vlan/view', [v.id])%]">[% v.id %]</a></td>
+   <tr class="row">
+ 	  <td><a id="click_ref" href="[%c.uri_for_action('vlan/view', [v.id])%]">[% v.id %]</a></td>
     <td>[% v.description %]</td>
    </tr>
   [% IF loop.last %]

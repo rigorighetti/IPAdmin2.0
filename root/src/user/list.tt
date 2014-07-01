@@ -23,8 +23,8 @@
        </thead>  
        <tbody>
   [% END %]
-         <tr>
- 	 <td><a href=[% c.uri_for_action('/user/view', [u.id]) %]>[% u.username %]</a></td>
+         <tr class="row">
+ 	 <td><a id="click_ref" href=[% c.uri_for_action('/user/view', [u.id]) %]>[% u.username %]</a></td>
  	 <td>[% u.fullname %]</td>
  	 <td>
 	  <a href="[% c.uri_for_action('user/edit',[u.id])%]">[% icon('edit') %]</a>

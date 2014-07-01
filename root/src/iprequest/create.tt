@@ -19,19 +19,20 @@ td.data {padding-left:20px;}
       <div class="section">
         <span class="left data">Nome e Cognome:</span> <span class="right">
          [%IF realm == "normal" -%]
-          <select name="user">
-           <option value="[% a.id %]">
+          <select name="user" id="user_sel">
+          <option value=0>Seleziona un utente</option>
             [% FOREACH a IN users %]
               <option value="[% a.id %]">[%a.fullname%]</option>
             [% END %]
           </select>
+
          [%ELSE -%]
           [% fullname%]
          [%END -%]
         </span><br>
-        <span class="left">Telefono:</span> <span class="right">[% user.telephone %]</span><br>
-        <span class="left">Fax:</span> <span class="right">[% user.fax %]</span><br>
-        <span class="left">Email:</span> <span class="right">[% user.email %]</span><br>
+        <span class="left">Telefono:</span> <span class="right" id="user_tel">[% user.telephone %]</span><br>
+        <span class="left">Fax:</span> <span class="right" id="user_fax">[% user.fax %]</span><br>
+        <span class="left">Email:</span> <span class="right" id="user_email">[% user.email %]</span><br>
         </div>
         <div class="title">Dati della Struttura:</div>
         <div class="section">
@@ -166,7 +167,54 @@ var hash_dom = {
  		}
    }            // function end
  ); 
-           
+
+
+[%IF realm == "normal"%]
+var hash_usertel = {
+  [% FOREACH u IN users -%]
+    "[%u.id %]" : "[%u.telephone %]" [% ',' UNLESS loop.last -%] 
+  [% END -%]
+};
+var hash_userfax = {
+  [% FOREACH u IN users -%]
+    "[%u.id %]" : "[%u.fax %]" [% ',' UNLESS loop.last -%] 
+  [% END -%]
+};
+var hash_useremail = {
+  [% FOREACH u IN users -%]
+    "[%u.id %]" : "[%u.email %]" [% ',' UNLESS loop.last -%] 
+  [% END -%]
+};
+
+  $("#user_sel").bind("change",
+  function() {
+    var i = this.value; 
+    if(i==0){
+      $("#user_tel").html("");
+      $("#user_fax").html("");
+      $("#user_email").html("");
+      } else {
+      var tel = hash_usertel[i];
+      var fax = hash_userfax[i];
+      var email  = hash_useremail[i];
+      if(tel == null ) {
+       tel = "-";
+      }
+      if(fax == null ) {
+       fax = "-";
+      }
+      if(email == null ) {
+       email = "-";
+      }
+      $("#user_tel").html(tel) ;
+      $("#user_fax").html(fax) ;
+      $("#user_email").html(email) ; 
+    }
+
+    }            // function end
+ );
+[%END -%]
+
 
 [%IF fixed %]  
  $(".fixed_time").show(); 

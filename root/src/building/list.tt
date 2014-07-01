@@ -23,8 +23,8 @@
    <tbody>
 [% FOREACH b IN building_table %]
 
-         <tr>
- 	 <td><a href=[% c.uri_for_action('/building/view', [b.id]) %]>[% b.name %]</a></td>
+         <tr class="row">
+ 	 <td><a id="click_ref" href=[% c.uri_for_action('/building/view', [b.id]) %]>[% b.name %]</a></td>
  	 <td>[% b.description %]</td>
  	 <td>[% b.address %]</td>
    <td>[% b.vlan.id %]</td>

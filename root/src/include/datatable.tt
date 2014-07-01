@@ -66,19 +66,23 @@ $(function() {
 
               $(row).click( function () {
                     var url = $(row).find("#click_ref").attr('href');
-                    window.location.replace(url);
+                    if(!url) return;
+                    window.location.assign(url);
                } );
   			}
        	   [% ELSE %]
-	        "test": false
+        "createdRow": function( row, data, dataIndex ) {
+              $(row).click( function () {
+              var url = $(row).find("#click_ref").attr('href');
+              if(!url) return;
+              window.location.assign(url);
+           } );
+          }
 	       [% END %]
            	});
-
-	       [% IF json_url -%]
-           	//var table = dTable.DataTable().column(0).visible(0);
-	       [% END %]
-
 });
+
+
 
 [% END -%]
 [% js_scripts.push(capture) -%]

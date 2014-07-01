@@ -54,7 +54,7 @@ __PACKAGE__->add_unique_constraint( ['username'] );
 __PACKAGE__->has_many( map_user_role => 'IPAdmin::DB::Result::UserRole', 'user_id' );
 __PACKAGE__->many_to_many( roles => 'map_user_role', 'role' );
 
-__PACKAGE__->has_many(map_user_ipreq => 'IPAdmin::DB::Result::IPRequest','user' );
+__PACKAGE__->has_many(map_user_ipreq => 'IPAdmin::DB::Result::IPRequest','user' , { cascade_delete => 0 });
 
 __PACKAGE__->has_many(  managed_area => 'IPAdmin::DB::Result::Area',
                           'manager', { cascade_delete => 0 }

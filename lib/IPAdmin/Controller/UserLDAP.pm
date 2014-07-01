@@ -56,9 +56,14 @@ sub object : Chained('base') : PathPart('username') : CaptureArgs(1) {
     #force lower case
     $cn = lc($cn);
     $c->stash( username => $cn );
-
     my $local_user = $c->stash->{resultset}->search({username => $cn })->single;
-    
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+
+
+
+    if($realm  eq "ldap" and $cn ne $user->username ){
+        $c->detach('/access_denied');
+    }
     $c->stash( object => $local_user ) if($local_user);
     if ( !$local_user  ) {
         $c->stash( error_msg => "Utente $cn non trovato nel database locale. Inserisci alcune informazioni prima di continuare" );
@@ -207,8 +212,10 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
     my $userldap = $c->stash->{'object'};
     my $id       = $userldap->id;
     my $name     = $userldap->username;
-    $c->stash( default_backref => $c->uri_for_action('userldap/list') );
-
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    $c->stash( default_backref => $c->uri_for_action('userldap/view'), lc($user->username));
+    $c->stash( default_backref => $c->uri_for_action('iprequest/list') ) if( $realm eq  "normal" );
+    
     if ( lc $c->req->method eq 'post' ) {
 #        if ( $c->model('IPAdminDB::Rack')->search( { userldap => $id } )->count ) {
 #            $c->flash( error_msg => 'UserLDAP is not empty. Cannot be deleted.' );

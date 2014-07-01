@@ -216,20 +216,6 @@ after setup_finalize => sub {
       __PACKAGE__->deny_access_unless( "$ctrl", [qw/admin/] );
     }
 
-
-    # #ACL to view only own userldap/view
-    # __PACKAGE__->allow_access_if( "userldap/view",  sub {
-    #      my $c        = shift;
-    #      my $username = $c->user->username;
-    #      my $action   = $c->req->path;
-    #      $action =~ m{ userldap\/username\/(.+)\/view }m and $c->log->debug("ECCC $user_in_action");
-    #      return $username eq $user_in_action; ;
-    #      my $user_in_action = $1;
-          
-    #   });
-    #   __PACKAGE__->deny_access_unless( "userldap/view", [qw/admin/] );
-
-
     # Additional acl for admin privileges
     # my @admin_acl =
     #     qw{ building/view

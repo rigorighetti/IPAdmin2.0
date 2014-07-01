@@ -34,7 +34,7 @@
          [% IF i.state == 1 or i.state == 3 -%] class="preactive" [% END -%]
          [% IF i.state == 2 -%]                 class="active"    [% END -%]
          [% IF i.state == 4 -%]                 class="archived"  [% END -%] >
-	    <td class="white"><a href=[% c.uri_for_action('/managerrequest/view', [i.id]) %]>[% i.id %]</a></td>
+	    <td class="white" ><a id="click_ref" href=[% c.uri_for_action('/managerrequest/view', [i.id]) %]>[% i.id %]</a></td>
  	    <td>[% i.date %]</td>
       <td>[% i.date_in %]</td>
       <td>[% i.date_out %]</td>

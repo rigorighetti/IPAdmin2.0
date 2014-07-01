@@ -86,7 +86,7 @@
            [% IF i.state == 1 or i.state == 3 -%] class="preactive" [% END -%]
            [% IF i.state == 2 -%]                 class="active"    [% END -%]
            [% IF i.state == 4 -%]                 class="archived"  [% END -%] > 
-        <td class="white"><a href=[% c.uri_for_action('/iprequest/view', [i.id]) %]>[% i.id %]</a></td>
+        <td class="white"><a id="click_ref" href=[% c.uri_for_action('/iprequest/view', [i.id]) %]>[% i.id %]</a></td>
 	      <td>[% date_myreq.${i.id} %]</td>
         <td>[% i.type.type %]</td>
 	      <td>[% i.area.department.name %] <i>presso</i> [% i.area.building.name %]</td>
@@ -138,7 +138,7 @@
            [% IF i.state == 1 or i.state == 3 -%] class="preactive" [% END -%]
            [% IF i.state == 2 -%]                 class="active"    [% END -%]
            [% IF i.state == 4 -%]                 class="archived"  [% END -%] >
-	      <td style="background:white"><a href=[% c.uri_for_action('/iprequest/view', [i.id]) %]>[% i.id %]</a></td>
+	      <td style="background:white"><a id="click_ref" href=[% c.uri_for_action('/iprequest/view', [i.id]) %]>[% i.id %]</a></td>
 	      <td>[% date_req.${i.id} %]</th>
         <td>[% i.type.type %]</td>
 	      <td>[% i.user.fullname %]</td>
@@ -188,7 +188,7 @@
            [% IF i.state == 1 or i.state == 3 -%] class="preactive" [% END -%]
            [% IF i.state == 2 -%]                 class="active"    [% END -%]
            [% IF i.state == 4 -%]                 class="archived"  [% END -%] >
-        <td style="background:white"><a href=[% c.uri_for_action('/iprequest/view', [a.ip_request.id]) %]>[% a.id %]</a></td>
+        <td style="background:white"><a id="click_ref" href=[% c.uri_for_action('/iprequest/view', [a.ip_request.id]) %]>[% a.id %]</a></td>
         <td>[% a.cname %]</th>
         <td>[% a.ip_request.hostname %].[% a.ip_request.area.department.domain %].uniroma1.it</td>
         <td class="white">

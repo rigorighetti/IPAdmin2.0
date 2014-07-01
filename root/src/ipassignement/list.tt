@@ -26,8 +26,8 @@
        </thead>  
        <tbody>
   [% END %]
-         <tr>
-	 <td align=center><a href=[% c.uri_for_action('/ipassignement/view', [i.id]) %]>[% i.id %]</a></td>
+         <tr id="row">
+	 <td id="click_ref" align=center><a href=[% c.uri_for_action('/ipassignement/view', [i.id]) %]>[% i.id %]</a></td>
  	 <td>[% i.date_in %]</td>
 	 <td>[% i.date_out %]</td>
 	 <td>[% i.state %]</td>

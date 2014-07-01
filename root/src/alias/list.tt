@@ -22,7 +22,7 @@
          [% IF a.state == 1 or i.state == 3 -%] class="preactive" [% END -%]
          [% IF a.state == 2 -%]                 class="active"    [% END -%]
          [% IF a.state == 4 -%]                 class="archived"  [% END -%] > 
-	   <td><a href="[% c.uri_for_action('/alias/view', [a.id]) %]">[% a.id %]</a></td>
+	   <td><a id="click_ref" href="[% c.uri_for_action('/alias/view', [a.id]) %]">[% a.id %]</a></td>
  	   <td><a href="[% c.uri_for_action('/userldap/view', [a.user.username]) %]">[% a.user.fullname %]</a></td>
  	   <td>[% a.cname %]</td>
  	   <td>[% a.hostname %]</td>
