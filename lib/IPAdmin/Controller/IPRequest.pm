@@ -54,6 +54,13 @@ sub object : Chained('base') : PathPart('id') : CaptureArgs(1) {
 
     $c->stash( object => $c->stash->{resultset}->find($id) );
 
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+
+    if($realm  eq "ldap" and $c->stash->{object}->user->id ne $user->id ){
+        $c->detach('/access_denied');
+    }
+
+
     if ( !$c->stash->{object} ) {
         $c->stash( error_msg => "Object $id not found!" );
         $c->detach('/error/index');
@@ -793,10 +800,12 @@ sub process_activate : Private {
 
     #Aggiorna la data dell'assegnamento 
     my $ret = $c->model('IPAdminDB::IPAssignement')->search({state=>$IPAdmin::ACTIVE})->single;
-    $ret->update({
-                        date_in     => time,
-                        });
+    $ret->update({date_in     => time});
 
+    if(defined($c->stash->{object}->guest)){
+        my $date_out = $c->stash->{object}->guest->date_out;
+        $ret->update({date_out => $date_out});
+    }
     if (! $ret ) {
     $c->stash->{message} = "Errore nell'aggiornamento dell'assegnazione IP";
     return 0;

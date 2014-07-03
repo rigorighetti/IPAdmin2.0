@@ -19,7 +19,7 @@
    <tbody>
 [% FOREACH a IN alias_table %]
     <tr  [% IF a.state == 0 -%]                 class="newip"     [% END -%]
-         [% IF a.state == 1 or i.state == 3 -%] class="preactive" [% END -%]
+         [% IF a.state == 1 or a.state == 3 -%] class="preactive" [% END -%]
          [% IF a.state == 2 -%]                 class="active"    [% END -%]
          [% IF a.state == 4 -%]                 class="archived"  [% END -%] > 
 	   <td><a id="click_ref" href="[% c.uri_for_action('/alias/view', [a.id]) %]">[% a.id %]</a></td>
@@ -28,8 +28,16 @@
  	   <td>[% a.hostname %]</td>
      <td><a href="[% c.uri_for_action('/iprequest/view', [a.iprequest.id]) %]">[% a.ip %]</a></td>     
      <td>
-      <a href="[% c.uri_for_action('/alias/edit',[a.id])%]">[% icon('edit') %]</a>
-      <a href="[% c.uri_for_action('/alias/delete',[a.id])%]">[% icon('remove') %]</a>
+      [% IF a.state == 0 -%]
+      <a href="[% c.uri_for_action('/alias/edit',[a.id],
+          {backref=> c.uri_for_action('alias/list')})%]">[% icon('edit') %]</a>
+      <a href="[% c.uri_for_action('/alias/activate',[a.id],
+          {backref=> c.uri_for_action('alias/list')})%]">[% icon('ok') %]</a>
+      [%END -%]
+      [% IF a.state != 4 -%]
+      <a href="[% c.uri_for_action('/alias/delete',[a.id],
+          {backref=> c.uri_for_action('alias/list')})%]">[% icon('remove') %]</a>
+      [% END -%]
      </td>
     </tr>
      

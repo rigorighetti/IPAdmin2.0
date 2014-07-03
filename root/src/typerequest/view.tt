@@ -24,11 +24,6 @@
 	<a href=[%c.uri_for_action('typerequest/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica</a>
 	&nbsp;<a href=[% c.uri_for_action('typerequest/delete', [object.id]) %]>
 	[% ui_icon('closethick') %]  Elimina</a>
-	&nbsp;
-
-	<a href="[% c.uri_for_action('/area/create',{typerequest => object.id, backref=>c.req.uri}) %]">
-		[% ui_icon('plusthick') %] Aggiungi Dipartimento</a> 
-
       </div>
     </p>
   [% add_css_tableinfo %]
