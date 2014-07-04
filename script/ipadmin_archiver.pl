@@ -48,6 +48,17 @@ has 'dryrun' => (
     required => 0
 );
 
+has 'blocked_ip' => (
+    traits  => ['NoGetopt'],
+    is      => 'ro',
+    lazy    => 1,
+    builder => '_build_blocked_ip'
+);
+
+sub _build_blocked_ip {
+    my $self = shift;
+    return {};
+}
 
 sub _build_transport {
     my $self = shift;
@@ -122,49 +133,76 @@ sub archive_new {
 
 sub process_archive {
     my ($self,$iprequest) = @_;
-
+        my $subject;
+        my $body; 
+        my $cc;
         #Archivia la richiesta
         $iprequest->state($IPAdmin::ARCHIVED);
         $iprequest->update;
         #chiude l'ultima assegnazione
-        foreach my $assignement (@{$iprequest->map_assignement}){
-            if($assignement->state eq $IPAdmin::ACTIVE){
+        my @assignements = $iprequest->map_assignement;
+
+        foreach my $assignement (@assignements){
+            if($assignement->state eq $ACTIVE){
                 $assignement->update({
                         date_out => time,
-                        state    => $IPAdmin::ARCHIVED,
+                        state    => $ARCHIVED,
                      });
             }
         }
-        #TODO alias?
-        foreach my $alias (@{$iprequest->map_alias}){
-            if($alias->state ne $IPAdmin::ARCHIVED){
+        #alias
+        my @alias = $iprequest->map_alias;
+        foreach my $alias (@alias){
+            if($alias->state ne $ARCHIVED){
                 $alias->update({
-                        state    => $IPAdmin::ARCHIVED,
+                        state    => $ARCHIVED,
                      });
             }
         }
-        #TODO mail
-        my $ip = "151.100.".$iprequest->subnet->id.".".$iprequest->host;
-        my $subject = "Archiviazione Indirizzo IP: $ip";
-        my $body; 
+        #mail
+        if($iprequest->state eq $NEW){
+          $subject = "Archiviazione Richiesta IP con Id ".$iprequest->id;
+          $body = <<EOF;
+Gentile Utente,
+la sua richiesta IP è stata archiviata in quanto non è stata validata dal referente.
+EOF
+          send_email($iprequest->mail, undef,$subject,$body);
+        }
+
+       if($iprequest->state eq $PREACTIVE){
+        $subject = "Archiviazione Richiesta IP con Id ".$iprequest->id;
+        $body = <<EOF;
+Gentile Utente,
+la sua richiesta IP è stata archiviata in quanto non validata dall'amministratore di rete.
+EOF
+        send_email($iprequest->mail, undef,$subject,$body);
+       }
+
+      if($iprequest->state eq $ACTIVE){
+          my $ip = "151.100.".$iprequest->subnet->id.".".$iprequest->host;
+          $subject = "Archiviazione Indirizzo IP: $ip";
  
-        if(defined $iprequest->guest){
+          if(defined $iprequest->guest){
             $body = <<EOF;
 Gentile Utente,
 il suo indirizzo IP $ip è stato bloccato poiché sono scaduti i termini di utilizzo.
 EOF
             send_email($iprequest->guest->email, $iprequest->user->email,
-                            $subject,$body);
-            return;
-        }
-
-        $body = <<EOF;
+                            #$subject,$body);
+          }
+          else{
+            $body = <<EOF;
 Gentile Utente,
 il suo indirizzo IP $ip è stato bloccato in seguito ad una inattività di oltre 90 giorni
 EOF
-        send_email($iprequest->mail, undef,$subject,$body);
-       
-
+             send_email($iprequest->mail, undef,$subject,$body);
+          }
+        #prepara la struttura dati con gli IP bloccati per poi compliare l'ACL
+        my $vlan = $iprequest->subnet->vlan->id;
+        defined $self->blocked_ip->{$vlan} or $self->blocked_ip->{$vlan} = [];
+        push @{$self->blocked_ip->{$vlan}}, $ip;
+      }
+          
 }
 
 
@@ -313,23 +351,6 @@ sub archive_active {
     return \@archived;
 }
 
-sub run {
-    my ($self) = @_;
-    my $time = time;
-
-    my $archived_new        = $self->archive_new($time);
-    my $archived_preactive  = $self->archive_pre($time);
-    my $archived_active     = $self->archive_active($time);
-
-#    print Dumper(\@archived_new);
-#    print Dumper(\@archived_preactive);
-#    print Dumper(\@archived_active);
-
-    my $body = $self->prepare_blocked_mail($archived_new, $archived_preactive, $archived_active);
-    $self->send_email('e.liguori@cineca.it',undef,
-                'Elenco IP Scaduti '.IPAdmin::Utils::print_short_timestamp(time),$body);
-}
-
 
 sub prepare_blocked_mail {
     my ( $self, $archived_new, $archived_preactive, $archived_active) = @_;
@@ -371,6 +392,27 @@ sub send_email {
 
   my $result = sendmail($email, { transport => $self->transport });
 }
+
+sub run {
+    my ($self) = @_;
+    my $time = time;
+
+    my $archived_new        = $self->archive_new($time);
+    my $archived_preactive  = $self->archive_pre($time);
+    my $archived_active     = $self->archive_active($time);
+
+   print Dumper(\@archived_new);
+   print Dumper(\@archived_preactive);
+   print Dumper(\@archived_active);
+
+    my $body = $self->prepare_blocked_mail($archived_new, $archived_preactive, $archived_active);
+    $self->send_email('e.liguori@cineca.it',undef,
+               'Elenco IP Scaduti '.IPAdmin::Utils::print_short_timestamp(time),$body);
+  
+    # TODO prepara ACL partendo da $self->blocked_ip
+}
+
+
 
 
 no Moose;

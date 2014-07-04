@@ -393,8 +393,6 @@ sub create : Chained('base') : PathPart('create') : Args() {
             my $msg = $c->stash->{message} ;
             $c->forward('process_notify');
             $c->flash(message => $msg." ".$c->stash->{mail_message});
-            $c->stash( default_backref =>
-                $c->uri_for_action( "iprequest/list" ) );
             $c->detach('/follow_backref');
         }
     }
