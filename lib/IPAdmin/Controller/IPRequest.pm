@@ -126,7 +126,8 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
     my ( $self, $c ) = @_;
     my $req = $c->stash->{object};
 
-
+    $c->user_in_realm( "normal" ) and 
+        $c->stash(realm => "normal");
 
     #Creare lista di assegnazioni per richiesta IP
     my @assignement =  map +{
@@ -137,7 +138,7 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
             },
             $req->map_assignement;
 
-
+    $c->stash( manoc_link => $c->config->{'Link'}->{'manoc'} );
     $c->stash( data => IPAdmin::Utils::print_short_timestamp($req->date));
     $c->stash( assignement => \@assignement );
     $c->stash( template => 'iprequest/view.tt' );

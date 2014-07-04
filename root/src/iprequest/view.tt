@@ -65,9 +65,13 @@
         <span class="left">Tipo:</span> <span class="right">[% object.type.type %]</span><br>
         <span class="left">Stanza:</span> <span class="right">[% object.location %]</span><br>
         <span class="left">Mac Address:</span> <span class="right">
-          <!-- <a href="https://manoc-ng.uniroma1.it/mac/[% object.macaddress%]"> -->
+          [%IF realm %]
+          <a href="[% manoc_link %]/mac/[% object.macaddress%]"> 
            [% object.macaddress%]
-          <!-- </a> -->
+          </a> 
+          [%ELSE%]
+          [% object.macaddress%]
+          [%END%]
          </span><br>
         <span class="left">Nome a Dominio:</span> <span class="right">[% object.hostname%].[%object.area.department.domain%].uniroma1.it</span><br>
       </div>

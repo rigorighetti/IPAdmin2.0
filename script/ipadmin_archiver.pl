@@ -164,7 +164,6 @@ il suo indirizzo IP $ip è stato bloccato in seguito ad una inattività di oltre
 EOF
         send_email($iprequest->mail, undef,$subject,$body);
        
-        #TODO blocca indirizzo su centrostella
 
 }
 
@@ -213,6 +212,7 @@ sub archive_pre {
        push @archived, { 
                          id     => $i->id,
                          name   => $i->user->fullname,
+                         fqdn   => $i->hostname.".".$i->area->department->domain,
                          mail   => $i->user->email, 
                          subnet => $i->subnet->id, 
                          host   => $i->host
@@ -277,6 +277,7 @@ sub archive_active {
         if(!defined ($result)){     
             push @archived, { 
                          id     => $i->id,
+                         fqdn   => $i->hostname.".".$i->area->department->domain,
                          name   => $i->user->fullname,
                          mail   => $i->user->email, 
                          subnet => $i->subnet->id, 
@@ -316,21 +317,44 @@ sub run {
     my ($self) = @_;
     my $time = time;
 
-    my @archived_new       = $self->archive_new($time);
-    my @archived_preactive = $self->archive_pre($time);
-    my @archived_active    = $self->archive_active($time);
+    my $archived_new        = $self->archive_new($time);
+    my $archived_preactive  = $self->archive_pre($time);
+    my $archived_active     = $self->archive_active($time);
 
-    #send_admin_email(\@archived_new,\@archived_preactive,\@archived_active);
+#    print Dumper(\@archived_new);
+#    print Dumper(\@archived_preactive);
+#    print Dumper(\@archived_active);
 
-    print Dumper(\@archived_new);
-    print Dumper(\@archived_preactive);
-    print Dumper(\@archived_active);
-
-    my $body = <<EOF;
-bla bla bla
-EOF
-    $self->send_email('sapienzanet@uniroma1.it',undef,'IPAdmin Archiver',$body);
+    my $body = $self->prepare_blocked_mail($archived_new, $archived_preactive, $archived_active);
+    $self->send_email('e.liguori@cineca.it',undef,
+                'Elenco IP Scaduti '.IPAdmin::Utils::print_short_timestamp(time),$body);
 }
+
+
+sub prepare_blocked_mail {
+    my ( $self, $archived_new, $archived_preactive, $archived_active) = @_;
+    my $link = $self->config->{'Link'}->{'ipadmin'};
+
+    my $body = "RICHIESTE NON VALIDATE SCADUTE:\n";
+    foreach my $i (@{$archived_new}){
+        $body .= sprintf("http://%s/iprequest/id/%s/view \t%20s\t%20s\n", $link, $i->{id},$i->{name},$i->{mail});
+    };
+
+    $body .= "\nRICHIESTE VALIDATE MA NON ATTIVATE:\n";
+    foreach my $i (@{$archived_preactive}){
+        $body .= sprintf("Id:%3s\t151.100.%s.%s\t%25s\t%20s\t%20s\n", $i->{id},$i->{subnet},
+                                                    $i->{host},$i->{fqdn},$i->{name},$i->{mail});
+    };
+
+    $body .= "\nRICHIESTE ATTIVE SCADUTE:\n";
+    foreach my $i (@{$archived_active}){
+        $body .= sprintf("Id:%3s\t151.100.%s.%s\t%25s\t%20s\t%20s\n", $i->{id},$i->{subnet},
+                                        $i->{host},$i->{fqdn},$i->{name},$i->{mail});
+    };
+
+    return $body; 
+}
+
 
 sub send_email {
     my ($self,$to,$cc,$subject,$body) = @_;
