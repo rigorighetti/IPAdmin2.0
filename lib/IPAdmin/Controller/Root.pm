@@ -57,6 +57,13 @@ sub auto : Private {
        return 0;
    }
 
+  my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+
+  if($realm eq 'ldap' and !$user->active){
+    $c->flash( error_msg => 'Il suo account è stato disabilitato. Contattare l\'amministratore di rete.');
+    $c->response->redirect($c->uri_for_action('/auth/login'));
+  }
+
   return 1;
 }
 

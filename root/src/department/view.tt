@@ -47,7 +47,7 @@
       <tbody>
 	[% END %]
         <tr>
- 	  <td><a href=[% c.uri_for_action('/building/view', [b.id]) %]>[% b.name %]</a></td>
+ 	  <td><a id="click_ref" href=[% c.uri_for_action('/building/view', [b.id]) %]>[% b.name %]</a></td>
  	  <td>[% b.description %]</td>
           <td>[% b.address %]</td>
 	</tr>

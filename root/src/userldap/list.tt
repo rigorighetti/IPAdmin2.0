@@ -23,8 +23,7 @@
    <th>Email</th>
  	 <th>Ruolo</th>
 	 <th>Active</th>
-	 <th>Commands</th>
-         </tr>
+   </tr>
        </thead>  
        <tbody>
   [% END %]
@@ -47,13 +46,7 @@
              <a href="[% c.uri_for_action('userldap/switch_status',[u.username]) %]">[% icon('remove') %] </a> 
           [% END %]
 	 </td>
- 	 <td>
-	  <a href="[% c.uri_for_action('userldap/edit',[u.username])%]">[% icon('edit') %]</a>
-	  <a href="[% c.uri_for_action('userldap/delete',[u.username])%]">[% icon('remove') %]</a>
-	 </td>
-
-
-         </tr>
+ 	</tr>
   [% IF loop.last %]
         </tbody>
     </table>

@@ -76,7 +76,7 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
 sub list : Chained('base') : PathPart('list') : Args(0) {
     my ( $self, $c ) = @_;
     my $schema    = $c->stash->{resultset};
-    my @subnet_list = $schema->search({});
+    my @subnet_list = $schema->search({}, {prefetch => 'vlan'});
    
     $c->stash(
         subnet_list => \@subnet_list,
