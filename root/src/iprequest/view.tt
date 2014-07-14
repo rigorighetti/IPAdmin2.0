@@ -74,6 +74,7 @@
           [%END%]
          </span><br>
         <span class="left">Nome a Dominio:</span> <span class="right">[% object.hostname%].[%object.area.department.domain%].uniroma1.it</span><br>
+        <span class="left">Note:</span> <span class="right">[% object.notes%]</span><br>
       </div>
         <div class="title">Configurazione della Scheda di Rete</div>
         <div class="section">

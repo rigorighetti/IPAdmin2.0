@@ -20,14 +20,22 @@
     </tr>
     <tr align=left>
       <th>Building:</th>
-      <td><a href="[% c.uri_for_action('/building/view', [object.building.id]) %]">[% object.building.name %]</a> </td>
+      <td>
+      [%IF object.building.0 %]
+      [% FOREACH b IN object.building %]
+        <a href="[% c.uri_for_action('/building/view', [b.id]) %]">[% b.name %]</a>
+      [% IF loop.last %],[%END%]
+      [%END%]
+      [%ELSE%]
+      <a href="[% c.uri_for_action('/building/view', [object.building.id]) %]">[% object.building.name %]</a>
+      [%END%]
+      </td>
     </tr>
     <tr align=left>
       <th>Descrizione:</th>
       <td>[% object.description %]</td>
     </tr>
 </table>
-[% add_css_tableinfo -%]
 
 <p>
  <div class="buttons">	

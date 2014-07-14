@@ -202,7 +202,7 @@ after setup_finalize => sub {
 
 
 
-    my @actions = qw{ userldap/list iprequest/list managerrequest/list 
+    my @actions = qw{ userldap/list iprequest/list iprequest/activate managerrequest/list 
     managerrequest/delete managerrequest/activate managerrequest/edit  };
 
     #additional ACL for admin

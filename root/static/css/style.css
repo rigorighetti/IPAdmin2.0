@@ -23,6 +23,17 @@ h2 {
     width: 100%;
 }
 
+#logged {
+ color: #000000;
+ font-weight:bold;
+ float:left;
+ height:30px;
+ position:absolute;
+ right:0;
+ top: 35px;
+ font-size:6px;
+}
+
 h1.logo {
     left:28px;
     margin:0;

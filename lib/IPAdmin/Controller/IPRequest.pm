@@ -53,18 +53,21 @@ sub object : Chained('base') : PathPart('id') : CaptureArgs(1) {
     my ( $self, $c, $id ) = @_;
 
     $c->stash( object => $c->stash->{resultset}->find($id) );
-
-    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
-
-    if($realm  eq "ldap" and $c->stash->{object}->user->id ne $user->id ){
-        $c->detach('/access_denied');
-    }
-
-
     if ( !$c->stash->{object} ) {
         $c->stash( error_msg => "Object $id not found!" );
         $c->detach('/error/index');
     }
+
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+
+    if($realm  eq "ldap" and $c->stash->{object}->user->id ne $user->id ){
+        #don'block if the user is the manager of that request
+        return if(  defined $c->stash->{object}->area->manager and 
+                    $c->stash->{object}->area->manager->id eq $user->id );
+        #block the action: an user can't see the reuqest of another user
+        $c->detach('/access_denied');
+    }
+
 }
 
 
@@ -222,7 +225,7 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
                               "Assegnista di ricerca", "Collaboratore a contratto", "Profressore visitatore", 
                               "Professore a contratto", "Ospite"];
     $tmpl_param{realm}          = $realm;
-    $tmpl_param{user}           = $user;
+    $tmpl_param{user}           = $req->user;
     $tmpl_param{fullname}       = $user->fullname;
     $tmpl_param{aree}           = \@aree;
     $tmpl_param{types}          = \@types;
@@ -231,6 +234,7 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
     $tmpl_param{subnets}        = $req->area->building->vlan->map_subnet;
     $tmpl_param{subnet_def}     = $req->subnet;
     $tmpl_param{host}           = $req->host;
+    $tmpl_param{notes}          = $req->notes;
 
     #user editable
     $tmpl_param{location}       = $c->req->param('location') || $req->location;
@@ -249,7 +253,7 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
     }
     $tmpl_param{type_def}       = $c->req->param('type') || $req->type->id;
     $tmpl_param{area_def}       = $req->area->id;
-    $tmpl_param{dom_def}       = $req->area->department->domain;
+    $tmpl_param{dom_def}        = $req->area->department->domain;
 
     $c->stash(user_def => $c->stash->{object}->user->id);
 
@@ -277,6 +281,7 @@ sub process_edit : Private {
     my $guest_fax      = $c->req->param('guest_fax');
     my $guest_phone    = $c->req->param('guest_phone');
     my $type           = $c->req->param('type');
+    my $notes          = $c->req->param('notes');
 
     my $area;
     my $user;
@@ -322,6 +327,7 @@ sub process_edit : Private {
                                 date        => time,
                                 state       => $IPAdmin::NEW,
                                 type        => $type,
+                                notes       => $notes,
                                    });
         } else{
             $ret = $c->stash->{'object'}->guest->update({
@@ -330,7 +336,7 @@ sub process_edit : Private {
                 telephone=> $guest_phone,
                 type     => $guest_type,
                 fax      => $guest_fax,
-                date_out => $guest_date_out
+                date_out => $guest_date_out,
                 });
             $ret = $c->stash->{'object'}->update({
                             area        => $area,
@@ -342,6 +348,7 @@ sub process_edit : Private {
                             hostname    => $hostname,
                             type        => $type,
                             guest       => $ret->id,
+                            notes       => $notes,
                                });
         }
     } else{
@@ -358,7 +365,8 @@ sub process_edit : Private {
                                 location    => $location,
                                 macaddress  => $mac,
                                 hostname    => $hostname,
-                                type        => $type
+                                type        => $type,
+                                notes       => $notes,
                                 });
         $c->stash->{'object'}->guest and 
                             $c->stash->{'object'}->guest->update({
@@ -430,6 +438,8 @@ sub create : Chained('base') : PathPart('create') : Args() {
     $tmpl_param{guest_phone}    = $c->req->param('guest_phone');
     $tmpl_param{guest_mail}     = $c->req->param('guest_mail');
     $tmpl_param{fixed}          = $c->req->param('fixed');
+    $tmpl_param{notes}          = $c->req->param('notes');
+    $tmpl_param{user_def}       = $c->req->param('user');
 
     $c->stash(%tmpl_param);
 }
@@ -443,6 +453,7 @@ sub process_create : Private {
     my $type      = $c->req->param('type');
     my $hostname  = $c->req->param('hostname');
     my $fixed     = $c->req->param('fixed');
+    my $notes     = $c->req->param('notes');
     my $guest_type= $c->req->param('guest_type');
     my $guest_date_out = $c->req->param('guest_date_out');
     my $guest_name  = $c->req->param('guest_name');
@@ -481,7 +492,8 @@ sub process_create : Private {
                         date        => time,
                         state       => $IPAdmin::NEW,
                         type        => $type,
-                           });
+                        notes       => $notes,
+                      });
     } else{
         $ret = $c->model("IPAdminDB::Guest")->create({
             fullname => $guest_name,
@@ -501,6 +513,7 @@ sub process_create : Private {
                         state       => $IPAdmin::NEW,
                         type        => $type,
                         guest       => $ret->id,
+                        notes       => $notes,
                            });
     }
 
