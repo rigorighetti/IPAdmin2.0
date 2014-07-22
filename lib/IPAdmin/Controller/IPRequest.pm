@@ -59,6 +59,7 @@ sub object : Chained('base') : PathPart('id') : CaptureArgs(1) {
     }
 
     my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    $c->stash(realm => $realm);
 
     if($realm  eq "ldap" and $c->stash->{object}->user->id ne $user->id ){
         #don'block if the user is the manager of that request
@@ -129,9 +130,12 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
     my ( $self, $c ) = @_;
     my $req = $c->stash->{object};
 
-    $c->user_in_realm( "normal" ) and 
-        $c->stash(realm => "normal");
-
+    if($c->user_in_realm( "normal" )){
+       $c->stash(realm => "normal");
+    }else {
+       $c->stash(realm => "ldap");
+    }
+   
     #Creare lista di assegnazioni per richiesta IP
     my @assignement =  map +{
             id          => $_->id,
@@ -218,7 +222,7 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
         $tmpl_param{users} = \@users;
     }
     #ordinamento aree per nome dipartimento
-    my @aree  = $c->model('IPAdminDB::Area')->search({},{join => 'department', prefetch => 'department', order_by => 'department.name'})->all;
+    my @aree  = $c->model('IPAdminDB::Area')->search({},{join => 'department', prefetch => ['department','building','manager'], order_by => 'department.name'})->all;
     my @types = $c->model('IPAdminDB::TypeRequest')->search({},{order_by => 'type'})->all;    
 
     $tmpl_param{guest_type} = ["Studente laureando", "Dottorando", "Studente specializzando", "Borsista", 
@@ -292,7 +296,7 @@ sub process_edit : Private {
     my $guest_name;
     my $guest_mail;
     if($c->stash->{realm} eq  "normal" ){
-      #root editable fileds
+      #root editable fields
       $area           = $c->req->param('area');
       $user           = $c->req->param('user');
       $fixed          = $c->req->param('fixed');
@@ -304,6 +308,8 @@ sub process_edit : Private {
       $guest_mail     = $c->req->param('guest_mail');
     }
     my $error;
+
+
 
     # check form
     $c->forward('check_ipreq_form') || return 0; 
@@ -325,7 +331,7 @@ sub process_edit : Private {
                                 macaddress  => $mac,
                                 hostname    => $hostname,
                                 date        => time,
-                                state       => $IPAdmin::NEW,
+                                #state       => $IPAdmin::NEW,
                                 type        => $type,
                                 notes       => $notes,
                                    });
@@ -575,11 +581,21 @@ sub check_ipreq_form : Private {
         return 0;
     } 
 
-    if ( $host ne '' and $subnet ne '' and 
-        $schema->search({subnet=> $subnet, host => $host})->count ) {
-        $c->stash->{error_msg} = "Indirizzo IP già assegnato!";
-        return 0;
-     }
+    if ( $host ne '' and $subnet ne '' ) {
+        if(!find_subnet($c,$area,$subnet)){
+          $c->stash->{error_msg} = "La subnet scelta non è tra quelle disponibili in questo dipartimento";
+          return 0;     
+        }
+        if(defined $c->stash->{object} and $c->stash->{object}->subnet->id ne $subnet
+                                       and $c->stash->{object}->host ne $host ){ 
+          #edit action
+          if($schema->search({subnet=> $subnet, host => $host, state => {-not => $IPAdmin::ARCHIVED}})->count > 0){
+            #l'indirizzo editato a mano è già in uso
+            $c->stash->{error_msg} = "Indirizzo IP già assegnato!";
+            return 0;
+        }
+      }
+    }
 
     # if ($schema->search({ macaddress => $mac})->count() > 0 ) {
     #  $c->stash->{error_msg} = "Mac Address già registrato!";
@@ -612,6 +628,19 @@ sub check_ipreq_form : Private {
 
 
     return 1;
+}
+
+sub find_subnet : Private {
+    my ( $c , $area, $subnet_id )  = @_;
+    my ($e,$it);
+
+    my $ret = $c->model("IPAdminDB::Area")->find($area);
+    my @subnets = $ret->building->vlan->map_subnet;
+
+    foreach my $s (@subnets){
+     $subnet_id eq $s->id and return 1;            
+    }
+    return 0;
 }
 
 sub validate : Chained('object') : PathPart('validate') : Args(0) {

@@ -16,12 +16,24 @@ has_field 'name' => (
 		'Str',
 		{
 			check => sub { $_[0] =~ /\w/ },
-			messagge => 'Invalid Name'
+			messagge => 'Immettere un nome valido (senza caratteri speciali)'
 		},
 	]
 );
 
-has_field 'description' => ( type => 'TextArea' );
+has_field 'description' => (
+    type     => 'TextArea',
+    required => 1,
+    label    => 'Descrizione Vlan',
+    apply    => [
+        'Str',
+        {
+            check => sub {  length($_[0]) < 255 },
+            message => 'Descrizione troppo lunga'
+        },
+    ]
+);
+
 has_field 'address' => ( type => 'Text', required => 1 );
 
 

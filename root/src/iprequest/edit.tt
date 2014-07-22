@@ -96,6 +96,10 @@ td.data {padding-left:20px;}
           [% END %] 
           </select><br>
           [% IF error.type %] <span class="error" id="error">[% error.type %] </span>[%END%]
+          [%IF object.state == 1%]
+          <span class="left data">Subnet:</span> <input class="right" type="text" name="subnet" value="[%object.subnet.id%]" /><br>
+          <span class="left data">Host:  </span> <input class="right" type="text" name="host" value="[%object.host%]" /><br>
+          [%END -%]
           <span class="left data">Stanza:</span> <input class="right" type="text" name="location" value="[%location%]" /><br>
          [% IF error.location %]<span class="error" id="error">[% error.location %] </span>[%END%]
           <span class="left data">Indirizzo ethernet:</span> <input class="right" type="text" name="mac" value="[%mac%]" /><br>
