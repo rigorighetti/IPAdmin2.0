@@ -31,7 +31,7 @@
       </div>
       <div id="logged">
       [% IF c.user.username %]
-      User: <i>[% c.user.username %] 
+      User: <i>[% c.user.username %]</i>
       [%END%]
       </div>
    </div>
