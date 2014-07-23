@@ -18,6 +18,7 @@
     <table class="display" id="userldap">
        <thead>  
 	 <tr>
+   <th>Id</th>
  	 <th>Username</th>
  	 <th>Nome e Cognome</th>
    <th>Email</th>
@@ -28,6 +29,7 @@
        <tbody>
   [% END %]
          <tr class="row">
+   <td>[% u.id %]</td>
  	 <td><a id="click_ref"  href=[% c.uri_for_action('/userldap/view', [u.username]) %]>[% u.username %]</a></td>
  	 <td>[% u.fullname %]</td>
  	 <td>[% u.email %]</td>

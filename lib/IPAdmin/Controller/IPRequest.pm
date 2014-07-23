@@ -913,9 +913,10 @@ EOF
     elsif ($ipreq->state == $IPAdmin::ACTIVE) {
         #A seguito di ipreq/activate, preparo il messaggio per l'utente: "Il tuo IP è attivo"
         #Se la richiesta è a tempo determinato invia anche un'email all'ospite
+        my $ip = "151.100.".$ipreq->subnet->id.".".$ipreq->host;
         $body = <<EOF;
 Gentile Utente, 
-il suo indirizzo IP è stato attivato.
+il suo indirizzo IP $ip è stato attivato.
 E' ora possibile configurare la scheda di rete del dispositivo con i dati presenti nel modulo: 
     $url
 EOF
@@ -931,6 +932,7 @@ EOF
         $body = <<EOF;
 Gentile Utente,
 il suo indirizzo IP $ip è stato bloccato in seguito ad una richiesta di rinuncia di indirizzo IP o all'inattività di oltre 90 giorni.
+E' possibile riattivare l'indirizzo IP, entro 7 giorni dalla ricezione di questa email, seguendo il link ed utilizzando il pulsante "Riattiva":
     $url
 EOF
         $subject = "Richiesta di indirizzo IP id: ".$ipreq->id." scaduta";
@@ -952,7 +954,7 @@ EOF
 
 
     my $email = {
-            from    => 'infosapienza@uniroma1.it',
+            from    => 'w3.staff@uniroma1.it',
             to      => $to,
             cc      => $cc,
             subject => $subject,

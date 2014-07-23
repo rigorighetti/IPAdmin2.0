@@ -24,14 +24,14 @@ h2 {
 }
 
 #logged {
- color: #000000;
+ color: rgba(0, 123, 1, 1);
  font-weight:bold;
  float:left;
  height:30px;
  position:absolute;
- right:0;
+ right:15px;
  top: 35px;
- font-size:6px;
+ font-size:13px;
 }
 
 h1.logo {
