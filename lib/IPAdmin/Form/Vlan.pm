@@ -26,9 +26,16 @@ has_field 'id' => (
     );
 
 has_field 'description' => (
-    type     => 'Text',
+    type     => 'TextArea',
     required => 0,
     label    => 'Descrizione Vlan',
+    apply    => [
+        'Str',
+        {
+            check => sub {  length($_[0]) < 255 },
+            message => 'Descrizione troppo lunga'
+        },
+    ]
 );
 
 has_field 'submit'  => ( type => 'Submit', value => 'Submit' );

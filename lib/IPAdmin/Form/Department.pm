@@ -21,7 +21,18 @@ has_field 'name' => (
 	]
 );
 
-has_field 'description' => ( type => 'TextArea' );
+has_field 'description' => (
+    type     => 'TextArea',
+    required => 1,
+    label    => 'Descrizione Vlan',
+    apply    => [
+        'Str',
+        {
+            check => sub {  length($_[0]) < 255 },
+            message => 'Descrizione troppo lunga'
+        },
+    ]
+);
 
 has_field 'domain' => ( type => 'Text',label => 'Dominio DNS', required => 1 );
 
