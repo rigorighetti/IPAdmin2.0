@@ -29,6 +29,11 @@
       <div id="navigation">
       [% menu_navigation %]
       </div>
+      <div id="logged">
+      [% IF c.user.username %]
+      User: <i>[% c.user.username %]</i>
+      [%END%]
+      </div>
    </div>
 </div>
 [% END -%]

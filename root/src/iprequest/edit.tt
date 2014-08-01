@@ -51,7 +51,9 @@ td.data {padding-left:20px;}
            [% IF error.type %]
              <span class="right error" id="error">[% error.type %] </span><br>
            [%END%]
+         <span class="left">Indirizzo dell'edificio:</span> <span class="right" id="address"></span><br>
          <span class="left">Referente di Rete:</span> <span class="right" id="referente"></span><br>
+         <span class="left data">Dominio:</span><span class="right" id="domain"></span><br>
         </div>
          <div class="left title">Tempo Determinato</div> <span><input [%IF realm == "ldap"%]disabled="1"[%END-%] type="checkbox" id="fixed" value="fixed" name="fixed" [%IF fixed %]checked="1"[%END-%] ></span>
          <div class="section">
@@ -94,13 +96,17 @@ td.data {padding-left:20px;}
           [% END %] 
           </select><br>
           [% IF error.type %] <span class="error" id="error">[% error.type %] </span>[%END%]
+          [%IF object.state == 1%]
+          <span class="left data">Subnet:</span> <input class="right" type="text" name="subnet" value="[%object.subnet.id%]" /><br>
+          <span class="left data">Host:  </span> <input class="right" type="text" name="host" value="[%object.host%]" /><br>
+          [%END -%]
           <span class="left data">Stanza:</span> <input class="right" type="text" name="location" value="[%location%]" /><br>
          [% IF error.location %]<span class="error" id="error">[% error.location %] </span>[%END%]
           <span class="left data">Indirizzo ethernet:</span> <input class="right" type="text" name="mac" value="[%mac%]" /><br>
          [% IF error.name %]<span class="error" id="error">[% error.mac %] </span>[%END%]
          <span class="left data">Nome host:</span> <input class="right" type="text" name="hostname" value="[%hostname%]" /><br>
          [% IF error.hostname %]<span class="error" id="error">[% error.hostname %] </span>[%END%]
-         <span class="left data">Dominio:</span><span class="right" id="domain">[%dom_def%].uniroma1.it</span><br>
+         <span class="left data">Note:</span> <textarea class="right" name="notes" id="notes" >[%notes%]</textarea>  <br>
         </div> 
         <div class="confirm"><a href="[% c.uri_for('/help/view',{page => 'howto'}) %]">Ho preso visione delle norme Sapienza</a><span><input type="checkbox" id="confirm" value="confirm" name="confirm"></span></div> 
         <div class="section">
@@ -115,8 +121,11 @@ td.data {padding-left:20px;}
 </form>
 
 
+
 [% fragment = BLOCK -%]
-  var hash_man = {
+
+
+var hash_man = {
   [% FOREACH a IN aree -%]
    [%IF a.manager.id -%] "[%a.id %]" : "[%a.manager.fullname %]" [% ',' UNLESS loop.last -%] [%END-%]
   [% END -%]
@@ -128,11 +137,17 @@ var hash_addr = {
   [% END -%]
 };
 
- $(function() {    
+var hash_dom = {
+  [% FOREACH a IN aree -%]
+   [%IF a.department.id -%] "[%a.id %]" : "[%a.department.domain %].uniroma1.it" [% ',' UNLESS loop.last -%] [%END-%]
+  [% END -%]
+};
 
-  $("#datepicker").datepicker("setDate", "[% guest_date_out %]" );
-   
+ $(function() {    
+  [%IF area_def %]$("#referente").html(hash_man[[%area_def%]]);[%END -%]
+  [%IF area_def %]$("#address").html(hash_addr[[%area_def%]]);[%END -%]
  
+  $("#datepicker").datepicker("setDate", "[% guest_date_out %]" );
 
    $("#area").bind("change",
    function() {
@@ -140,21 +155,75 @@ var hash_addr = {
     if(i==0){
       $("#referente").html("");
       $("#address").html("");
+      $("#domain").html("");
       } else {
       var text = hash_man[i];
       var addr = hash_addr[i];
+      var dom  = hash_dom[i];
       if(text == null ) {
        text = "Non ancora assegnato!";
       }
       if(addr == null ) {
        addr = "-";
       }
+      if(dom == null ) {
+       dom = "-";
+      }
+      $("#domain").html(dom) ;
       $("#referente").html(text) ;
       $("#address").html(addr) ; 
     }
+   }            // function end
+ ); 
+
+
+[%IF realm == "normal"%]
+var hash_usertel = {
+  [% FOREACH u IN users -%]
+    "[%u.id %]" : "[%u.telephone %]" [% ',' UNLESS loop.last -%] 
+  [% END -%]
+};
+var hash_userfax = {
+  [% FOREACH u IN users -%]
+    "[%u.id %]" : "[%u.fax %]" [% ',' UNLESS loop.last -%] 
+  [% END -%]
+};
+var hash_useremail = {
+  [% FOREACH u IN users -%]
+    "[%u.id %]" : "[%u.email %]" [% ',' UNLESS loop.last -%] 
+  [% END -%]
+};
+
+  $("#user_sel").bind("change",
+  function() {
+    var i = this.value; 
+    if(i==0){
+      $("#user_tel").html("");
+      $("#user_fax").html("");
+      $("#user_email").html("");
+      } else {
+      var tel = hash_usertel[i];
+      var fax = hash_userfax[i];
+      var email  = hash_useremail[i];
+      if(tel == null ) {
+       tel = "-";
+      }
+      if(fax == null ) {
+       fax = "-";
+      }
+      if(email == null ) {
+       email = "-";
+      }
+      $("#user_tel").html(tel) ;
+      $("#user_fax").html(fax) ;
+      $("#user_email").html(email) ; 
+    }
+
     }            // function end
-    ); 
- 
+ );
+[%END -%]
+
+
 [%IF fixed %]  
  $(".fixed_time").show(); 
 [%ELSE%]
@@ -169,8 +238,6 @@ var hash_addr = {
    }
   }
   );
-
-
 });
 [% END -%]
 [% js_scripts.push(fragment) -%]

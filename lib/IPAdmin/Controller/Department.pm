@@ -66,14 +66,14 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
 #        my @department_table = $build_schema->all;
 
 	my @department_table = map +{
-	        id      => $_->id,
-	        name    => $_->name,
-	        description    => $_->description,
-	        domain  => $_->domain,
-		n_build => $_->buildings->count()
+	        id      	=> $_->id,
+	        name    	=> $_->name,
+	        description => $_->description,
+	        domain  	=> $_->domain,
+			n_build 	=> $_->buildings->count()
 	        },
 	        $build_schema->search({},
-        	                      {prefetch => 'map_area_build'});
+        	                      {prefetch => {map_area_build => 'building'}});
 
 	$c->stash( department_table => \@department_table );
 	$c->stash( template	    => 'department/list.tt' );

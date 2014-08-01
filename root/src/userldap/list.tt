@@ -18,17 +18,18 @@
     <table class="display" id="userldap">
        <thead>  
 	 <tr>
+   <th>Id</th>
  	 <th>Username</th>
  	 <th>Nome e Cognome</th>
    <th>Email</th>
  	 <th>Ruolo</th>
 	 <th>Active</th>
-	 <th>Commands</th>
-         </tr>
+   </tr>
        </thead>  
        <tbody>
   [% END %]
          <tr class="row">
+   <td>[% u.id %]</td>
  	 <td><a id="click_ref"  href=[% c.uri_for_action('/userldap/view', [u.username]) %]>[% u.username %]</a></td>
  	 <td>[% u.fullname %]</td>
  	 <td>[% u.email %]</td>
@@ -47,13 +48,7 @@
              <a href="[% c.uri_for_action('userldap/switch_status',[u.username]) %]">[% icon('remove') %] </a> 
           [% END %]
 	 </td>
- 	 <td>
-	  <a href="[% c.uri_for_action('userldap/edit',[u.username])%]">[% icon('edit') %]</a>
-	  <a href="[% c.uri_for_action('userldap/delete',[u.username])%]">[% icon('remove') %]</a>
-	 </td>
-
-
-         </tr>
+ 	</tr>
   [% IF loop.last %]
         </tbody>
     </table>

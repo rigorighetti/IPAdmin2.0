@@ -371,11 +371,10 @@ sub process_notify : Private {
     $to = $alias->ip_request->user->email;
 
     if ($alias->state == $IPAdmin::ACTIVE) {
-        #A seguito di alias/activate, preparo il messaggio per l'utente: "Il tuo IP è attivo"
+        #A seguito di alias/activate, preparo il messaggio per l'utente: "Il tuo alias è attivo"
         $body = <<EOF;
 Gentile Utente, 
-il suo indirizzo IP è stato attivato.
-E' ora possibile configurare la scheda di rete del dispositivo con i dati presenti nel modulo: 
+l'alias $alias_cname.uniroma1.it è stato attivato. E' possibile visualizzare i dettagli seguendo il link: 
     $url
 EOF
         $subject = "Richiesta Alias id: $alias_id attiva";
@@ -394,7 +393,7 @@ EOF
 
 
     my $email = {
-            from    => 'infosapienza@uniroma1.it',
+            from    => 'w3.staff@uniroma1.it',
             to      => $to,
             cc      => $cc,
             subject => $subject,

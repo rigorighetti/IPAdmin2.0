@@ -74,16 +74,20 @@
           [%END%]
          </span><br>
         <span class="left">Nome a Dominio:</span> <span class="right">[% object.hostname%].[%object.area.department.domain%].uniroma1.it</span><br>
+        <span class="left">Note:</span> <span class="right">[% object.notes%]</span><br>
       </div>
         <div class="title">Configurazione della Scheda di Rete</div>
         <div class="section">
          [% IF object.state == 0 -%]
           <div class="newip"><span class="left">Stato:</span> <span class="right">In attesa di convalida del Referente di Rete</span>
          [% END -%] 
-         [% IF object.state == 1 or object.state == 3 -%] 
+         [% IF object.state == 1 -%] 
           <div class="preactive"><span class="left">Stato:</span> <span class="right">Convalidata. Inviare il fax per attivare l'IP</span>
          [% END -%] 
-         [% IF object.state == 2 -%]
+         [% IF object.state == 3 -%]
+          <div class="preactive"><span class="left">Stato:</span> <span class="right">Scaduta: riattivare con il pulsante a lato prima che venga archiviato.</span>
+         [% END -%]
+	 [% IF object.state == 2 -%]
           <div class="active"><span class="left">Stato:</span> <span class="right">Attiva</span>
          [% END -%] 
          [% IF object.state == 4 -%]

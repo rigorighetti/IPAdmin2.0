@@ -79,7 +79,7 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
     my ( $self, $c ) = @_;
 
     my $user_schema = $c->stash->{resultset};
-    my @user_table = $c->stash->{resultset}->all;
+    my @user_table = $user_schema->search({});
 
     $c->stash( userldap_table => \@user_table );
     $c->stash( template       => 'userldap/list.tt' );
@@ -209,28 +209,28 @@ sub create : Chained('base') : PathPart('create') : Args(0) {
 
 sub delete : Chained('object') : PathPart('delete') : Args(0) {
     my ( $self, $c ) = @_;
-    my $userldap = $c->stash->{'object'};
-    my $id       = $userldap->id;
-    my $name     = $userldap->username;
-    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
-    $c->stash( default_backref => $c->uri_for_action('userldap/view'), lc($user->username));
-    $c->stash( default_backref => $c->uri_for_action('iprequest/list') ) if( $realm eq  "normal" );
+#     my $userldap = $c->stash->{'object'};
+#     my $id       = $userldap->id;
+#     my $name     = $userldap->username;
+#     my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+#     $c->stash( default_backref => $c->uri_for_action('userldap/view'), lc($user->username));
+#     $c->stash( default_backref => $c->uri_for_action('iprequest/list') ) if( $realm eq  "normal" );
     
-    if ( lc $c->req->method eq 'post' ) {
-#        if ( $c->model('IPAdminDB::Rack')->search( { userldap => $id } )->count ) {
-#            $c->flash( error_msg => 'UserLDAP is not empty. Cannot be deleted.' );
-#            $c->stash( default_backref => $c->uri_for_action( 'userldap/view', [$id] ) );
-#            $c->detach('/follow_backref');
-#        }
+#     if ( lc $c->req->method eq 'post' ) {
+# #        if ( $c->model('IPAdminDB::Rack')->search( { userldap => $id } )->count ) {
+# #            $c->flash( error_msg => 'UserLDAP is not empty. Cannot be deleted.' );
+# #            $c->stash( default_backref => $c->uri_for_action( 'userldap/view', [$id] ) );
+# #            $c->detach('/follow_backref');
+# #        }
 
-        $userldap->delete;
+#         $userldap->delete;
 
-        $c->flash( message => 'Success!!  ' . $name . ' successful deleted.' );
-        $c->detach('/follow_backref');
-    }
-    else {
-        $c->stash( template => 'generic_delete.tt' );
-    }
+#         $c->flash( message => 'Success!!  ' . $name . ' successful deleted.' );
+#         $c->detach('/follow_backref');
+#     }
+#     else {
+#         $c->stash( template => 'generic_delete.tt' );
+#     }
 }
 
 =head2 switch_status

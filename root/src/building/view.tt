@@ -56,7 +56,7 @@
       <tbody>
 	[% END %]
         <tr>
- 	  <td><a href=[% c.uri_for_action('/department/view', [d.id]) %]>[% d.name %]</a></td>
+ 	  <td><a id="click_ref" href=[% c.uri_for_action('/department/view', [d.id]) %]>[% d.name %]</a></td>
  	  <td>[% d.description %]</td>
         </tr>
 	[% IF loop.last %]

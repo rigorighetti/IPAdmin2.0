@@ -19,13 +19,16 @@ td.data {padding-left:20px;}
       <div class="section">
         <span class="left data">Nome e Cognome:</span> <span class="right">
          [%IF realm == "normal" -%]
-          <select name="user" id="user_sel">
-          <option value=0>Seleziona un utente</option>
+          <select id="user_sel" name="user">
+           <option value="[% a.id %]">
             [% FOREACH a IN users %]
-              <option value="[% a.id %]">[%a.fullname%]</option>
+              <option value="[% a.id %]"
+              [% IF a.id == user_def -%] 
+                 selected="1"
+               [% END -%] 
+              >[%a.fullname%]</option>
             [% END %]
           </select>
-
          [%ELSE -%]
           [% fullname%]
          [%END -%]
@@ -52,6 +55,7 @@ td.data {padding-left:20px;}
            [%END%]
          <span class="left">Indirizzo dell'edificio:</span> <span class="right" id="address"></span><br>
          <span class="left">Referente di Rete:</span> <span class="right" id="referente"></span><br>
+         <span class="left data">Dominio:</span><span class="right" id="domain"></span><br>
         </div>
          <div class="left title">Tempo Determinato</div> <span><input type="checkbox" id="fixed" value="fixed" name="fixed" [%IF fixed %]checked="1"[%END-%] ></span>
          <div class="section">
@@ -93,14 +97,14 @@ td.data {padding-left:20px;}
             [%a.type%]</option>
           [% END %] 
           </select><br>
-          [% IF error.type %] <span class="error" id="error">[% error.type %] </span>[%END%]
+          [% IF error.type -%] <span class="error" id="error">[% error.type %] </span>[%END -%]
           <span class="left data">Stanza:</span> <input class="right" type="text" name="location" value="[%location%]" /><br>
          [% IF error.location %]<span class="error" id="error">[% error.location %] </span>[%END%]
           <span class="left data">Indirizzo ethernet:</span> <input class="right" type="text" name="mac" value="[%mac%]" /><br>
          [% IF error.name %]<span class="error" id="error">[% error.mac %] </span>[%END%]
          <span class="left data">Nome host:</span> <input class="right" type="text" name="hostname" value="[%hostname%]" /><br>
          [% IF error.hostname %]<span class="error" id="error">[% error.hostname %] </span>[%END%]
-         <span class="left data">Dominio:</span><span class="right" id="domain"></span><br>
+         <span class="left data">Note:</span> <textarea class="right" name="notes" id="notes" >[%notes%]</textarea>  <br>
         </div>  
         <div class="section">
         <div class="confirm"><a href="[% c.uri_for('/help/view',{page => 'howto'}) %]"> Ho preso visione delle norme Sapienza </a><span><input type="checkbox" id="confirm" value="confirm" name="confirm"></span></div>
