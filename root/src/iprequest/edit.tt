@@ -108,8 +108,9 @@ td.data {padding-left:20px;}
          [% IF error.hostname %]<span class="error" id="error">[% error.hostname %] </span>[%END%]
          <span class="left data">Note:</span> <textarea class="right" name="notes" id="notes" >[%notes%]</textarea>  <br>
         </div> 
-        <div class="confirm"><a href="[% c.uri_for('/help/view',{page => 'howto'}) %]">Ho preso visione delle norme Sapienza</a><span><input type="checkbox" id="confirm" value="confirm" name="confirm"></span></div> 
         <div class="section">
+        <div class="confirm"><a href="[% c.uri_for('/help/view',{page => 'howto'}) %]">Il Richiedente accetta le norme di utilizzo di SapienzaNET e le norme del GaRR</a><span><input type="checkbox" id="confirm" value="confirm" name="confirm" checked="checked"></span></div> 
+          <br>
          <div class="buttons">
            <input id="submit" type="submit" name="submit" value="Invia la  Richiesta"> 
            <input type="submit" name="discard" value="Annulla">

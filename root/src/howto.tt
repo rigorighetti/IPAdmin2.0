@@ -26,9 +26,10 @@
       --  Il requisito fondamentale per richiedere un indirizzo IP è il possesso di un account di posta elettronica di tipo <b>nome.cognome@uniroma1.it</b>, riservato al personale docente e non docente dell'ateneo.
           Il processo prevede i seguenti passaggi:
       <ol>
-      <li>Autenticazione con le proprie credenziali usate per la posta elettronica: al primo accesso sarà necessario inserire alcuni dati dell'utente.</li>
-      <li>Selezione della struttura di riferimento (dipartimento, facoltà o centro servizi) e dell'edificio dove è collocata la struttura.</li>
-      <li><b>Dati del responsabile del Nodo</b>: i campi sono inseriti in automatico dal sistema in base alle informazioni inserite in precedenza e non sono modificabili.<br>
+      <li>Autenticazione con le proprie credenziali usate per la posta elettronica (il nome utente è <i>Nome</i> spazio <i>Cognome</i>): al primo accesso sarà necessario inserire alcuni dati dell'utente.</li>
+      <li>Utilizzare il pulsante <i>Nuova Richiesta IP</i> dalla propria pagina Utente.</li>
+      <li><b>Dati del responsabile del Nodo</b>: i campi sono inseriti in automatico dal sistema in base alle informazioni inserite alla prima autenticazione.<br>
+      <li>Selezionare la struttura di riferimento (dipartimento, facoltà o centro servizi) e l'edificio dove è collocata la struttura.</li>
       <b>Opzione Richiedente a tempo determinato</b>: Fanno parte di questa categoria gli studenti laureandi, dottorandi e specializzandi, borsisti, assegnisti di ricerca, il personale collaboratore con contratto a tempo determinato, i professori visitatori, i professori a contratto e gli ospiti a qualunque titolo. I docenti di riferimento dovranno compilare il modulo a proprio nome inserendo i dati del richiedente all’interno di questa sezione, assumendosi la responsabilità dell'indirizzo registrato.
       <b>Dati dell’apparato:</b> inserire le informazioni riguardanti l'apparato sul quale si vuole configurare l’indirizzo IP. In caso di difficoltà nel trovare il proprio mac address si seguano le istruzioni [icona con il punto interrogativo] accanto allo spazio per l'inserimento del mac.</li>
       <li>Dopo aver completato la compilazione fare un click sul pulsante <span style="color:red"><b><i>"Invia la richiesta"</i></b></span>, apparirà un pop-up che invita alla lettura delle Norme Sapienza-Net. Selezionare la casella <span style="color:red"><b><i>“Dichiaro di aver letto e accettato la normativa sopra indicata”</i></b></span> e fare click nuovamente sul pulsante <span style="color:red"><b><i>"Invia la richiesta"</i></b></span>. Il sistema invia una mail al referente di rete, che dovrà convalidare la richiesta.</li>

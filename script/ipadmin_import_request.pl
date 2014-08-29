@@ -83,7 +83,7 @@ my $dbh = DBI->connect('DBI:mysql:database=prorete;hostname=151.100.4.23', 'root
 
 # Prepare the SQL query for execution
 my $sth = $dbh->prepare(<<End_SQL) or die "Couldn't prepare statement: $DBI::errstr; stopped";
-SELECT id_ref,email2_ref,nominativo1_ref,telefono1_ref,email1_ref,data_ref,corso_ref,struttura1_ref FROM s_referenti
+SELECT id_ref,email2_ref,nominativo1_ref,telefono1_ref,email1_ref,data_ref,corso_ref,struttura1_ref FROM s_referenti WHERE valido_ref = 1
 End_SQL
 
 # Execute the query

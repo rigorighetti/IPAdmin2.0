@@ -1,0 +1,50 @@
+[% META 
+   title='Mac Address'
+   use_table=1
+   section = 'Istruzioni' 
+%]
+
+<div id="tabs">	 
+  <ul>
+  	<li><a href="#tabs-1">Informazioni</a></li>
+    <li><a href="#tabs-2">Windows</a></li> 
+    <li><a href="#tabs-3">Mac OSX</a></li>  
+    <li><a href="#tabs-4">Linux</a></li>
+  </ul>
+
+  <div id="tabs-1">
+	<h2>Come conoscere il proprio Mac-Address?</h2>
+	
+	<p><b>Che cosa è il MAC address?</b> E' un codice esadecimale che identifica univocamente una scheda di rete. E' utilizzato dai computer per comunicare nelle reti locali.<br>
+	<b>Quale rapporto tra IP address e MAC Address?</b> Servono entrambi a identificare un dispositivo in una rete, ma da punti di vista diversi. Con una metafora automobilistica, diciamo che la loro relazione è paragonabile al rapporto tra la targa (assegnata dalla motorizzazione civile) e il numero di telaio (assegnato dalla casa produttrice).<br>
+	La maggior parte dei PC è dotata di più interfacce di rete e ogni interfaccia è caratterizzata da un certo MAC address. <br>
+	Durante la registrazione del proprio indirizzo IP, come durante la risoluzione di problemi di connettività, è importante riconoscere il MAC address associato (o da associare) all'indirizzo IP della rete di Ateneo.<br>
+	Le istruzioni sottostanti per Mac e Linux si riferiscono sempre alla prima interfaccia di rete del sistema, mentre in Windows il comando <i>ipconfig /all</i> produce un output contenente tutte le interfacce.</p>
+	<p style="text-align:center;"><b>ATTENZIONE: inserire il mac address nel formato <em>"aa:aa:aa:aa:aa:aa".</em></b></p>
+
+  </div>
+
+  <div id="tabs-2">
+	<h4>Sistemi	Windows</h4>
+	<p>Premere il pulsante Start >> Esegui, scrivere il comando <em><b>cmd</b></em> e premere &quot;Invio&quot;.<br>
+	Nella finestra nera scrivere <em><b>ipconfig /all</b></em> e premere &quot;Invio&quot;.<br>
+	Il MAC address è indicato dalla stringa <em>“Indirizzo fisico”</em>.<br>
+	Attenzione a scegliere l'interfaccia giusta: si cerchi la <em>“Connessione alla rete locale (LAN)”</em>.</p>
+	<img src="img/findmac_windows.png" />
+  </div>
+
+  <div id="tabs-3">
+	<h4>Sistemi	Mac</h4>
+	<p>Finder >> Applicazioni >> Utilities >> Terminale Scrivere il comando <em><b>ifconfig en0</b></em> e premere “Invio”. Il MAC address è la cifra esadecimale che segue la stringa "ether".</p>
+	<img src="img/findmac_apple.png" />
+
+  </div>
+
+
+  <div id="tabs-4">
+	<h4>Sistemi	Linux</h4>
+	<p>Aprire un terminale e scrivere il comando <em><b>ip addr show eth0</b></em> e premere il tasto “Invio”.</p>
+	<img src="img/findmac_linux.png" />
+  </div>
+
+</div>

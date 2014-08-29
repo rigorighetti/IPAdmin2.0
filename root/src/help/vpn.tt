@@ -8,7 +8,8 @@
 		<li><a href="#tabs-1">Informazioni</a></li>
 		<li><a href="#tabs-2">Windows</a></li>
 		<li><a href="#tabs-3">Mac OSX</a></li>
-		<li><a href="#tabs-4">Linux</a></li>		
+		<li><a href="#tabs-4">Linux</a></li>
+		<li><a href="#tabs-5">Smartphone & Tablet</a></li>		
 	</ul>
 
  <div id="tabs-1">
@@ -96,7 +97,16 @@ connessa al pc, tramite porta usb o parallela (LPT).
 Cliccare con il tasto destro sull’icona del lucchetto e scegliere disconnect.
 </div>
 
- </div>
+	<div id="tabs-3">
+		Mac OSX
+ 	</div>
 
+	<div id="tabs-4">
+		Linux
+	</div>
+
+	<div id="tabs-5">
+		Smartphone e Tablet
+	</div>
 
 </div>

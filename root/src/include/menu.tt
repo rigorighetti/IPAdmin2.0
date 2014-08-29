@@ -68,8 +68,8 @@
              name = 'Tipi di Richieste IP',
              path = c.uri_for('/typerequest/list'),
            },	     
-		],
-	 Utenti = [
+		   ],
+	 	  Utenti = [
   	       {
 		     name = 'Utenti Strutturati', 
 		     path = c.uri_for('/userldap/list'),
@@ -77,9 +77,31 @@
 	       {
 		     name = 'Admin',
 		     path = c.uri_for('/user'),
-		},	     
-		],
-	 }		
+		   },	     
+		   ],
+		  Istruzioni = [
+		   {
+		     name = 'Guida',
+		     path = c.uri_for('/help/view',{page => 'howto'}),
+		   },
+		   {
+		   	 name = 'Configurazione IP',
+		   	 path = c.uri_for('/help/view',{page => 'ipconf'}),
+		   },
+		   {
+		   	 name = 'Mac Address',
+		   	 path = c.uri_for('/help/view',{page => 'macfind'}),
+		   },
+		   {
+		   	 name = 'Norme SapienzaNET',
+		   	 path = c.uri_for('/help/view',{page => 'norme'}),
+		   },
+		   {
+		   	 name = 'VPN',
+		   	 patch = c.uri_for('/help/view',{page => 'vpn'}),
+		   },
+		   ],
+	 	}		
 -%]
 [% MACRO menu_dock BLOCK -%]
 <ul>

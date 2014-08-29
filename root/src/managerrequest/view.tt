@@ -10,6 +10,22 @@
  </ul>
   		
 <div id="tabs-1">
+    <div class="right">
+      <div class="rightbox">
+         [% IF object.state == 0 -%] 
+          <a href=[%c.uri_for_action('managerrequest/validate', [object.id]) %]> [%ui_icon('check')%] Convalida</a><br>
+         [% END -%]
+         [% IF object.state == 1 -%] 
+          <a href=[%c.uri_for_action('managerrequest/activate', [object.id]) %]> [%ui_icon('check')%] Attiva</a><br>
+         [% END -%]
+         [% IF object.state != 4 -%] 
+          <a href=[%c.uri_for_action('managerrequest/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica Dati</a><br>
+          <a href=[% c.uri_for_action('managerrequest/delete', [object.id]) %]> [% ui_icon('closethick') %]  Rinuncia</a><br>
+         [% END -%]
+         
+         <a href=[%c.uri_for_action('managerrequest/print', [object.id]) %]> [%ui_icon('print')%]Stampa</a><br>
+      </div>
+    </div>
     <div id="infoipreq">
       <div class="left">Id: </div>[% object.id %] <div class="right">Data Richiesta: [% date %]</div>
       <hr style="clear:both">
@@ -50,18 +66,6 @@
            [% END -%]
          </div>
         </div>
-
-    <div class="section">
-      <div class="buttons"> 
-       [% IF object.state == 0  -%] 
-        <a href=[%c.uri_for_action('managerrequest/activate', [object.id]) %]> [%ui_icon('check')%] Attiva</a>
-       [% END -%]
-       [% IF object.state != 3 AND object.state != 4 -%] 
-        <a href=[%c.uri_for_action('managerrequest/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica</a>&nbsp;
-        <a href=[% c.uri_for_action('managerrequest/delete', [object.id]) %]> [% ui_icon('closethick') %]  Archivia</a>
-       [%END -%]
-      </div>
-    </div>
 
    </div>
   </div>

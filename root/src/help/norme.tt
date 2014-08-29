@@ -1,0 +1,90 @@
+[% META
+	title='Norme SapienzaNET'
+	use_table=1
+	section='Istruzioni'
+%]
+
+<div class="section" style="text-align:justify">
+<h3><center>REGOLAMENTO GENERALE PER L'UTILIZZO DELLA RETE
+TELEMATICA DI SAPIENZA UNIVERSITA’ DI ROMA</center></h3>
+
+<h4>Premessa</h4>
+<p>Sapienza Università di Roma (di seguito indicata come Sapienza) riconosce il ruolo centrale e strategico della rete informatica come strumento essenziale per il miglioramento dei servizi offerti e per il perseguimento dei propri obiettivi scientifici, didattici ed amministrativi. Sapienza, nel favorire l'uso della rete da parte di tutte le sue componenti istituzionali, emana il presente Regolamento che definisce le regole per la gestione e l’utilizzo dei servizi di rete di Ateneo.</p>
+
+<h4>Indice</h4>
+<div class="indice">
+<a href="#Art1">Art. 1 &#8211; Definizioni</a><br>
+<a href="#Art2">Art. 2 &#8211; Strutture collegate alla rete di trasmissione di Sapienza</a><br>
+<a href="#Art3">Art. 3 &#8211; Utenti della rete di trasmissione di Sapienza</a><br>
+<a href="#Art4">Art. 4 &#8211; Utilizzo della rete e regole di accesso</a><br>
+<a href="#Art5">Art. 5 &#8211; Abusi nell’utilizzo della rete</a><br>
+<a href="#Art6">Art. 6 &#8211; <span class=GramE>Struttura</span> per la gestione ed il controllo</a><br>
+</div>
+<br>
+
+<h4><a id="Art1">Art. 1 - Definizioni</a></h4>
+<ol>
+<li>La rete di trasmissione dati di Sapienza rappresenta lo strumento di collegamento delle risorse informatiche universitarie alla rete scientifica nazionale GARR.</li>
+<li>Sapienza sviluppa e gestisce la rete di trasmissione per le strutture scientifiche, didattiche e amministrative ad essa afferenti.</li>
+<li>La rete trasmissione dati di Sapienza è un servizio all'utenza scientifica, didattica e amministrativa; l’utilizzo della rete è regolato dagli articoli seguenti e dalle decisioni degli Organi di Governo nel rispetto delle norme di legge vigenti.</li>
+</ol>
+
+<h4><a id="Art2">Art. 2 - Strutture collegate alla rete di trasmissione di Sapienza</a></h4>
+<p>Sono collegate alla rete di trasmissione di Sapienza:</p>
+<ol>
+<li>Strutture didattiche, di ricerca ed amministrative di Sapienza.</li>
+<li>Soggetti partecipati da
+Sapienza richiedenti il collegamento.</li>
+<li>Enti esterni a Sapienza. Le modalità di connessione saranno disciplinate da una convenzione, sottoscritta tra le parti ed approvata dagli Organi di Governo dell’Università, comprovante la collaborazione e l'utilità del collegamento. Gli Enti esterni non potranno accedere alla Rete GARR se non preventivamente autorizzati.</li>
+</ol>
+<p>Tutte le strutture elencate nei punti precedenti dovranno nominare un referente di rete, che avrà il ruolo di interfaccia verso Infosapienza.</p>
+
+<h4><a id="Art3">Art. 3 - Utenti della rete di trasmissione di Sapienza</a></h4>
+<p>Possono avere accesso alla rete di trasmissione di Sapienza per scopi didattici, di ricerca ed amministrativo-gestionale, compatibilmente con le risorse disponibili le seguenti figure:</p>
+<ol>
+<li>Personale docente, tecnico-amministrativo e bibliotecario di Sapienza, gli studenti, i dottorandi di ricerca, i titolari di borse post-dottorato e di assegni di ricerca, gli specializzandi.</li>
+<li>Professori a contratto, i professori visitatori, i collaboratori esterni impegnati nelle attività istituzionali svolte da Sapienza, per il periodo di tempo necessario all’espletamento dei loro compiti all’interno dell’Università, previa autorizzazione.</li>
+<li>Organizzazioni Sindacali Locali riconosciute che ne facciano domanda al Rettore tramite il rappresentante dell’Organizzazione Sindacale Locale che si renda responsabile dell’utilizzo della connessione e/o della casella di posta elettronica.</li>
+<li>Associazione studentesche riconosciute che ne facciano domanda al Rettore tramite il Presidente dell’Associazione che si renda responsabile dell’utilizzo della connessione.</li>
+<li>Ogni altra categoria di persone autorizzata dagli Organi di Governo, che determineranno anche le regole per l’autorizzazione.</li>
+</ol>
+
+<h4><a id="Art4">Art. 4 - Utilizzo della rete e regole di accesso</a></h4>
+<ol>
+<li>Qualsiasi accesso alla rete deve essere associato ad una persona fisica attraverso la registrazione di un indirizzo IP fisso. Alla predetta persona fisica saranno riconducibili le attività svolte dall’indirizzo IP di cui è responsabile.</li>
+<li>La richiesta di accesso comporta l’esplicita accettazione delle norme GARR, del presente regolamento, nonché la totale assunzione di responsabilità delle attività svolte tramite la rete. L’uso della rete è in ogni caso soggetto alle norme di legge vigenti.</li>
+<li>La rete trasmissione di Sapienza può essere utilizzata esclusivamente per l’attività didattica, scientifica e strumentale d’interesse dell’Università.</li>
+<li>Ogni utente della rete sarà identificato e sarà tenuto ad adottare le necessarie misure per non interferire nel corretto funzionamento delle comunicazioni, per garantire l’integrità dei sistemi e l’accesso alle risorse da parte degli altri utenti ed evitare che le attività svolte producano disturbo o danni agli altri utenti. Ogni illecito o abuso riscontrato sarà oggetto di successivi provvedimenti sanzionatori.</li>
+<li>In casi di interventi tecnici urgenti ed improcrastinabili, le connessioni alla rete potranno essere interrotte senza preavviso.</li>
+<li>Se l'utente non utilizzerà l'indirizzo IP a lui assegnato per 90 giorni, la Sapienza provvederà a recuperare il suddetto IP bloccando ogni tipo di accesso alla rete. L’utente con l’IP bloccato dovrà compilare una nuova richiesta IP.</li>
+<li>Qualora l’utente volesse cessare di utilizzare un indirizzo IP a lui assegnato dovrà effettuarne la rinuncia tramite apposita procedura. Rimarrà responsabile dell’indirizzo IP fino a tale
+richiesta, o in caso di inattività fino allo scadere dei 90 giorni.</li>
+</ol>
+
+<h4><a id="Art5">Art. 5 - Abusi nell’utilizzo della rete</a></h4>
+<p>Costituisce abuso nell’utilizzo della rete trasmissione dati di Sapienza:</p>
+<ol>
+<li>Qualsiasi atto che possa compromettere la sicurezza delle risorse informatiche e la riservatezza delle informazioni di Sapienza o di altri Enti.</li>
+<li>L’accesso, l’utilizzo, la distruzione, l’alterazione o la disabilitazione non autorizzata di risorse informatiche, anche per mezzo di chiavi di accesso (password, badge, ecc.) rese disponibili ad altri soggetti, nonché l’abbandono senza custodia di stazioni di lavoro.</li>
+<li>La duplicazione, l’archiviazione e l’uso di software su qualsiasi risorsa informatica di Sapienza in violazione a disposizioni contrattuali.</li>
+<li>L’utilizzo per scopi d’interesse esclusivamente privato di qualsiasi risorsa informatica di Sapienza.</li>
+<li>Qualsiasi atto che, tramite la rete telematica di Sapienza, possa recare disturbo o danni a terzi.</li>
+<li>L’uso di dati o di altre risorse informatiche per scopi non consentiti dalle norme di leggi vigenti o in contrasto con quanto disciplinato nel presente regolamento.</li>
+</ol>
+<p>L’uso personale della rete è tollerato purché:</p>
+<ol>
+<li>Non sia a detrimento dei compiti istituzionali.</li>
+<li>Non costituisca un’attività commerciale o comunque con profitto.</li>
+<li>Non sia offensiva.</li>
+<li>Non violi le norme e le leggi in vigore.</li>
+</ol>
+<p>In caso di abuso, secondo la gravità del medesimo e fatte salve le ulteriori conseguenze di natura penale, civile ed amministrativa, gli organi responsabili delle risorse informatiche potranno adottare provvedimenti che ne limiteranno l’uso.</p>
+<p>L’inosservanza del presente regolamento o, in ogni caso, l’adozione di comportamenti che possano compromettere il funzionamento della rete, saranno segnalati all’utente che sarà richiamato al rispetto delle condizioni d'uso.</p>
+<p>Nel caso di abusi che rientrino nei punti del presente articolo saranno adottati i necessari provvedimenti urgenti, incluso il temporaneo distacco o la revoca dell’accesso alla rete.</p>
+<p>Qualora il comportamento dell’utente violi le norme di legge e/o causi danni di qualunque natura (economici, d’immagine, violazione della privacy, ecc.) potranno essere adottati provvedimenti disciplinari, amministrativi o legali.</p>
+
+<h4><a id="Art6">Art. 6 - Struttura per la gestione ed il controllo</a></h4>
+<p>Al Settore Reti Periferiche del Centro Infosapienza sono demandate l’applicazione delle regole tecniche di gestione della rete e la verifica dell’osservanza del presente regolamento.</p>
+<p>Ha il compito di pianificare, sviluppare, monitorare e di curare il mantenimento delle reti informatiche universitarie.</p>
+
+</div>
