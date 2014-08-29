@@ -1,56 +1,17 @@
-[% META 
-   title='LDAP'
+[% META
+   title="LDAP"
    use_table=1
-   section='Utenti'
+   section="Utenti"
 -%]
 
-<!--
-<div class="buttons create_btn">
-<a href="[% c.uri_for_action('/userldap/create') %]" >
-   [% ui_icon('circle-plus') %] Crea un Utente</a>
-[% add_css_create_btn %]
-</div>
--->
-
-[% FOREACH u IN userldap_table %]
-   [% IF loop.first %] 
-     [%init_table('userldap') %]  
-    <table class="display" id="userldap">
-       <thead>  
-	 <tr>
-   <th>Id</th>
- 	 <th>Username</th>
- 	 <th>Nome e Cognome</th>
-   <th>Email</th>
- 	 <th>Ruolo</th>
-	 <th>Active</th>
-   </tr>
-       </thead>  
-       <tbody>
-  [% END %]
-         <tr class="row">
-   <td>[% u.id %]</td>
- 	 <td><a id="click_ref"  href=[% c.uri_for_action('/userldap/view', [u.username]) %]>[% u.username %]</a></td>
- 	 <td>[% u.fullname %]</td>
- 	 <td>[% u.email %]</td>
-	 <td>
-	 [% FOREACH r IN u.roles %]
-          [% r.role %] 
-	   [%IF loop.last %].[% ELSE %],[% END %]
-	 [% END %]
-	 </td>
- 	 <td align="center">
-	  [% IF u.active %] 
-              [% IF u.login == 'admin' %]  [% icon('ok_white') %] 
-              [% ELSE %] <a href="[% c.uri_for_action('userldap/switch_status',[u.username]) %]"> [% icon('ok') %] </a> 
-	      [% END %]
-	  [% ELSE %]   
-             <a href="[% c.uri_for_action('userldap/switch_status',[u.username]) %]">[% icon('remove') %] </a> 
-          [% END %]
-	 </td>
- 	</tr>
-  [% IF loop.last %]
-        </tbody>
-    </table>
-   [% END %]
-[% END %]
+[% init_table("userldap",null,{sortby => 0},json_url=c.uri_for('list/js')) -%]
+<table class="display dataTable" id="userldap">
+<thead>
+<tr>
+      <th>Id</th>
+      <th>Username</th>
+      <th>Nome e Cognome</th>
+      <th>Email</th>
+    </tr>
+</thead>
+</table>

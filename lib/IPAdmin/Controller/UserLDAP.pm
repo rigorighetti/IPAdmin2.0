@@ -13,6 +13,8 @@ use Data::Dumper;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
+with 'IPAdmin::ControllerRole::JQDatatable';
+
 =head1 NAME
 
 IPAdmin::Controller::UserLDAP - Catalyst Controller
@@ -78,12 +80,28 @@ sub object : Chained('base') : PathPart('username') : CaptureArgs(1) {
 sub list : Chained('base') : PathPart('list') : Args(0) {
     my ( $self, $c ) = @_;
 
-    my $user_schema = $c->stash->{resultset};
-    my @user_table = $user_schema->search({});
+    # my $user_schema = $c->stash->{resultset};
+    # my @user_table = $user_schema->search({});
 
-    $c->stash( userldap_table => \@user_table );
+    # $c->stash( userldap_table => \@user_table );
     $c->stash( template       => 'userldap/list.tt' );
 }
+
+=head2 listmanager
+
+=cut
+
+sub listmanager : Chained('base') : PathPart('listmanager') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    my $user_schema = $c->stash->{resultset};
+    my @man_table   = $user_schema->search({},{prefetch => 'is_manager', group_by => 'username'});
+
+
+    $c->stash( man_table => \@man_table );
+    $c->stash( template  => 'userldap/listmanager.tt' );
+}
+
 
 =head2 view
 
@@ -292,6 +310,46 @@ sub set_manager : Chained('object') : PathPart('set_manager') : Args(0) {
     $c->detach('/follow_backref');
 }
 
+=head2 list_js
+
+=cut
+
+sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
+    my ($self, $c) = @_;
+
+    my @col_names = qw(id username fullname email); #TODO roles active
+
+    $c->stash(col_names => \@col_names);
+    my @col_searchable = qw( me.id me.username me.fullname me.email );
+    $c->stash(col_searchable => \@col_searchable);
+
+    # $c->stash(resultset_search_opt =>
+    #           {prefetch => 'map_user_role'} );
+
+
+    $c->stash(col_formatters => {
+        id => sub {
+            my ($c, $rs)= @_;
+            return $rs->id;
+        },
+        username => sub {
+            my ($c, $rs)= @_;
+            return'<a id="click_ref" href="' .
+              $c->uri_for_action('/userldap/view',  [ $rs->username ]) .
+                '">' . $rs->username . '</a>';
+        },
+        fullname => sub {
+            my ($c, $rs)= @_;
+            return $rs->fullname;
+        },
+        email => sub {
+            my ($c, $rs)= @_;
+            return $rs->email;
+        },
+    });
+
+    $c->detach("datatable_response");
+}
 
 =head1 AUTHOR
 

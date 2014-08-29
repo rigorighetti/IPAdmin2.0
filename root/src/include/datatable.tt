@@ -37,7 +37,7 @@ $(function() {
        		 "sDom": '<"H"f<"toolbar">>t<"F"i>',
       		[% END -%]
 	       //in columns trovo l'array per l'inizializzazione delle colonne della tabella
-	       [% IF columns %]
+         [% IF columns %]
 	       "bAutoWidth": false,
            "aoColumns" : [
 			     {"sWidth"      : "[% columns.shift %]%"} 

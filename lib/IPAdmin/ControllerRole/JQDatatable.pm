@@ -71,6 +71,7 @@ sub datatable_response : Private {
     };
     # search!!!
     my @rows;
+
     my $search_rs =  $rs->search($search_filter, $search_attrs);
     while (my $item = $search_rs->next) {
         my @row;

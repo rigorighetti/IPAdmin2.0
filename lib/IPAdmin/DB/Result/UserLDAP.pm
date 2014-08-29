@@ -1,4 +1,4 @@
-# Copyright 2013 by the Manoc Team
+ # Copyright 2013 by the Manoc Team
 #
 # This library is free software. You can redistribute it and/or modify
 # it under the same terms as Perl itself.
@@ -56,9 +56,10 @@ __PACKAGE__->many_to_many( roles => 'map_user_role', 'role' );
 
 __PACKAGE__->has_many(map_user_ipreq => 'IPAdmin::DB::Result::IPRequest','user' , { cascade_delete => 0 });
 
-__PACKAGE__->has_many(  managed_area => 'IPAdmin::DB::Result::Area',
-                          'manager', { cascade_delete => 0 }
-);
+__PACKAGE__->has_many(managed_area => 'IPAdmin::DB::Result::Area', 'manager', { cascade_delete => 0 } );
+
+__PACKAGE__->has_many(is_manager => 'IPAdmin::DB::Result::Area', 'manager', { cascade_delete => 0, join_type => 'left' } );
+
 =head1 NAME
 
 IPAdmin:DB::UserLDAP - A model object representing a person with access to the system.

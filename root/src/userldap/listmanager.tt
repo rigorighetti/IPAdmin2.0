@@ -1,0 +1,33 @@
+[% META
+   title="LDAP"
+   use_table=1
+   section="Utenti"
+-%]
+
+[% FOREACH i IN man_table %]
+   [% IF loop.first %] 
+     [%init_table('request') %]  
+    <table class="display" id="request">
+      <thead>  
+        <tr>
+         <th>Id</th>
+         <th>Username</th>
+         <th>Nome e Cognome</th>
+         <th>Email</th>
+        </tr>
+      </thead>  
+      <tbody>
+     [% END %]
+     [%IF i.is_manager != NULL%]
+     <tr>
+      <td>[% i.id %]</td>
+      <td><a id="click_ref" href=[% c.uri_for_action('/userldap/view', [i.username]) %]>[% i.username %]</a></td>
+      <td>[% i.fullname %]</td>
+      <td>[% i.email %]</td>
+     </tr>
+     [%END%]
+  [% IF loop.last %]
+      </tbody>
+    </table>
+  [% END %]
+[% END %]

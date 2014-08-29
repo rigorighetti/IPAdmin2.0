@@ -74,10 +74,14 @@
 		     name = 'Utenti Strutturati', 
 		     path = c.uri_for('/userldap/list'),
 	       },
+	 	   {
+		     name = 'Referenti', 
+		     path = c.uri_for('/userldap/listmanager'),
+	       },  
 	       {
 		     name = 'Admin',
 		     path = c.uri_for('/user'),
-		},	     
+		},	    
 		],
 	 }		
 -%]
