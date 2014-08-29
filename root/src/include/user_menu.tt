@@ -17,7 +17,24 @@
 -%]
 [% 
   menu_subsections = {
-
+     Istruzioni = [
+       {
+         name = 'Guida'
+         path = c.uri_for('/help/view',{page => 'howto'}),
+       },
+       {
+         name = 'Configurazione IP'
+         path = c.uri_for('/help/view',{page => 'ipconf'}),
+       },
+       {
+         name = 'Mac Address'
+         path = c.uri_for('/help/view',{page => 'macfind'}),
+       },
+       {
+         name = 'VPN'
+         patch = c.uri_for('/help/view',{page => 'vpn'}),
+       },
+       ],
 	 }		
 -%]
 [% MACRO menu_dock BLOCK -%]

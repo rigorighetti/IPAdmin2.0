@@ -1,61 +1,74 @@
 [% META 
+   title='Guida'
    use_table=1
    section = 'Istruzioni' 
 %]
 
 <div id="tabs">	 
   <ul>
-    <li><a href="#tabs-1">Informazioni</a></li>
-    <li><a href="#tabs-2">Guida alla Richiesta di un Indirizzo IP</a></li>
-    [% # IF object.managed_area -%] 
-      <li><a href="#tabs-3">Guida di IPAdmin per il Referente di Rete</a></li>
+    <li><a href="#tabs-1">Guida alla Richiesta di un Indirizzo IP</a></li> 
+    <li><a href="#tabs-2">Informazioni</a></li>  
+    [% # IF object.managed_area -%]
+    <li><a href="#tabs-3">Guida di IPAdmin per il Referente di Rete</a></li>
     [% # END -%]
     <li><a href="#tabs-4">F.A.Q.</a></li>
   </ul>
 
+
   <div id="tabs-1">
-  	Questa sarà la guida per il corretto utilizzo di IPAdmin v2
-	   <li>Sezione Utente
-	   <li>Sezione Referente
-
-  </div>
-
-  <div id="tabs-2">
   	<h3>Nuova Richiesta di Indirizzo IP</h3>
     <h4>Istruzioni di compilazione del form per la registrazione di un indirizzo IP</h4>
       <i>N.B.: Il requisito fondamentale per richiedere un indirizzo IP è il possesso di un account di posta elettronica di tipo <b>nome.cognome@uniroma1.it</b>, riservato al personale docente e non docente dell'ateneo.</i><br>
 
       Il processo prevede i seguenti passaggi:<br>
       <ol>
-      <li>Autenticazione con le proprie credenziali usate per la posta elettronica: al primo accesso sarà necessario inserire alcuni dati dell'utente.</li>
-      <li>Selezione della struttura di riferimento (dipartimento, facoltà o centro servizi) e dell'edificio dove è collocata la struttura.</li>
-      <li><b>Dati del responsabile del Nodo</b>: i campi sono inseriti in automatico dal sistema in base alle informazioni inserite in precedenza e non sono modificabili.<br>
-      <b>Opzione Richiedente a tempo determinato</b>: Fanno parte di questa categoria gli studenti laureandi, dottorandi e specializzandi, borsisti, assegnisti di ricerca, il personale collaboratore con contratto a tempo determinato, i professori visitatori, i professori a contratto e gli ospiti a qualunque titolo. I docenti di riferimento dovranno compilare il modulo a proprio nome inserendo i dati del richiedente all’interno di questa sezione, assumendosi la responsabilità dell'indirizzo registrato.
-      <b>Dati dell’apparato:</b> inserire le informazioni riguardanti l'apparato sul quale si vuole configurare l’indirizzo IP. In caso di difficoltà nel trovare il proprio mac address si seguano le istruzioni [icona con il punto interrogativo] accanto allo spazio per l'inserimento del mac.</li>
-      <li>Dopo aver completato la compilazione fare un click sul pulsante <span style="color:red"><b><i>"Invia la richiesta"</i></b></span>, apparirà un pop-up che invita alla lettura delle Norme Sapienza-Net. Selezionare la casella <span style="color:red"><b><i>“Dichiaro di aver letto e accettato la normativa sopra indicata”</i></b></span> e fare click nuovamente sul pulsante <span style="color:red"><b><i>"Invia la richiesta"</i></b></span>. Il sistema invia una mail al referente di rete, che dovrà convalidare la richiesta.</li>
-      <li>A convalida avvenuta si riceverà una mail contenente il modulo. Seguire il link all’interno dell’email. Fare click sul pulsante a fondo pagina <span style="color:red"><b><i>"utilizzare questo tasto per confermare e stampare la richiesta da inviare per FAX"</i></b></span>. Apparirà un pop-up di richiesta conferma: <b>confermare scegliendo OK e stampare, firmare il foglio e inviarlo via fax allo 06-4991 3837 (int 23837).</b></li>
-      <li>Alla ricezione del FAX il personale tecnico del Settore Reti per le Strutture Periferiche confermerà la registrazione.</li>
-      <li>Alla conclusione del processo il Richiedente riceverà una mail con la configurazione di rete da applicare al proprio pc. </li>
+      <li>Utilizzare il pulsante <i>Nuova Richiesta IP</i> dalla propria pagina Utente.</li>
+      <li>Compilare tutti i dati del form</li>
+       <ul>
+        <li><b>Dati del responsabile</b>: i campi sono inseriti in automatico dal sistema in base alle informazioni inserite alla prima autenticazione.</li>
+        <li><b>Dati della struttura</b>: selezionare la struttura di riferimento (dipartimento, facoltà o centro servizi) e l'edificio dove è collocata.<br>
+        <li><b>Opzione richiedente a tempo determinato</b>: Fanno parte di questa categoria gli studenti laureandi, dottorandi e specializzandi, borsisti, assegnisti di ricerca, il personale collaboratore con contratto a tempo determinato, i professori visitatori, i professori a contratto e gli ospiti a qualunque titolo. I docenti di riferimento dovranno compilare il modulo a proprio nome inserendo i dati del richiedente all’interno di questa sezione, assumendosi la responsabilità dell'indirizzo registrato.<br>
+        <li><b>Dati dell’apparato:</b> inserire le informazioni riguardanti l'apparato sul quale si vuole configurare l’indirizzo IP. In caso di difficoltà nel trovare il proprio mac address si seguano le istruzioni [icona con il punto interrogativo] accanto allo spazio per l'inserimento del mac.</li>
+       </ul>
+      <li>Leggere le norme di utilizzo di SapienzaNET e le norme del GaRR, e selezionare la casella per accettare tali norme ai sensi del Codice in materia di protezione dei dati personali D.Lgs. 196/03.</li>  
+      <li>Dopo aver completato la compilazione fare click sul pulsante <b><i>"Invia la richiesta"</i></b>. Il sistema invierà una email al referente di rete, che dovrà convalidare la richiesta.</li>
+      <li>A convalida avvenuta si riceverà una email contenente il link al modulo. Seguire il link e fare click sul pulsante in fondo alla pagina <b><i>"Stampa"</i></b>. Stampare, firmare il foglio e inviarlo via fax allo 06-4991 3837 (int 23837).</b></li>
+      <li>Alla ricezione del FAX il personale tecnico del Settore Reti per le Strutture Periferiche confermerà la registrazione IP.</li>
+      <li>Alla conclusione del processo il Richiedente riceverà una email con la configurazione di rete da applicare sul proprio apparato. </li>
       </ol>
       <br>
-      Per problemi con la configurazione dell'indirizzo IP consultare la guida relativa al proprio Sistema Operativo:
-      <ul>
-      <li><a href="http://www.infosapienza.uniroma1.it/istruzioni/configurazione_ip_win.html" >Windows</a></li>
-      <li><a href="http://www.infosapienza.uniroma1.it/istruzioni/configurazione_ip_mac.html">Mac OS X</a></li>
-      <li><a href="http://www.infosapienza.uniroma1.it/istruzioni/configurazione_ip_linux.html">Linux</a></li>
-      </ul>
+      <i>N.B.: è possibile controllare lo stato delle proprie Richieste IP dalla scheda "Le mie richieste IP", presente nella propria pagina Utente.</i>
+      <br>
+      <br>
+      [% ui_icon('info') %]  Per problemi con la configurazione dell'indirizzo IP <a href=[%c.uri_for('/help/view',{page => 'ipconf'})%] target="_blank">consultare la guida</a>.
 
   	<h3>Modifica dati di una richiesta IP già esistente</h3>
-      <p>E' possibile modificare alcuni campi di una richiesta attiva</p>
+      <p>E' possibile modificare alcuni campi di una richiesta attiva:</p>
+      <ol>
+        <li>Dalla propria pagina Utente selezionare la scheda <i>Le mie richieste IP</i>.</li>
+        <li>Fare click sulla riga relativa alla richiesta IP da modificare per visualizzarne i dettagli.</li>
+        <li>Selezionare <i>Modifica Dati dell'Apparato</i> dal menu di destra.</li>
+        <li>Apportare le modifiche ai soli campi abilitati.</li>
+        <li>Fare click su <i>Conferma</i> per completare le modifiche e tornare alla propria pagina Utente.</li>
+      </ol>
   	<h3>Rinuncia di un indirizzo IP</h3>
-      <p>Per rinunciare ad un indirizzo IP è necessario l'invio di una email da parte del responsabile a ipsapienza@uniroma1.it e in copia a paola.deangelis@uniroma1.it</p>
+      <p>Per rinunciare ad un indirizzo IP è necessario l'invio di una email da parte del responsabile a <i>ipsapienza@uniroma1.it</i> e in copia a <i>paola.deangelis@uniroma1.it</i></p>
       <i>N.B.: si ricorda che da regolamento si è responsabili di un indirizzo IP fino alla formale rinuncia o allo scadere di 90 giorni di inattività di tale indirizzo. Infosapienza non è responsabile di furti di IP o azioni illegali effettuate sulla rete.</i>
   	<h3>Nuova richiesta di Alias per indirizzo IP già registrato</h3>
-      <p>E' possibile richiedere un nome a dominio di 3° livello (o superiore) su "uniroma1.it" per un indirizzo IP già registrato.
-        N.B.: solo il responsabile dell'indirizzo IP può effettuare la richiesta di Alias. </p>
+      <p>E' possibile richiedere un nome a dominio di 3° livello (o superiore) su "uniroma1.it" per un indirizzo IP già registrato.</p>
+        <i>N.B.: solo il responsabile dell'indirizzo IP può effettuare la richiesta di Alias. </i>
     <h3>Rinuncia di un Alias</h3>
 
   </div>
+
+
+<div id="tabs-2">
+    Questa sarà la guida per il corretto utilizzo di IPAdmin v2
+     <li>Sezione Utente
+     <li>Sezione Referente
+
+  </div>
+
 
   <div id="tabs-3">
   	<h3>Il ruolo del referente di rete</h3>
@@ -68,6 +81,13 @@
           <li>Per esigenze di servizio, la nomina di Referente di Rete è riservata esclusivamente al personale strutturato.</li>
         </ol>
   	<h3>Come convalidare una richiesta IP</h3>
+      <ol>
+        <li>Selezionare la scheda <i>Area Referente di Rete</i> nella propria pagina Utente</li>
+        <li>Fare click sulla riga relativa alla richiesta IP da convalidare per visualizzarne i dettagli</li>
+        <li>Selezionare <i>Convalida</i> dal menu di destra.</li>
+        <li>Selezionare un indirizzo IP tra quelli elencati dal sistema e confermare utilizzando il pulsante <i>Submit</i>.</li>
+        <li>Il sistema invierà una email all'utente che dovrà stampare, firmare ed inviare via fax il modulo e attendere l'attivazione dal personale tecnico del Settore Reti per le Strutture Periferiche.</li>
+      </ol>
 
   </div>
 

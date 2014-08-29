@@ -11,7 +11,7 @@ use warnings;
 use Carp qw( croak carp);
 use Exporter 'import';
 our @EXPORT_OK = qw(
-    find_user str_to_time str_to_seconds print_short_timestamp
+    find_user str_to_time eng_str_to_time str_to_seconds print_short_timestamp
 );
 use DateTime::Format::Strptime;
 
@@ -48,6 +48,16 @@ sub str_to_time {
   my $date = shift;
   my $strp = DateTime::Format::Strptime->new(
      pattern => '%d/%m/%Y',
+     time_zone => 'local',
+  );
+
+  $strp->parse_datetime("$date")->epoch;
+}
+
+sub eng_str_to_time {
+  my $date = shift;
+  my $strp = DateTime::Format::Strptime->new(
+     pattern => '%Y-%m-%d %T',
      time_zone => 'local',
   );
 

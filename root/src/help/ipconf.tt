@@ -1,10 +1,19 @@
 [% META 
+   title='Configurazione IP'
    use_table=1
    section = 'Istruzioni' 
 %]
 
+<div id="tabs">	 
+  <ul>
+    <li><a href="#tabs-1">Windows</a></li> 
+    <li><a href="#tabs-2">Mac OSX</a></li>  
+    <li><a href="#tabs-3">Linux</a></li>
+  </ul>
 
-<div>
+
+  <div id="tabs-1">
+
 <h2>Istruzioni per la configurazione di un indirizzo IP in ambiente Windows</h2>
 
 <div>
@@ -64,3 +73,13 @@
 </div>
 
 </div>
+
+	<div id="tabs-2">
+	</div>
+
+	<div id="tabs-3">
+	</div>
+
+
+</div>
+

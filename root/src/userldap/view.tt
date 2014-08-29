@@ -45,8 +45,8 @@
         <td>Referente per:</td>
         <td>
         [% FOREACH a IN managed_area %]
-          <a href="[%c.uri_for_action("/area/view", [a.id])%]">
-          [%a.department.name%] <i>presso</i> [%a.building.name%]
+          <!-- <a href="[%c.uri_for_action("/area/view", [a.id])%]"> -->
+          [%a.department.name%] <i>presso</i> [%a.building.name%] ([%a.building.description%])
           </a> <br>
         [%END -%]
         </td></tr>

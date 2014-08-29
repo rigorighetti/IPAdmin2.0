@@ -47,7 +47,7 @@ td.data {padding-left:20px;}
                [% IF a.id == area_def -%] 
                  selected="1"
                [% END -%] >
-               [%a.department.name%] presso [%a.building.name%]</option>
+               [%a.department.name%] ([%a.building.name%])</option>
               [% END %]
            </select><br>
            [% IF error.type %]
@@ -100,15 +100,16 @@ td.data {padding-left:20px;}
           [% IF error.type -%] <span class="error" id="error">[% error.type %] </span>[%END -%]
           <span class="left data">Stanza:</span> <input class="right" type="text" name="location" value="[%location%]" /><br>
          [% IF error.location %]<span class="error" id="error">[% error.location %] </span>[%END%]
-          <span class="left data">Indirizzo ethernet:</span> <input class="right" type="text" name="mac" value="[%mac%]" /><br>
+          <span class="left data">Indirizzo ethernet:</span> <a href="[% c.uri_for('/help/view',{page => 'macfind'}) %]" target="_blank">[% ui_icon('info') %]</a> <input class="right" type="text" name="mac" value="[%mac%]" /><br>
          [% IF error.name %]<span class="error" id="error">[% error.mac %] </span>[%END%]
          <span class="left data">Nome host:</span> <input class="right" type="text" name="hostname" value="[%hostname%]" /><br>
          [% IF error.hostname %]<span class="error" id="error">[% error.hostname %] </span>[%END%]
          <span class="left data">Note:</span> <textarea class="right" name="notes" id="notes" >[%notes%]</textarea>  <br>
         </div>  
         <div class="section">
-        <div class="confirm"><a href="[% c.uri_for('/help/view',{page => 'howto'}) %]"> Ho preso visione delle norme Sapienza </a><span><input type="checkbox" id="confirm" value="confirm" name="confirm"></span></div>
-         <div class="buttons">
+        <div class="confirm"><a href="[% c.uri_for('/help/view',{page => 'norme'}) %] " target="_blank">Il Richiedente accetta le norme di utilizzo di SapienzaNET e le norme del GaRR</a><span><input type="checkbox" id="confirm" value="confirm" name="confirm"></span></div>
+        <div style="text-align:center"><i><small>Codice in materia di protezione dei dati personali D.Lgs. 196/03</small></i></div><br>
+         <div class="buttons" style="text-align:center">
            <input id="submit" type="submit" name="submit" value="Invia la  Richiesta"> 
            <input type="submit" name="discard" value="Annulla">
          </div>
