@@ -415,11 +415,11 @@ sub create : Chained('base') : PathPart('create') : Args() {
     my @users;
 
     if($realm eq "normal") {
-        @users =  $c->model('IPAdminDB::UserLDAP')->search({})->all;
+        @users =  $c->model('IPAdminDB::UserLDAP')->search({},{order_by => 'username'})->all;
         $tmpl_param{users} = \@users;
     }
     #ordinamento aree per nome dipartimento
-    my @aree  = $c->model('IPAdminDB::Area')->search({},{join => 'department', prefetch => 'department', order_by => 'department.name'})->all;
+    my @aree  = $c->model('IPAdminDB::Area')->search({},{prefetch => ['department','building','manager'], order_by => 'department.name'})->all;
     my @types = $c->model('IPAdminDB::TypeRequest')->search({},{order_by => 'type'})->all;    
 
     $tmpl_param{guest_type}= ["Studente laureando", "Dottorando", "Studente specializzando", "Borsista", 
