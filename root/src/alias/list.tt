@@ -4,7 +4,7 @@
    section='Richieste'
 -%]
 
-[% init_table('alias_list',[5,20,30,20,5,5],{sortby => 5, order => 'desc'}) %]
+[% init_table('alias_list',[5,20,31,20,5,4],{sortby => 0, order => 'desc'}) %]
  <table class="display" id="alias_list">
    <thead>  
      <tr>
@@ -27,16 +27,18 @@
  	   <td>[% a.cname %]</td>
  	   <td>[% a.hostname %]</td>
      <td><a href="[% c.uri_for_action('/iprequest/view', [a.iprequest.id]) %]">[% a.ip %]</a></td>     
-     <td>
+     <td class="white">
       [% IF a.state == 0 -%]
-      <a href="[% c.uri_for_action('/alias/edit',[a.id],
-          {backref=> c.uri_for_action('alias/list')})%]">[% icon('edit') %]</a>
-      <a href="[% c.uri_for_action('/alias/activate',[a.id],
-          {backref=> c.uri_for_action('alias/list')})%]">[% icon('ok') %]</a>
+      <a href="[% c.uri_for_action('/alias/activate',[a.id], {backref=> c.uri_for_action('alias/list')})%]" title="Convalida">[% ui_icon('check') %]</a>
+      <a href="[% c.uri_for_action('/alias/edit',[a.id], {backref=> c.uri_for_action('alias/list')})%]" style="position:absolute;right:40px" title="Modifica">[% ui_icon('pencil') %]</a>
+      [%END -%]
+      [% IF a.state == 2 -%]
+        <span title="Attiva">[% ui_icon('circle-check') %]</span>
       [%END -%]
       [% IF a.state != 4 -%]
-      <a href="[% c.uri_for_action('/alias/delete',[a.id],
-          {backref=> c.uri_for_action('alias/list')})%]">[% icon('remove') %]</a>
+      <a href="[% c.uri_for_action('/alias/delete',[a.id], {backref=> c.uri_for_action('alias/list')})%]" style="position:absolute;right:10px" title="Rinuncia">[% ui_icon('closethick') %]</a>
+        [%ELSE -%]
+          <span title="Archiviata">[% ui_icon('circle-close') %]</span>
       [% END -%]
      </td>
     </tr>

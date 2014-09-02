@@ -34,13 +34,11 @@
 	 <td><a href="mailto:[% a.manager.email %]">[% a.manager.email %]</a></td>
 	 <td>[% FOREACH i IN a.building.vlan.map_subnet -%]<a href=[% c.uri_for_action('/subnet/view', [i.id]) %]>[% i.id %]</a>
 		 [% UNLESS loop.last %], [% END -%][% END -%]</td>
-	  <td>
-          <a href="[% c.uri_for_action('/area/edit',[a.id])%]">[% icon('edit') %]</a>
-          <a href="[% c.uri_for_action('/area/delete',[a.id])%]">[% icon('remove') %]</a>
-         </td>
-
-
-         </tr>
+	 <td>
+     <a href="[% c.uri_for_action('/area/edit',[a.id])%]" title="Modifica">[% ui_icon('pencil') %]</a>
+     <a href="[% c.uri_for_action('/area/delete',[a.id])%]" title="Elimina" style="position:absolute;right:10px;">[% ui_icon('closethick') %]</a>
+   </td>
+  </tr>
 [% END %]
    </tbody>
 </table>

@@ -151,6 +151,7 @@
           <th>Id</th>
           <th>Cname</th>
           <th>Hostname</th>
+          <th>Comandi</th>
         </tr>
       </thead>
       <tbody>
@@ -162,6 +163,16 @@
           <td class="white">[% a.id %]</td>
           <td>[% a.cname %]</td>
           <td>[% a.ip_request.hostname %].[% a.ip_request.area.department.domain %].uniroma1.it </td>
+          <td class="white">
+            [% IF a.state == 2 -%]
+              <span title="Attiva">[% ui_icon('circle-check') %]</span>
+            [% END -%]
+            [% IF a.state != 4 -%] 
+              <a href="[% c.uri_for_action('/alias/delete',[a.id])%]" title="Rinuncia">[% ui_icon('closethick') %]</a>
+              [% ELSE -%]
+              <span title="Archiviata">[% ui_icon('circle-close') %]</span>
+            [%END -%]
+          </td>
         </tr>
         [% IF loop.last %]
       </tbody>
