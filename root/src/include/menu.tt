@@ -102,7 +102,7 @@
 		   },
 		   {
 		   	 name = 'VPN',
-		   	 patch = c.uri_for('/help/view',{page => 'vpn'}),
+		   	 path = c.uri_for('/help/view',{page => 'vpn'}),
 		   },
 		   ],
 	 	}		

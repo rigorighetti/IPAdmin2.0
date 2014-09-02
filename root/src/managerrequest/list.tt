@@ -50,11 +50,16 @@
       </td>	 
       <td>[%i.n_ip%]</td>
 	    <td class="white">
-	     [% IF i.state != 4 %] 
-        <a href="[% c.uri_for_action('managerrequest/delete',[i.id])%]">[% icon('remove') %]</a> [% END -%]
        [% IF i.state == 0 %] 
-        <a href="[% c.uri_for_action('managerrequest/edit',[i.id])%]">[% icon('edit') %]</a>
-        <a href="[% c.uri_for_action('managerrequest/activate',[i.id])%]">[% icon('ok') %]</a> [% END -%]
+        <a href="[% c.uri_for_action('managerrequest/edit',[i.id])%]" style="position:absolute;right:40px" title="Modifica">[% ui_icon('pencil') %]</a>
+        <a href="[% c.uri_for_action('managerrequest/activate',[i.id])%]" title="Convalida e attiva">[% ui_icon('check') %]</a> 
+       [% END -%]
+	     [% IF i.state != 0 %]
+        <span title="Attiva">[% ui_icon('circle-check') %]</span> 
+       [%END -%]
+       [% IF i.state != 4 %] 
+        <a href="[% c.uri_for_action('managerrequest/delete',[i.id])%]" style="position:absolute;right:10px" title="Rinuncia">[% ui_icon('closethick') %]</a> 
+       [% END -%]
 	    </td>
      </tr>
   [% IF loop.last %]

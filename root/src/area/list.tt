@@ -39,8 +39,6 @@
           <a href="[% c.uri_for_action('/area/edit',[a.id])%]">[% icon('edit') %]</a>
           <a href="[% c.uri_for_action('/area/delete',[a.id])%]">[% icon('remove') %]</a>
          </td>
-
-
          </tr>
 [% END %]
    </tbody>

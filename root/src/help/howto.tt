@@ -6,12 +6,11 @@
 
 <div id="tabs">	 
   <ul>
-    <li><a href="#tabs-1">Guida alla Richiesta di un Indirizzo IP</a></li> 
-    <li><a href="#tabs-2">Informazioni</a></li>  
+    <li><a href="#tabs-1">Guida alla Richiesta di un Indirizzo IP</a></li>   
     [% # IF object.managed_area -%]
-    <li><a href="#tabs-3">Guida di IPAdmin per il Referente di Rete</a></li>
+    <li><a href="#tabs-2">Guida di IPAdmin per il Referente di Rete</a></li>
     [% # END -%]
-    <li><a href="#tabs-4">F.A.Q.</a></li>
+    <li><a href="#tabs-3">F.A.Q.</a></li>
   </ul>
 
 
@@ -58,19 +57,11 @@
       <p>E' possibile richiedere un nome a dominio di 3° livello (o superiore) su "uniroma1.it" per un indirizzo IP già registrato.</p>
         <i>N.B.: solo il responsabile dell'indirizzo IP può effettuare la richiesta di Alias. </i>
     <h3>Rinuncia di un Alias</h3>
+      <p>Per rinunciare ad un Alias è necessario selezionare il tasto a forma di "x", a destra della relativa richiesta, nella scheda "I miei Alias" nella propria pagina Utente.</p>
 
   </div>
 
-
-<div id="tabs-2">
-    Questa sarà la guida per il corretto utilizzo di IPAdmin v2
-     <li>Sezione Utente
-     <li>Sezione Referente
-
-  </div>
-
-
-  <div id="tabs-3">
+  <div id="tabs-2">
   	<h3>Il ruolo del referente di rete</h3>
       - <ol>
           <li>E' l'unico interlocutore verso il Settore Reti per le Strutture Periferiche per la notifica di problemi relativi alla rete telematica.</li>
@@ -91,7 +82,7 @@
 
   </div>
 
-  <div id="tabs-4">
+  <div id="tabs-3">
   	* FAQ generiche
 
   </div>

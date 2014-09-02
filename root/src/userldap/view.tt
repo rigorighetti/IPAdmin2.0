@@ -67,7 +67,7 @@
   [%END%] 
   [% FOREACH i IN myrequests %]
     [% IF loop.first %]
-    [% init_table('iprequest_list',[3,4,8,25,10,7,15,2,6]) %]
+    [% init_table('iprequest_list',[3,4,8,48,10,7,15,2,3]) %]
     <table class="display" id="iprequest_list">
       <thead>
         <tr>
@@ -98,13 +98,20 @@
         <td>[% IF i.state != 0 -%] [% i.subnet.id %].[% i.host %] [% ELSE -%]---[% END -%]</td> 
         <td class="white">
          [% IF i.state != 4 -%]
-          <a href="[% c.uri_for_action('iprequest/delete',[i.id])%]">[% icon('remove') %]</a>
+          <a href="[% c.uri_for_action('iprequest/delete',[i.id])%]" title="Rinuncia" style="position:absolute;right:10px;">[% ui_icon('closethick') %]</a> 
+          [% ELSE -%]
+           <span title="Archiviata">[% ui_icon('circle-close') %]</span> 
          [% END -%]
-         <div class="buttons small_btn">
-          [%IF i.state == 3 -%]
-           <a href="[% c.uri_for_action('iprequest/activate',[i.id], {backref=>c.req.uri } ) %]">Riattiva</a>
-          [%END -%]  
-         </div>
+         [%IF i.state != 0 AND i.state != 4 -%]
+             <a href="[% c.uri_for_action('iprequest/edit',[i.id])%]" title="Modifica" style="position:absolute;right:40px;">[% ui_icon('pencil') %]</a>
+         [%END -%]
+         [%IF i.state == 3 -%]
+             <a href="[% c.uri_for_action('iprequest/activate',[i.id], {backref=>c.req.uri } ) %]" title="Riattiva" >[% ui_icon('check')%]</a>
+          [%ELSIF i.state == 2 -%]
+             <span title="Attiva">[% ui_icon('circle-check') %]</span>
+          [%ELSE -%]
+             <span style="visibility:hidden">[% ui_icon('circle-check') %]</span>
+         [%END -%]  
         </td>
        </tr>
     [% IF loop.last %]
@@ -119,7 +126,7 @@
  <div id="tabs-3">
   [% FOREACH i IN requests %]
     [% IF loop.first %]
-    [% init_table('requests',[3,4,8,10,25,7,15,2,6]) %]
+    [% init_table('requests',[3,4,8,10,48,7,15,2,3]) %]
     <table class="display" id="requests">
       <thead>
         <tr>
@@ -147,19 +154,19 @@
         <td>[% i.area.department.name %] presso [% i.area.building.name %]</td>
         <td>[% i.macaddress %]</td>
         <td>[% i.hostname %].[% i.area.department.domain %]</td>
-        <td>[% IF i.state != 0 -%] [% i.subnet.id %].[% i.host %] [% ELSE -%]---[% END -%]</td> 
+        <td>[% IF i.state != 0 -%][% i.subnet.id %].[% i.host %][% ELSE -%]---[% END -%]</td> 
 	      <td class="white">
-           [%IF i.state != 4 -%]
-            <a href="[% c.uri_for_action('iprequest/delete',[i.id])%]">[% icon('remove') %]</a>
-           [% END -%]
-           <div class="buttons small_btn">
             [%IF i.state == 0 -%]
-	           <a href="[% c.uri_for_action('iprequest/validate',[i.id], {backref=>c.req.uri } ) %]">Convalida</a>
+             <a href="[% c.uri_for_action('iprequest/validate',[i.id])%]" title="Convalida" >[% ui_icon('check') %]</a>
+             [%ELSE -%]
+              <span title="Validata">[% ui_icon('circle-check') %]</span>
             [%END -%]  
-            [%IF i.state != 0 OR i.state != 4%]
-                <a href="[% c.uri_for_action('iprequest/edit',[i.id])%]">[% icon('edit') %]</a>
-            [%END%]
-	         </div>
+            [%IF i.state != 0 OR i.state != 4 -%]
+             <a href="[% c.uri_for_action('iprequest/edit',[i.id])%]" title="Modifica" style="position:absolute;right:40px;">[% ui_icon('pencil') %]</a>
+            [%END -%]
+            [%IF i.state != 4 -%]
+             <a href="[% c.uri_for_action('iprequest/delete',[i.id])%]" title="Rinuncia" style="position:absolute;right:10px;">[% ui_icon('closethick') %]</a> 
+            [% END -%]
         </td>
        </tr>
     [% IF loop.last %]
@@ -186,17 +193,22 @@
       </thead>
       <tbody>
     [% END %]
-       <tr [% IF i.state == 0 -%]                 class="newip"     [% END -%]
-           [% IF i.state == 1 or i.state == 3 -%] class="preactive" [% END -%]
-           [% IF i.state == 2 -%]                 class="active"    [% END -%]
-           [% IF i.state == 4 -%]                 class="archived"  [% END -%] >
+       <tr [% IF a.state == 0 -%]                 class="newip"     [% END -%]
+           [% IF a.state == 1 or a.state == 3 -%] class="preactive" [% END -%]
+           [% IF a.state == 2 -%]                 class="active"    [% END -%]
+           [% IF a.state == 4 -%]                 class="archived"  [% END -%] >
         <td style="background:white"><a id="click_ref" href=[% c.uri_for_action('/iprequest/view', [a.ip_request.id]) %]>[% a.id %]</a></td>
         <td>[% a.cname %]</th>
         <td>[% a.ip_request.hostname %].[% a.ip_request.area.department.domain %].uniroma1.it</td>
         <td class="white">
-           [%IF i.state != 4 -%]
-            <a href="[% c.uri_for_action('alias/delete',[a.id])%]">[% icon('remove') %]</a>
-           [% END -%]
+           [% IF a.state == 2 -%]
+              <span title="Attiva">[% ui_icon('circle-check') %]</span>
+            [% END -%]
+            [% IF a.state != 4 -%] 
+              <a href="[% c.uri_for_action('/alias/delete',[a.id])%]" title="Rinuncia">[% ui_icon('closethick') %]</a>
+              [% ELSE -%]
+              <span title="Archiviata">[% ui_icon('circle-close') %]</span>
+            [%END -%]
            </td>
        </tr>
     [% IF loop.last %]
