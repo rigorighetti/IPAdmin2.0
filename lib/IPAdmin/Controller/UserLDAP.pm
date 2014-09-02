@@ -171,7 +171,7 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
  sub save : Private {
      my ( $self, $c ) = @_;
      my $mail = $c->user->mail || '';
-     my $cn   = lc($c->user->username);
+     my $cn   = $c->stash->{'username'};
 
      my $item = $c->stash->{'object'} ||
 	 $c->stash->{resultset}->new_result( {email => $mail, username => $cn} );

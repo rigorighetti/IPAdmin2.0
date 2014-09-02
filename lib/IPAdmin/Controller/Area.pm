@@ -65,9 +65,17 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
 
     my $build_schema = $c->stash->{resultset};
 
-    my @area_table = $build_schema->search({},{prefetch => [{building => 'vlan'},'manager', 'department']});
+    my @area_table = $build_schema->search({},{prefetch => [{building => {vlan => 'map_subnet'}},'manager', 'department',{filter_subnet=> 'area'}]});
+    my %subnet;
+    foreach my $area (@area_table){
+       my %filter = map {$_->id =>1}  $area->filtered;
+       $subnet{$area->id}  = \%filter;
+    }
 
     $c->stash( area_table => \@area_table );
+    $c->stash( filtered => \%subnet );
+    
+
     $c->stash( template       => 'area/list.tt' );
 }
 
@@ -77,6 +85,8 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
 
 sub view : Chained('object') : PathPart('view') : Args(0) {
     my ( $self, $c ) = @_;
+    my %filtered   = map {$_->id => 1} $c->stash->{'object'}->filtered->all;
+    $c->stash( filtered    => \%filtered);
 
     $c->stash( template => 'area/view.tt' );
 }
@@ -87,8 +97,80 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
 
 sub edit : Chained('object') : PathPart('edit') : Args(0) {
     my ( $self, $c ) = @_;     
-    $c->forward('save');
+
+    my $id;
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    $c->stash( default_backref => $c->uri_for_action('area/view',[$c->stash->{'object'}->id]) );
+
+    if ( lc $c->req->method eq 'post' ) {
+        if ( $c->req->param('discard') ) {
+            $c->detach('/follow_backref');
+        }
+        my $done = $c->forward('process_edit');
+        if ($done) {
+            $c->flash( message => $c->stash->{message} );
+            $c->detach('/follow_backref');
+        }
+    }
+    #set form defaults
+    my %filtered   = map {$_->id => 1} $c->stash->{'object'}->filtered->all;
+
+
+
+    my @subnets    = $c->stash->{'object'}->building->vlan->map_subnet;        
+    my @building   = $c->model('IPAdminDB::Building')->search({}) ;
+    my @department = $c->model('IPAdminDB::Department')->search({}) ;
+
+    $c->stash( subnets     => \@subnets );
+    $c->stash( department  => \@department );
+    $c->stash( building    => \@building );
+
+    $c->stash( filtered    => \%filtered);
+
+    $c->stash( template => 'area/edit.tt' );
+
 }
+
+sub process_edit : Private {
+    my ( $self, $c )   = @_;
+    #user editable fields
+    my $id_build       = $c->req->param('building');
+    my $id_dep         = $c->req->param('department');
+    my $area           = $c->stash->{'object'};
+    my @subnets        = $area->building->vlan->map_subnet;
+
+    # check form
+    #$c->forward('check_edit_form') || return 0; 
+    $c->model('IPAdminDB::FilterSubnet')->search({area_id => $area->id})->delete;
+
+    foreach my $subnet (@subnets){
+        if(!$c->req->param($subnet->id)){
+            $c->model('IPAdminDB::FilterSubnet')->update_or_create({
+                     area_id   => $area->id,
+                     subnet_id => $subnet->id
+                    });
+        }
+    }       
+
+    my $ret = $area->update(
+        {
+            building    => $id_build,
+            department  => $id_dep
+        }
+        );
+
+
+    if (! $ret ) {
+    $c->stash->{error_msg} = "Errore nella modifica dell\'Area";
+    return 0;
+    } else {
+    $c->stash->{message} = "Area modificata con successo.";
+    return 1;
+    }
+}
+
+
+
 
 =head2 save
 
@@ -108,27 +190,27 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
         delete $c->req->params->{'def_build'} 
     }
 
-     #set the default backref according to the action (create or edit)
+    #set the default backref according to the action (create or edit)
     my $def_br = $c->uri_for('/area/list');
     $def_br = $c->uri_for_action( 'area/view', [ $c->stash->{object}->id ] )
          if ( defined( $c->stash->{object} ) );
-     $c->stash( default_backref => $def_br );
+    $c->stash( default_backref => $def_br );
 
     my $form = IPAdmin::Form::Area->new( {item => $item, def_build => $def_build} );
-     $c->stash( form => $form, template => 'area/save.tt' );
+    $c->stash( form => $form, template => 'area/save.tt' );
 
      # the "process" call has all the saving logic,
      #   if it returns False, then a validation error happened
 
-     if ( $c->req->param('discard') ) {
+    if ( $c->req->param('discard') ) {
          $c->detach('/follow_backref');
-     }
-     return unless $form->process( params => $c->req->params);
+    }
+    return unless $form->process( params => $c->req->params);
 
-     $c->flash( message => 'Success! Area created.' );
-     $def_br = $c->uri_for_action( 'area/view', [ $item->id ] );
-     $c->stash( default_backref => $def_br );
-     $c->detach('/follow_backref');
+    $c->flash( message => 'Success! Area created.' );
+    $def_br = $c->uri_for_action( 'area/view', [ $item->id ] );
+    $c->stash( default_backref => $def_br );
+    $c->detach('/follow_backref');
  }
 
 =head2 create

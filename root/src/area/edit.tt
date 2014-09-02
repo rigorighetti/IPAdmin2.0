@@ -1,0 +1,59 @@
+[%  META title='Modifica Area'    
+    section='Configurazione'
+ %]
+
+<form name="form1" method="POST">
+
+<table class="ui-widget-content ui-corner-all manoc-form">
+	  <tr>
+        <td><label>Edificio:</label></td>
+        <td>
+	  	    <select name="building">
+		        [% FOREACH a IN building %]
+                    <option value="[% a.id %]" [%IF a.id == object.building.id %] selected="1" [%END%]>
+                    [%a.name%] </option>
+		        [% END %]
+            </select>
+        </td>    
+		<td>
+		 [% IF error.building %]
+	      <span class="error" id="error">[% error.building %] </span>
+		 [%END%]
+        </td>
+      </tr>
+	<tr>
+        <td><label>Struttura:</label></td>
+        <td>
+	  	    <select name="department">
+		        [% FOREACH a IN department %]
+                    <option value="[% a.id %]" [%IF a.id == object.department.id %] selected="1" [%END%]>
+                    [%a.name%]</option>
+		        [% END %]
+            </select>
+        </td>    
+		<td>
+		 [% IF error.department %]
+	      <span class="error" id="error">[% error.department %] </span>
+		 [%END%]
+        </td>
+    </tr>
+	<tr>
+        <td><label>Subnet:</label></td>
+        <td>
+		[% FOREACH s IN subnets -%]
+		[% id = s.id %]
+    	<input type="checkbox" name="[% s.id -%]" value="[% s.id -%]" 
+    	[% IF !filtered.$id -%] checked="true" [% END -%] > 151.100.[%s.id%].0
+    	[% IF !loop.last -%]<br>[% END -%]
+		[% END -%]
+		</td>
+	</tr>
+	<tr>
+   <td colspan="2" class="buttons-form">
+   <div class="buttons">
+   <input type="submit" name="submit" value="Submit">
+   <input type="submit" name="discard" value="Discard">
+   </div>
+   </tr>
+</table>
+</form>

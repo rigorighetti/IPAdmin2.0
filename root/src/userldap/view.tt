@@ -56,6 +56,7 @@
   </div>
   
   <div id="tabs-2">
+  [%IF myrequests.0%]
     <div class="right rightbox">
       Legenda: 
       <table>
@@ -63,6 +64,7 @@
             <td bgcolor="#7FCD31" width=20></td><td>Attiva</td><td bgcolor="#A96FDA" width=20></td><td>Archiviata</td>
         </table>
     </div>
+  [%END%] 
   [% FOREACH i IN myrequests %]
     [% IF loop.first %]
     [% init_table('iprequest_list',[3,4,8,25,10,7,15,2,6]) %]

@@ -201,8 +201,6 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
     $c->stash( default_backref => $c->uri_for_action('userldap/view',[$user->username]) );
     $c->stash( default_backref => $c->uri_for_action('iprequest/list') ) if( $realm eq  "normal" );
 
-
-
     if ( lc $c->req->method eq 'post' ) {
         if ( $c->req->param('discard') ) {
             $c->detach('/follow_backref');
@@ -218,11 +216,11 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
     my @users;
 
     if($realm eq "normal") {
-        @users =  $c->model('IPAdminDB::UserLDAP')->search({})->all;
+        @users =  $c->model('IPAdminDB::UserLDAP')->search({},{order_by => 'username'})->all;
         $tmpl_param{users} = \@users;
     }
     #ordinamento aree per nome dipartimento
-    my @aree  = $c->model('IPAdminDB::Area')->search({},{join => 'department', prefetch => ['department','building','manager'], order_by => 'department.name'})->all;
+    my @aree  = $c->model('IPAdminDB::Area')->search({},{prefetch => ['department','building','manager'], order_by => 'department.name'})->all;
     my @types = $c->model('IPAdminDB::TypeRequest')->search({},{order_by => 'type'})->all;    
 
     $tmpl_param{guest_type} = ["Studente laureando", "Dottorando", "Studente specializzando", "Borsista", 
@@ -670,7 +668,8 @@ sub validate : Chained('object') : PathPart('validate') : Args(0) {
     $tmpl_param{data}      = IPAdmin::Utils::print_short_timestamp($req->date);
     #a regime deve proporre un indirizzo IP tra le subnet associate 
     #all'area
-    my $vlan = $req->area->building->vlan;
+    my $vlan   = $req->area->building->vlan;
+    my %filter = map {$_->id =>1}  $req->area->filtered;
     my $subnets; 
     defined $vlan and $subnets = $vlan->map_subnet;
 
@@ -684,8 +683,10 @@ sub validate : Chained('object') : PathPart('validate') : Args(0) {
     while(my $subnet = $subnets->next) {
     	$used_ip = undef;
         my $sub_id = $subnet->id;
+        
+        next if($filter{$sub_id});
         foreach my $ip (6..247){
-	 $used_ip = $c->model("IPAdminDB::IPRequest")->search({-and => 
+	        $used_ip = $c->model("IPAdminDB::IPRequest")->search({-and => 
                                                      [ subnet => $sub_id,
                                                        host   => $ip,
                                                        -or     =>[ state => $IPAdmin::PREACTIVE,
@@ -694,14 +695,14 @@ sub validate : Chained('object') : PathPart('validate') : Args(0) {
                                                                  ]
                                                      ]},
                                                     )->single;
-	$free_ip = $ip;
-	last unless defined $used_ip;
-	}
+	       $free_ip = $ip;
+	       last unless defined $used_ip;
+	   }
 
         #TODO spostare tutto in una funzione
         #TODO logica degli ip
         if (defined $used_ip ) {
-            $c->flash( message => "Non ci sono IP disponibili per la subnet 151.100.$subnet->id.0.
+            $c->flash( message => "Gli IP dispobibili a questa struttura sono terminati.
                                    Contattare ipsapienza\@uniroma1.it" );
             #TODO redirigere su userldap/<utente>/view
             $c->stash( default_backref =>
@@ -1047,7 +1048,7 @@ sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
 
     $c->stash(col_names => \@col_names);
     my @col_searchable = qw( me.id me.state me.date type.type user.fullname building.name department.name 
-                            area.manager me.macaddress me.hostname department.domain subnet host);
+                            manager.fullname me.macaddress me.hostname department.domain subnet.id host);
     $c->stash(col_searchable => \@col_searchable);
 
     $c->stash(resultset_search_opt =>

@@ -40,5 +40,8 @@ __PACKAGE__->belongs_to( manager    => 'IPAdmin::DB::Result::UserLDAP', 'manager
 
 __PACKAGE__->has_many(  list_iprequest => 'IPAdmin::DB::Result::IPRequest' );
 
+__PACKAGE__->has_many( filter_subnet => 'IPAdmin::DB::Result::FilterSubnet', 'area_id' );
+__PACKAGE__->many_to_many( filtered => 'filter_subnet', 'subnet' );
+
 1;
 

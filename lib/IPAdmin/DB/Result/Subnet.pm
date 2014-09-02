@@ -38,5 +38,9 @@ __PACKAGE__->has_many( map_iprequest   => 'IPAdmin::DB::Result::IPRequest','subn
 	{ cascade_delete => 0 }
 	);
 
+
+__PACKAGE__->has_many( filter_subnet => 'IPAdmin::DB::Result::FilterSubnet', 'subnet_id' );
+__PACKAGE__->many_to_many( filtered_areas => 'filter_subnet', 'area' );
+
 1;
 

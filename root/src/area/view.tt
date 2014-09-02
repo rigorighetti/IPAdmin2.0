@@ -12,12 +12,21 @@
   <div id="tabs-1">
     <table id="info">
       <tr>
-	<td>Edificio:</td><td>[% object.building.name %]</td>
+	      <td>Edificio:</td><td>[% object.building.name %]</td>
       </tr>
       <tr>
-	<td>Dipartmento:</td><td>[% object.department.name | html %] </td>
+      	<td>Dipartmento:</td><td>[% object.department.name | html %] </td>
       <tr>
-	<td>Referente:</td><td>[% object.manager.fullname | html%]</td>
+	      <td>Referente:</td><td>[% object.manager.fullname | html%]</td>
+      </tr>
+       <tr>
+        <td>Subnet:</td>
+        <td>
+            [% FOREACH s IN object.building.vlan.map_subnet -%]
+            [% id = s.id %]
+            [% IF !filtered.$id -%]<a href="[%c.uri_for_action('/subnet/view', [s.id]) %]">  151.100.[%s.id%].0</a><br>[% END -%]
+            [%END%]
+        </td>
       </tr>
     </table>
     [% add_css_tableinfo -%]
@@ -27,10 +36,7 @@
 	&nbsp;<a href=[% c.uri_for_action('area/delete', [object.id]) %]>
 	[% ui_icon('closethick') %]  Elimina</a>
 	&nbsp; 
-<!--
-	<a href="[% c.uri_for('/area/create', object.id,{backref=>c.req.uri}) %]">
-		[% ui_icon('plusthick') %] Aggiungi Area</a> 
--->
+
       </div>
     </p>
   [% add_css_tableinfo %]
