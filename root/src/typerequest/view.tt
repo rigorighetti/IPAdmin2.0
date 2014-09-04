@@ -17,6 +17,12 @@
       <tr>
 	<td>Descrizione:</td><td>[% object.description | html %] </td>
       </tr>
+      <tr>
+      <td>Tipi di richiesta archiviabile?</td>
+      <td>[%IF object.archivable%]Si[%ELSE%]No[%END%]</td>
+      </tr>
+
+
     </table>
     [% add_css_tableinfo -%]
     <p>

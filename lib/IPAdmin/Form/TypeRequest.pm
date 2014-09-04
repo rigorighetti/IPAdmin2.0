@@ -22,7 +22,10 @@ has_field 'type' => (
 );
 
 has_field 'description' => ( type => 'TextArea' );
-
+has_field 'archivable' => (
+    type  => 'Checkbox',
+    label => 'Tipi di richiesta archiviabili'
+);
 has_field 'submit'  => ( type => 'Submit', value => 'Submit' );
 has_field 'discard' => ( type => 'Submit', value => 'Discard' );
 

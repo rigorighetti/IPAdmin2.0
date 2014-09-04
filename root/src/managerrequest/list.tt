@@ -12,7 +12,7 @@
 
 [% FOREACH i IN request_table %]
    [% IF loop.first %] 
-     [%init_table('request', [3,5,5,5,15,36,15,8,3,5]) %]  
+     [%init_table('request', [3,5,5,5,15,41,8,3,5]) %]  
     <table class="display" id="request">
       <thead>  
 	      <tr>
@@ -23,7 +23,6 @@
  	       <th>Direttore</th>
          <th>Area</th>
  	       <th>Referente di Rete</th>
-	       <th>Subnet</th>
 	       <th>Nr. IP ass</th>
          <th>Comandi</th>
         </tr>
@@ -39,15 +38,9 @@
       <td>[% i.date_in %]</td>
       <td>[% i.date_out %]</td>
       <td>[% i.dir_fullname %]</td>
- 	    <td>[% i.area.department.name %] <i>presso</i> [% i.area.building.name %]</td>
- 	    <td>[% i.user.fullname %]</td>
-	    <td>[% FOREACH j IN i.area.building.vlan.map_subnet -%]
-           <a href=[% c.uri_for_action('/subnet/view', [j.id]) %]>[% j.id %]</a>
-           [% UNLESS loop.last %]
-            , 
-           [% END -%]
-          [% END -%]
-      </td>	 
+ 	    <td> <a href="[%c.uri_for_action('/area/view',[i.area.id])%]">
+            [% i.area.department.name %] <i>presso</i> [% i.area.building.name %] </a></td>
+ 	    <td><a href=[% c.uri_for_action('/userldap/view', [i.user.username]) %]>[% i.user.fullname %]</a></td>
       <td>[%i.n_ip%]</td>
 	    <td class="white">
        [% IF i.state == 0 %] 

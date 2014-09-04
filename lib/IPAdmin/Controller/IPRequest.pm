@@ -228,7 +228,7 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
                               "Professore a contratto", "Ospite"];
     $tmpl_param{realm}          = $realm;
     $tmpl_param{user}           = $req->user;
-    $tmpl_param{fullname}       = $user->fullname;
+    $tmpl_param{fullname}       = $req->user->fullname;
     $tmpl_param{aree}           = \@aree;
     $tmpl_param{types}          = \@types;
     $tmpl_param{data}           = IPAdmin::Utils::print_short_timestamp(time);
@@ -343,8 +343,6 @@ sub process_edit : Private {
                 date_out => $guest_date_out,
                 });
             $ret = $c->stash->{'object'}->update({
-                            area        => $area,
-                            user        => $user,
                             location    => $location,
                             subnet      => $subnet,
                             host        => $host,
@@ -552,12 +550,16 @@ sub check_ipreq_form : Private {
     my $confirm        = $c->req->param('confirm') || '';
 
 
+    if ( $user eq '' ) {
+        $c->stash->{error_msg} = "Selezionare un utente";
+        return 0;
+    }
     if ( $area eq '' and !defined($c->stash->{object}) ) {
-        $c->stash->{error_msg} = "Selezionare una struttura!";
+        $c->stash->{error_msg} = "Selezionare una struttura";
         return 0;
     }
     if ( $mac eq '' ) {
-     	$c->stash->{error_msg} = "Campo Mac Address obbligatorio!";
+     	$c->stash->{error_msg} = "Campo Mac Address obbligatorio";
      	return 0;
      }
     #controllo formato mac address (ancora non copre aa:bb:cc:dd:ee:ff) 
@@ -567,11 +569,11 @@ sub check_ipreq_form : Private {
      }
 
     if ( $hostname eq '' ) {
-	   $c->stash->{error_msg} = "Campo Hostname obbligatorio!";
+	   $c->stash->{error_msg} = "Campo Hostname obbligatorio";
 	   return 0;
      }    
     if ( $type eq '' ) {
-        $c->stash->{error_msg} = "Tipo di apparato obbligatorio!";
+        $c->stash->{error_msg} = "Tipo di apparato obbligatorio";
         return 0;
      }  
     if ( $confirm eq '' ) {
@@ -589,7 +591,7 @@ sub check_ipreq_form : Private {
           #edit action
           if($schema->search({subnet=> $subnet, host => $host, state => {-not => $IPAdmin::ARCHIVED}})->count > 0){
             #l'indirizzo editato a mano è già in uso
-            $c->stash->{error_msg} = "Indirizzo IP già assegnato!";
+            $c->stash->{error_msg} = "Indirizzo IP già assegnato";
             return 0;
         }
       }
@@ -631,6 +633,8 @@ sub check_ipreq_form : Private {
 sub find_subnet : Private {
     my ( $c , $area, $subnet_id )  = @_;
     my ($e,$it);
+
+    print "TEST $area \n\n\n";
 
     my $ret = $c->model("IPAdminDB::Area")->find($area);
     my @subnets = $ret->building->vlan->map_subnet;

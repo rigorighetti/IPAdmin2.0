@@ -63,10 +63,10 @@ sub tot_assigned_ip :Private {
     my $count = 0;
     return 0 unless(defined $area->building->vlan);
 
-    foreach my $subnet ($area->building->vlan->map_subnet){
-        $count += $c->model("IPAdminDB::IPRequest")->search({state => $IPAdmin::ACTIVE,
-                                                            subnet => $subnet->id})->count;
-    }
+   ###TODO: sistemare
+    $count += $c->model("IPAdminDB::IPRequest")->search({ state   => $IPAdmin::ACTIVE,
+                                                          area    => $area->id })->count;
+    
 
     return $count;
 }
@@ -92,6 +92,7 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
             n_ip         => $self->tot_assigned_ip($c,$_->area),
 	    },  $c->stash->{resultset}->search({}, {prefetch => [{area => ['department', 'building', 'manager']} ]});
    
+
    $c->stash( request_table => \@managerrequest_table );
    $c->stash( template        => 'managerrequest/list.tt' );
 }

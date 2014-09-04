@@ -34,6 +34,7 @@ __PACKAGE__->add_columns(
 );
 
 __PACKAGE__->set_primary_key(qw(id));
+__PACKAGE__->add_unique_constraint( [qw/cname/] );
 
 __PACKAGE__->belongs_to( ip_request   => 'IPAdmin::DB::Result::IPRequest',
     { 'foreign.id' => 'self.ip_request' } 
