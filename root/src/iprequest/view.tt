@@ -160,7 +160,7 @@
             [% IF a.state == 1 or a.state == 3 -%] class="preactive" [% END -%]
             [% IF a.state == 2 -%]                 class="active"    [% END -%]
             [% IF a.state == 4 -%]                 class="archived"  [% END -%] >
-          <td class="white">[% a.id %]</td>
+          <td class="white"><a href="[% c.uri_for_action('/alias/view',[a.id])%]">[% a.id %]</a></td>
           <td>[% a.cname %]</td>
           <td>[% a.ip_request.hostname %].[% a.ip_request.area.department.domain %].uniroma1.it </td>
           <td class="white">

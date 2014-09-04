@@ -31,11 +31,11 @@
 <li>Fare doppio clic sull'icona <b>Connessioni di rete</b></li>
 <li>Fare doppio clic sull'icona <b>Connessione alla rete locale (LAN)</b></li>
 <li>Fare clic sul pulsante <b>Proprietà</b></li>
-<img src="img/ip_xp-1.jpg" />
+<img class="frame" src="[% c.uri_for('/static/images/ipconf/ip_xp-1.jpg') %]" /><br><br>
 <li>Selezionare <b>Protocollo Internet (TCP/IP)</b> e cliccare su <b>Proprieta'</b></li>
-<img src="img/ip_xp-2.jpg" />
+<img class="frame" src="[% c.uri_for('/static/images/ipconf/ip_xp-2.jpg') %]" /><br><br>
 <li>Selezionare <b>Utilizza il seguente indirizzo IP</b> e il campo <b>Utilizza i seguenti indirizzi server DNS</b> e riempire i campi indicati dalla freccia rossa con gli indirizzi assegnati alla fine della procedura di registrazione IP.</li>
-<img src="img/ip_xp-3.jpg" />
+<img class="frame" src="[% c.uri_for('/static/images/ipconf/ip_xp-3.jpg') %]" /><br>
 </ol>
 
 <br><hr>
@@ -45,13 +45,13 @@
 <li>Dal pulsante <b>Start</b> selezionare <b>Pannello di controllo</b></li>
 <li>Fare doppio clic sull'icona <b>Centro connessioni di rete e condivisione</b></li>
 <li>Fare clic su <b>Visualizza stato</b></li>
-<img src="img/ip_vista-1.jpg" />
+<img class="frame" src="[% c.uri_for('/static/images/ipconf/ip_vista-1.jpg') %]" /><br><br>
 <li>Fare clic sul pulsante <b>Proprietà</b></li>
-<img src="img/ip_vista-2.jpg" />
+<img class="frame" src="[% c.uri_for('/static/images/ipconf/ip_vista-2.jpg') %]" /><br><br>
 <li>Selezionare <b>Protocollo Internet versione 4 (TCP/IPv4)</b> e cliccare su <b>Proprieta'</b></li>
-<img src="img/ip_vista-3.jpg" />
+<img class="frame" src="[% c.uri_for('/static/images/ipconf/ip_vista-3.jpg') %]" /><br><br>
 <li>Selezionare <b>Utilizza il seguente indirizzo IP</b> e il campo <b>Utilizza i seguenti indirizzi server DNS</b> e riempire i campi con gli indirizzi assegnati alla fine delle procedura di registrazione IP</li>
-<img src="img/ip_vista-4.jpg" />
+<img class="frame" src="[% c.uri_for('/static/images/ipconf/ip_vista-4.jpg') %]" /><br><br>
 </ol>
 
 <br><hr>
@@ -59,15 +59,15 @@
 <h4 id="7">Windows 7</h4>
 <ol>
 <li>Fare clic sull'icona della connessione internet vicino all'orologio e successivamente su <b>Apri Centro connessioni di rete e condivisione</b></li>
-<img src="img/ip_7-1.jpg" />
+<img class="frame" src="[% c.uri_for('/static/images/ipconf/ip_7-1.jpg') %]" /><br><br>
 <li>Fare clic su <b>Connessione alla rete locale (LAN)</b></li>
-<img src="img/ip_7-2.jpg" />
+<img class="frame" src="[% c.uri_for('/static/images/ipconf/ip_7-2.jpg') %]" /><br><br>
 <li>Fare clic su <b>Proprietà</b></li>
-<img src="img/ip_7-3.jpg" />
+<img class="frame" src="[% c.uri_for('/static/images/ipconf/ip_7-3.jpg') %]" /><br><br>
 <li>Selezionare <b>Protocollo Internet versione 4 (TCP/IPv4)</b> e cliccare su <b>Proprieta'</b></li>
-<img src="img/ip_7-4.jpg" />
+<img class="frame" src="[% c.uri_for('/static/images/ipconf/ip_7-4.jpg') %]" /><br><br>
 <li>Selezionare <b>Utilizza il seguente indirizzo IP</b> e il campo <b>Utilizza i seguenti indirizzi server DNS</b> e riempire i campi con gli indirizzi assegnati alla fine delle procedura di registrazione IP</li>
-<img src="img/ip_7-5.jpg" />
+<img class="frame" src="[% c.uri_for('/static/images/ipconf/ip_7-5.jpg') %]" /><br><br>
 </ol>
 
 </div>
@@ -75,9 +75,80 @@
 </div>
 
 	<div id="tabs-2">
+
+<h2>Istruzioni per la configurazione di un indirizzo IP in ambiente Mac OS X</h2>
+
+<div>Fare clic su <b>Preferenze di Sistema</b> del dock e successivamente su <b>Network</b></li>
+<ol>
+<li>Selezionare la scheda <b>Ethernet</b></li>
+<li>Assicurarsi che siano abilitate le modifiche (lucchetto aperto)</li>
+<li>Selezionare <i>Manualmente</i> dal menu a tendina di <b>Configura IPv4</b></li>
+<li>Inserire gli indirizzi IP assegnati alla fine della procedura di registrazione IP</li>
+</ol>
+<br>
+<img src="[% c.uri_for('/static/images/ipconf/ip_mac.jpg') %]" /><br><br>
+
+</div>
 	</div>
 
 	<div id="tabs-3">
+
+<h2>Istruzioni per la configurazione di un indirizzo IP in ambiente Linux</h2>
+
+<div>
+<ul>
+<li><a href="#ubuntu">Ubuntu (Debian)</a></li>
+<li><a href="#centos">CentOS (Red Hat)</a></li>
+</ul>
+
+<br><hr>
+<h4 id="ubuntu">Ubuntu (Debian)</h4>
+<p>Utilizzare il Network Manager di Ubuntu per modificare la configurazione IP. Nel caso in cui non fosse presente tale applicazione procedere con le seguenti istruzioni a riga di comando:</p>
+Con i permessi di root aprire il file <b><i>/etc/network/interfaces</i></b> con un qualsiasi editor di testo.
+<p><i>sudo nano /etc/network/interfaces</i></p>
+Sostituire gli indirizzi IP nelle seguenti righe con quelli assegnati alla fine della procedura di registrazione IP:
+
+<pre>	iface eth0 inet static
+      	address 151.100.x.y
+      	netmask 255.255.255.0
+      	gateway 151.100.x.z</pre>
+      
+Aprire il file <b><i>/etc/resolv.conf</i></b>
+<p><i>sudo nano /etc/resolv.conf</i></p>
+Sostituire gli indirizzi IP nelle due righe con quelli indicati da "DNS"
+
+<pre>	nameserver 151.100.4.2
+	nameserver 151.100.4.13</pre>
+
+Riavviare l'interfaccia di rete con il comando:
+<p><i>sudo /etc/init.d/networking restart</i></p>
+
+<br><hr>
+
+<h4 id="centos">CentOS (Red Hat)</h4>
+Con i permessi da root aprire il file <b><i>/etc/sysconfig/network-scripts/ifcfg-eth0</i></b> con un qualsiasi editor di testo.
+<p><i>sudo vi /etc/sysconfig/network-scripts/ifcfg-eth0</i></p>
+Sostituire gli indirizzi IP nelle seguenti righe con quelli assegnati alla fine della procedura di registrazione IP:
+
+<pre>	DEVICE=eth0
+	BOOTPROTO=static
+	IPADDR=151.100.x.y
+	GATEWAY=151.100.x.z
+	NETMASK=255.255.255.0
+	ONBOOT=yes</pre>
+
+Aprire il file <b><i>/etc/resolv.conf</i></b>
+<p><i>sudo vi /etc/resolv.conf</i></p>
+Sostituire gli indirizzi IP nelle due righe con quelli indicati da "DNS"
+
+<pre>	nameserver 151.100.4.2
+	nameserver 151.100.4.13</pre>
+
+Riavviare l'interfaccia di rete con il comando:
+<p><i>sudo /etc/init.d/network restart</i></p>
+
+
+</div>
 	</div>
 
 

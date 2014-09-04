@@ -921,7 +921,13 @@ c'è una nuova richiesta IP che richiede il suo intervento:
     $url
 EOF
 	if(defined $ipreq->area->manager){
-          $to = $ipreq->area->manager->email;
+        $to = $ipreq->area->manager->email;
+        if ($ipreq->type->type eq "WiFi Sapienza AP") {
+            $to = 's.italiano@cineca.it';
+        }
+        elsif ($ipreq->type->type eq "Marcatempo") {
+            $to = 'e.liguori@cineca.it';
+        }
 	}
 	else{
  	  $c->stash( error_msg => 'Impossibile inviare una mail al referente perché Non è stato ancora nominato un referente per quest\'area');
