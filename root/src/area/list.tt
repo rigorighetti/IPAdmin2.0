@@ -15,9 +15,9 @@
    <thead>  
      <tr>
 	<th>Id</th>
-        <th>Building</th>
-        <th>Department</th>
-        <th>Manager</th>
+        <th>Edificio </th>
+        <th>Struttura</th>
+        <th>Referente</th>
 	<th>Subnet</th>
 	<th>Comandi</th>
      </tr>

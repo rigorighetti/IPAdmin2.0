@@ -48,6 +48,7 @@ __PACKAGE__->add_columns(
 );
 
 __PACKAGE__->set_primary_key(qw(id));
+__PACKAGE__->add_unique_constraint( [qw/fullname/] );
 
 __PACKAGE__->has_one( iprequest => 'IPAdmin::DB::Result::IPRequest' );
 

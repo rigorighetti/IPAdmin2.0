@@ -8,7 +8,10 @@ td.data {padding-left:20px;}
 
 <form name="form1" method="POST">
 
-[%IF realm != "normal"-%]<input type=hidden name="user" value="[% user.id %]" />[%END-%]
+[%IF realm != "normal"-%]
+  <input type=hidden name="user" value="[% user.id %]" />
+  <input type=hidden name="area" value="[% object.area.id %]" />
+[%END-%]
 <br>
 <div id="infoipreq">
       <div class="right">Data Richiesta: [% data %]</div>
