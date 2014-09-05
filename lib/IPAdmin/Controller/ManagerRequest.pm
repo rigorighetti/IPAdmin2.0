@@ -90,7 +90,7 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
             user         => $_->user,
             state   	 => $_->state,
             n_ip         => $self->tot_assigned_ip($c,$_->area),
-	    },  $c->stash->{resultset}->search({}, {prefetch => [{area => ['department', 'building', 'manager']} ]});
+	    },  $c->stash->{resultset}->search({}, {prefetch => [{area => ['department', {building => 'vlan'}, 'manager'],'user'} ]});
    
 
    $c->stash( request_table => \@managerrequest_table );

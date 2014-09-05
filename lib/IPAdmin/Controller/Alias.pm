@@ -75,7 +75,7 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
         dominio     => $_->ip_request->area->department->domain,
         state       => $_->state,
         user        => $_->ip_request->user,
-        }, $alias_schema->search({},{join => ['ip_request'], prefetch => ['ip_request']});
+        }, $alias_schema->search({}, {prefetch => [{ip_request => [{area => 'department'},'user','subnet',]}]});
 
     $c->stash( alias_table => \@alias_table );
     $c->stash( template       => 'alias/list.tt' );
