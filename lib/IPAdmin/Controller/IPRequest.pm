@@ -1057,7 +1057,7 @@ sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
                        manager macaddress hostname domain subnet host);
 
     $c->stash(col_names => \@col_names);
-    my @col_searchable = qw( me.id me.state me.date type.type user.fullname building.name department.name 
+    my @col_searchable = qw(  me.state type.type user.fullname building.name department.name 
                             manager.fullname me.macaddress me.hostname department.domain subnet.id host);
     $c->stash(col_searchable => \@col_searchable);
 
@@ -1110,7 +1110,7 @@ sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
         },        
         manager => sub {
             my ($c, $rs)= @_;
-            return $rs->area->manager->fullname;
+            defined $rs->area->manager and return $rs->area->manager->fullname;
         },
         macaddress => sub {
             my ($c, $rs)= @_;

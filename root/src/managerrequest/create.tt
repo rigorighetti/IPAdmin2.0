@@ -11,19 +11,16 @@
     <hr style="clear:both">
 	<div class="title">Dati della Struttura:</div>
     <div class="section">
-     <span class="left">Struttura:</span>
-     <select class="right" name="area" id="area">
-      <option value="">Seleziona Struttura</option>
-       [% FOREACH a IN aree %] 
-        <option value="[% a.id %]" 
-        [% IF a.id == area_def -%] 
-         selected="1"
-        [% END -%] >
-        [%a.department.name%] presso [%a.building.name%]</option>
+     <span class="left">Dipartimento:</span>
+     <select class="right" name="department" id="department">
+      <option value="">Seleziona il dipartimento</option>
+       [% FOREACH a IN departments %] 
+        <option value="[% a.id %]">
+        [%a.name%] </option>
        [% END %]
       </select><br>
-      [% IF error.area %]
-	   <span class="error" id="error">[% error.area %] </span>
+      [% IF error.department %]
+	   <span class="error" id="error">[% error.department %] </span>
 	  [%END%]
     </div>
     <div class="title"> Dati del Responsabile della Struttura </div>
@@ -53,8 +50,8 @@
       </div>
       <br>
       <div class="buttons section">
-	     <input type="submit" name="submit" value="Submit">
-	     <input type="submit" name="discard" value="Discard">
+	     <input type="submit" name="submit" value="Invia Richiesta">
+	     <input type="submit" name="discard" value="Annulla">
 	</div>
 
 </div>

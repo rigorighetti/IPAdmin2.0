@@ -13,9 +13,6 @@
     <div class="right">
       <div class="rightbox">
          [% IF object.state == 0 -%] 
-          <a href=[%c.uri_for_action('managerrequest/validate', [object.id]) %]> [%ui_icon('check')%] Convalida</a><br>
-         [% END -%]
-         [% IF object.state == 1 -%] 
           <a href=[%c.uri_for_action('managerrequest/activate', [object.id]) %]> [%ui_icon('check')%] Attiva</a><br>
          [% END -%]
          [% IF object.state != 4 -%] 
@@ -39,8 +36,7 @@
       </div>
       <div class="title">Dati della Struttura</div>
       <div class="section">
-        <span class="left">Nome:</span> <span class="right">[% object.area.department.name %] <i>presso</i> [% object.area.building.name %]</span><br>
-        <span class="left">Indirizzo:</span> <span class="right">[% object.area.building.address %]</span><br>
+        <span class="left">Nome:</span> <span class="right">[% object.department.name %]</span><br>
         <span class="left">Direttore:</span> <span class="right">[% object.dir_fullname %]</span><br>
         <span class="left">Telefono:</span> <span class="right">[% object.dir_phone %]</span><br>
         <span class="left">Email:</span> <span class="right">[% object.dir_email %]</span><br>

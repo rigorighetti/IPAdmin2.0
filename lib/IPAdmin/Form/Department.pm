@@ -16,7 +16,7 @@ has_field 'name' => (
 		'Str',
 		{
 			check => sub { $_[0] =~ /\w/ },
-			messagge => 'Invalid Name'
+			messagge => 'Nome non valido'
 		},
 	]
 );
@@ -24,7 +24,7 @@ has_field 'name' => (
 has_field 'description' => (
     type     => 'TextArea',
     required => 1,
-    label    => 'Descrizione Vlan',
+    label    => 'Descrizione Dipartimento',
     apply    => [
         'Str',
         {
