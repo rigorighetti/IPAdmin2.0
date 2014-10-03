@@ -23,14 +23,8 @@ has_field 'department' => (
         required     => 1
 );
  
-has 'def_build' => (
-    is       => 'rw',
-    isa      => 'Int',
-    required => 0,
-);
-
-has_field 'submit'  => ( type => 'Submit', value => 'Submit' );
-has_field 'discard' => ( type => 'Submit', value => 'Discard' );
+has_field 'submit'  => ( type => 'Submit', value => 'Invia' );
+has_field 'discard' => ( type => 'Submit', value => 'Annulla' );
 
 
 
@@ -46,7 +40,7 @@ sub options_building {
     );
     my @selections;
     while ( my $build = $builds->next ) {
-        push @selections, { value => $build->id, label => $build->name, selected => $build->id eq $self->def_build };
+        push @selections, { value => $build->id, label => $build->name};
     }
     return  @selections;
 }

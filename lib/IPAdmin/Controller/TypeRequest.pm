@@ -96,41 +96,64 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
 
 =cut
 
- sub save : Private {
-     my ( $self, $c ) = @_;
-     my $item = $c->stash->{object} ||
-         $c->stash->{resultset}->new_result( {} );
+sub save : Private {
+    my ( $self, $c ) = @_;
+    my $item         = $c->stash->{object};
 
-     #set the default backref according to the action (create or edit)
-     my $def_br = $c->uri_for('/typerequest/list');
-     $def_br = $c->uri_for_action( 'typerequest/view', [ $c->stash->{object}->id ] )
-         if ( defined( $c->stash->{object} ) );
-     $c->stash( default_backref => $def_br );
+    #set the default backref according to the action (create or edit)
+    my $def_br = $c->uri_for('/typerequest/list');
+    $def_br = $c->uri_for_action( 'typerequest/view', [ $c->stash->{object}->id ] )
+        if ( defined( $c->stash->{object} ) );
+    $c->stash( default_backref => $def_br );
 
-     my $form = IPAdmin::Form::TypeRequest->new( item => $item );
-     $c->stash( form => $form, template => 'typerequest/save.tt' );
+    my $form = IPAdmin::Form::TypeRequest->new( item => $item );
+    $c->stash( form => $form, template => 'typerequest/save.tt' );
 
-     # the "process" call has all the saving logic,
-     #   if it returns False, then a validation error happened
+    # the "process" call has all the saving logic,
+    #   if it returns False, then a validation error happened
 
-     if ( $c->req->param('discard') ) {
-         $c->detach('/follow_backref');
-     }
-     return unless $form->process( params => $c->req->params );
+    if ( $c->req->param('discard') ) {
+        $c->detach('/follow_backref');
+    }
+    return unless $form->process( params => $c->req->params );
 
-     $c->flash( message => 'Success! Type Request created.' );
-     $def_br = $c->uri_for_action( 'typerequest/view', [ $item->id ] );
-     $c->stash( default_backref => $def_br );
-     $c->detach('/follow_backref');
- }
+    $c->flash( message => 'Success! Type Request created.' );
+    $def_br = $c->uri_for_action( 'typerequest/view', [ $item->id ] );
+    $c->stash( default_backref => $def_br );
+    $c->detach('/follow_backref');
+}
 
 =head2 create
 
 =cut
 
 sub create : Chained('base') : PathPart('create') : Args(0) {
-     my ( $self, $c ) = @_;
-     $c->forward('save');
+    my ( $self, $c ) = @_;
+    my $item         = $c->stash->{resultset}->new_result( {} );
+
+    #set the default backref according to the action (create or edit)
+    my $def_br = $c->uri_for('/typerequest/list');
+    $def_br = $c->uri_for_action( 'typerequest/view', [ $c->stash->{object}->id ] )
+        if ( defined( $c->stash->{object} ) );
+    $c->stash( default_backref => $def_br );
+
+    my $form = IPAdmin::Form::TypeRequest->new( item => $item );
+    $c->stash( form => $form, template => 'typerequest/save.tt' );
+
+    # the "process" call has all the saving logic,
+    #   if it returns False, then a validation error happened
+
+    if ( $c->req->param('discard') ) {
+        $c->detach('/follow_backref');
+    }
+    return unless $form->process( params => $c->req->params );
+
+    $c->flash( message => 'Success! Type Request created.' );
+    $def_br = $c->uri_for_action( 'typerequest/view', [ $item->id ] );
+    $c->stash( default_backref => $def_br );
+    $c->detach('/follow_backref');
+
+
  }
 
 =head2 delete
@@ -141,7 +164,7 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
     my ( $self, $c ) = @_;
     my $typerequest = $c->stash->{'object'};
     my $id       = $typerequest->id;
-    my $name     = $typerequest->name;
+    my $name     = $typerequest->type;
     $c->stash( default_backref => $c->uri_for_action('typerequest/list') );
 
     if ( lc $c->req->method eq 'post' ) {

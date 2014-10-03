@@ -35,8 +35,8 @@ has_field 'description' => (
 );
 
 has_field 'domain' => ( type => 'Text',label => 'Dominio DNS', required => 1 );
-
-has_field 'submit'  => ( type => 'Submit', value => 'Submit' );
-has_field 'discard' => ( type => 'Submit', value => 'Discard' );
+ 
+has_field 'submit'  => ( type => 'Submit', value => 'Invia' );
+has_field 'discard' => ( type => 'Submit', value => 'Annulla' );
 
 1;

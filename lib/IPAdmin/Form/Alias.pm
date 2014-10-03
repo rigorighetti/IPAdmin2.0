@@ -22,8 +22,8 @@ has 'def_ipreq' => (
     required => 0,
 );
 
-has_field 'submit'  => ( type => 'Submit', value => 'Submit' );
-has_field 'discard' => ( type => 'Submit', value => 'Discard' );
+has_field 'submit'  => ( type => 'Submit', value => 'Invia' );
+has_field 'discard' => ( type => 'Submit', value => 'Annulla' );
 
 
 
