@@ -65,7 +65,7 @@
         <span class="left">Tipo:</span> <span class="right">[% object.type.type %]</span><br>
         <span class="left">Stanza:</span> <span class="right">[% object.location %]</span><br>
         <span class="left">Mac Address:</span> <span class="right">
-          [%IF realm %]
+          [%IF realm == "normal" %]
           <a href="[% manoc_link %]/mac/[% object.macaddress%]"> 
            [% object.macaddress%]
           </a> 

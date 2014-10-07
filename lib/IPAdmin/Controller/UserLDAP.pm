@@ -110,9 +110,13 @@ sub listmanager : Chained('base') : PathPart('listmanager') : Args(0) {
 sub view : Chained('object') : PathPart('view') : Args(0) {
     my ( $self, $c ) = @_;
     my @requests;     
-    my @myrequests;     
+    my @myrequests; 
+    my @myservice_requests; 
+    my @service_requests;
     my $date_myreq = {};
     my $date_req = {};
+    my $date_ser = {};
+
     my ($e,$it);
 
     my @managed_area = $c->stash->{'object'}->managed_area;
@@ -125,6 +129,10 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
                 });
         while($e = $it->next){
             $date_req->{$e->id} = print_short_timestamp($e->date);
+            if(defined $e->type->service_manager){
+                push @myservice_requests, $e;
+                next;
+            }
             push @requests, $e;  
         }
     }
@@ -143,12 +151,25 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
         }
     }
 
+    my @managed_services = $c->stash->{'object'}->managed_services;
+    foreach my $service (@managed_services){
+        $it = $c->model("IPAdminDB::IPRequest")->search({'type.service_manager' => $c->stash->{'object'}->id },
+                {prefetch => [qw(type subnet),{area => ['building','department','manager']}],
+                 select   => [qw(id date type.type area.department area.building
+                              area.manager macaddress area.department hostname state subnet host )] });
+        while($e = $it->next){
+        $date_ser->{$e->id} = print_short_timestamp($e->date);
+        push @service_requests, $e;
+        }
+    }
 
     $c->stash(date_req      => $date_req);
     $c->stash(date_myreq    => $date_myreq);
     $c->stash( managed_area => \@managed_area );
     $c->stash( requests     => \@requests );
     $c->stash( myrequests   => \@myrequests );
+    $c->stash( myservice_requests   => \@myservice_requests );
+    $c->stash( service_requests     => \@service_requests );
     $c->stash( myaliases    => \@myaliases );
     $c->stash( template     => 'userldap/view.tt' );
 }

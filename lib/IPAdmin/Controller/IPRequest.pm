@@ -61,10 +61,22 @@ sub object : Chained('base') : PathPart('id') : CaptureArgs(1) {
     my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
     $c->stash(realm => $realm);
 
-    if($realm  eq "ldap" and $c->stash->{object}->user->id ne $user->id ){
+
+    $c->log->debug("Area: ".Dumper($c->stash->{object}->area->manager));
+    $c->log->debug("Servizio: ".Dumper($c->stash->{object}->type->service_manager));
+
+
+
+#and $c->stash->{object}->user->id ne $user->id 
+
+    if($realm  eq "ldap" ){
         #don'block if the user is the manager of that request
         return if(  defined $c->stash->{object}->area->manager and 
                     $c->stash->{object}->area->manager->id eq $user->id );
+        #non bloccare se sei referente di servizio per questa richiesta
+        return if( defined $c->stash->{object}->type->service_manager and 
+            $c->stash->{object}->type->service_manager->id eq $user->id );
+        return if( $c->stash->{object}->user->id eq $user->id );
         #block the action: an user can't see the reuqest of another user
         $c->detach('/access_denied');
     }
@@ -119,6 +131,7 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
    #              });
 
    # $c->stash( iprequest_table => \@iprequest_table );
+
    $c->stash( template        => 'iprequest/list.tt' );
 }
 
@@ -648,10 +661,23 @@ sub find_subnet : Private {
 sub validate : Chained('object') : PathPart('validate') : Args(0) {
     my ( $self, $c ) = @_;
     my $req = $c->stash->{'object'};
-
+    my $error_flag = 0;
     my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
     $c->stash( default_backref => $c->uri_for_action('userldap/view',[$user->username]) );
     $c->stash( default_backref => $c->uri_for_action('iprequest/list') ) if( $realm eq  "normal" );
+    if($realm  eq "ldap" ){
+        #TODO se l'utente non è referente blocca tutto (per i controlli in object)
+       #  if(defined $user->managed_area)
+       #     $user->managed_area->id ne $c->stash->{'object'}->area->id
+       #  $error_flag = 1;
+       #  }
+       #  if(defined $c->stash->{'object'}->type->service_manager and 
+       #     $c->stash->{'object'}->type->service_manager->id ne $user->id ){
+       #  $error_flag = 1;
+    
+       #$error_flag and $c->detach('/access_denied') 
+    }
+
 
     if ( lc $c->req->method eq 'post' ) {
         if ( $c->req->param('discard') ) {
@@ -772,39 +798,39 @@ sub process_validate : Private {
     }
 }
 
-sub unactivate : Chained('object') : PathPart('unactivate') : Args(0) {
- my ( $self, $c ) = @_;
- my $iprequest = $c->stash->{'object'};
+# sub unactivate : Chained('object') : PathPart('unactivate') : Args(0) {
+#  my ( $self, $c ) = @_;
+#  my $iprequest = $c->stash->{'object'};
 
-    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
-    $c->stash( default_backref => $c->uri_for_action('userldap/view',[$user->username]) );
-    $c->stash( default_backref => $c->uri_for_action('iprequest/list') ) if( $realm eq  "normal" );
- if ( lc $c->req->method eq 'post' ) {
-     #TODO invalidare ogni assegnazione associata alla richiesta
+#     my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+#     $c->stash( default_backref => $c->uri_for_action('userldap/view',[$user->username]) );
+#     $c->stash( default_backref => $c->uri_for_action('iprequest/list') ) if( $realm eq  "normal" );
+#  if ( lc $c->req->method eq 'post' ) {
+#      #TODO invalidare ogni assegnazione associata alla richiesta
 
-        $iprequest->state($IPAdmin::INACTIVE);
-        $iprequest->update;
-        #invalida la vecchia assegnazione IP
-        my $ret = $c->model('IPAdminDB::IPAssignement')->search({-and =>
-                                                     [ ip_request => $iprequest->id, state=>$IPAdmin::ACTIVE ]})->single;
-        $ret->update({
-                        date_out => time,
-                        state    => $IPAdmin::ARCHIVED,
-                        });
-        #crea la nuova assegnazione (riattivabile dall'utente entro tot giorni)
-        $c->model('IPAdminDB::IPAssignement')->create({
-                        date_in     => time,
-                        state       => $IPAdmin::ACTIVE,
-                        ip_request  => $c->stash->{'object'}->id,
-                        });
-        $c->forward('process_notify');
-        $c->flash( message => 'Richiesta IP invalidata.' );
-        $c->detach('/follow_backref');
-   }
-   else {
-       $c->stash( template => 'iprequest/unactivate.tt' );
-   }
-}
+#         $iprequest->state($IPAdmin::INACTIVE);
+#         $iprequest->update;
+#         #invalida la vecchia assegnazione IP
+#         my $ret = $c->model('IPAdminDB::IPAssignement')->search({-and =>
+#                                                      [ ip_request => $iprequest->id, state=>$IPAdmin::ACTIVE ]})->single;
+#         $ret->update({
+#                         date_out => time,
+#                         state    => $IPAdmin::ARCHIVED,
+#                         });
+#         #crea la nuova assegnazione (riattivabile dall'utente entro tot giorni)
+#         $c->model('IPAdminDB::IPAssignement')->create({
+#                         date_in     => time,
+#                         state       => $IPAdmin::ACTIVE,
+#                         ip_request  => $c->stash->{'object'}->id,
+#                         });
+#         $c->forward('process_notify');
+#         $c->flash( message => 'Richiesta IP invalidata.' );
+#         $c->detach('/follow_backref');
+#    }
+#    else {
+#        $c->stash( template => 'iprequest/unactivate.tt' );
+#    }
+# }
 
 
 sub activate : Chained('object') : PathPart('activate') : Args(0) {
@@ -926,11 +952,8 @@ c'è una nuova richiesta IP che richiede il suo intervento:
 EOF
 	if(defined $ipreq->area->manager){
         $to = $ipreq->area->manager->email;
-        if ($ipreq->type->type eq "WiFi Sapienza AP") {
-            $to = 's.italiano@cineca.it';
-        }
-        elsif ($ipreq->type->type eq "Marcatempo") {
-            $to = 'e.liguori@cineca.it';
+        if (defined $ipreq->type->service_manager) {
+            $to = $c->stash->{object}->type->service_manager->email;
         }
 	}
 	else{
