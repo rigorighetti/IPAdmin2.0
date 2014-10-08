@@ -68,13 +68,12 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
     my @area_table = $build_schema->search({},{prefetch => [{building => {vlan => 'map_subnet'}},'manager', 'department',{filter_subnet=> 'area'}]});
     my %subnet;
     foreach my $area (@area_table){
-       my %filter = map {$_->id =>1}  $area->filtered;
-       $subnet{$area->id}  = \%filter;
+       my @filtered = $area->filtered->all;
+       $subnet{$area->id}  =  \@filtered;
     }
 
     $c->stash( area_table => \@area_table );
     $c->stash( filtered => \%subnet );
-    
 
     $c->stash( template       => 'area/list.tt' );
 }
@@ -144,7 +143,7 @@ sub process_edit : Private {
     $c->model('IPAdminDB::FilterSubnet')->search({area_id => $area->id})->delete;
 
     foreach my $subnet (@subnets){
-        if(!$c->req->param($subnet->id)){
+        if($c->req->param($subnet->id)){
             $c->model('IPAdminDB::FilterSubnet')->update_or_create({
                      area_id   => $area->id,
                      subnet_id => $subnet->id
@@ -206,6 +205,11 @@ sub process_edit : Private {
          $c->detach('/follow_backref');
     }
     return unless $form->process( params => $c->req->params);
+
+    foreach my $subnet ($item->building->vlan->map_subnet){
+        $c->log->debug("Creazione ".$item->id." ".$subnet->id);
+        $c->model('IPAdminDB::FilterSubnet')->update_or_create({area_id => $item->id, subnet_id => $subnet->id});        
+    }
 
     $c->flash( message => 'Success! Area created.' );
     $def_br = $c->uri_for_action( 'area/view', [ $item->id ] );

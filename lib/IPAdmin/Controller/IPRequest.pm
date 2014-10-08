@@ -62,10 +62,6 @@ sub object : Chained('base') : PathPart('id') : CaptureArgs(1) {
     $c->stash(realm => $realm);
 
 
-    $c->log->debug("Area: ".Dumper($c->stash->{object}->area->manager));
-    $c->log->debug("Servizio: ".Dumper($c->stash->{object}->type->service_manager));
-
-
 
 #and $c->stash->{object}->user->id ne $user->id 
 
@@ -158,10 +154,13 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
             },
             $req->map_assignement;
 
-    $c->stash( manoc_link => $c->config->{'Link'}->{'manoc'} );
-    $c->stash( data => IPAdmin::Utils::print_short_timestamp($req->date));
+    my @aliases = $req->map_alias;
+
+    $c->stash( manoc_link  => $c->config->{'Link'}->{'manoc'} );
+    $c->stash( data        => IPAdmin::Utils::print_short_timestamp($req->date));
     $c->stash( assignement => \@assignement );
-    $c->stash( template => 'iprequest/view.tt' );
+    $c->stash( aliases     => \@aliases );
+    $c->stash( template    => 'iprequest/view.tt' );
 }
 
 
@@ -662,20 +661,21 @@ sub validate : Chained('object') : PathPart('validate') : Args(0) {
     my ( $self, $c ) = @_;
     my $req = $c->stash->{'object'};
     my $error_flag = 0;
+
     my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
     $c->stash( default_backref => $c->uri_for_action('userldap/view',[$user->username]) );
     $c->stash( default_backref => $c->uri_for_action('iprequest/list') ) if( $realm eq  "normal" );
+
+    my ($id_manager, $id_ser_manager);
+    defined $req->area->manager and $id_manager = $req->area->manager->id;
+    defined $req->type->service_manager and $id_manager = $req->type->service_manager->id;
+
     if($realm  eq "ldap" ){
-        #TODO se l'utente non è referente blocca tutto (per i controlli in object)
-       #  if(defined $user->managed_area)
-       #     $user->managed_area->id ne $c->stash->{'object'}->area->id
-       #  $error_flag = 1;
-       #  }
-       #  if(defined $c->stash->{'object'}->type->service_manager and 
-       #     $c->stash->{'object'}->type->service_manager->id ne $user->id ){
-       #  $error_flag = 1;
-    
-       #$error_flag and $c->detach('/access_denied') 
+       #se l'utente non è referente blocca tutto
+       #qui devo solo controllare che l'utente non stiamo validando la propria richiesta
+       #senza essere referente (di area o di servizio)
+       $c->detach('/access_denied') 
+            if($user->id ne $id_manager and $user->id ne $id_ser_manager);
     }
 
 
@@ -691,30 +691,29 @@ sub validate : Chained('object') : PathPart('validate') : Args(0) {
         }
     }
 
-
     #set form defaults
     my %tmpl_param;
 
     $tmpl_param{data}      = IPAdmin::Utils::print_short_timestamp($req->date);
     #a regime deve proporre un indirizzo IP tra le subnet associate 
     #all'area
-    my $vlan   = $req->area->building->vlan;
+    my $vlan   = $req->area->building->vlan->id;
     my %filter = map {$_->id =>1}  $req->area->filtered;
-    my $subnets; 
-    defined $vlan and $subnets = $vlan->map_subnet;
+    my @subnets = $req->area->filtered->all; 
 
-    if(!defined $subnets){
-        $c->flash( message => "Nessuna subnet associata alla vlan $vlan!" );
+    if(! scalar(@subnets)){
+        $c->flash( message => "Nessuna subnet associato al dipartimento di ".
+                        $req->area->department->name." presso ".$req->area->building->name );
         return;
     }
 
     my ($free_ip, $used_ip);
     my @availables;
-    while(my $subnet = $subnets->next) {
+    foreach my $subnet (@subnets){
     	$used_ip = undef;
         my $sub_id = $subnet->id;
         
-        next if($filter{$sub_id});
+       #next if($filter{$sub_id});
         foreach my $ip (6..247){
 	        $used_ip = $c->model("IPAdminDB::IPRequest")->search({-and => 
                                                      [ subnet => $sub_id,

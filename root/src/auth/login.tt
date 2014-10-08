@@ -15,7 +15,7 @@
  <tr>
 <td colspan="2" class="buttons-form">
 <div class=buttons>
- <input type="submit" name="submit" value="submit" />
+ <input type="submit" name="submit" value="Invia" />
 </div>
 </td>
  </tr>

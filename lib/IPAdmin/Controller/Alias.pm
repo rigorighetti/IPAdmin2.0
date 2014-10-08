@@ -163,12 +163,15 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
 sub create : Chained('base') : PathPart('create') : Args(0) {
     my ( $self, $c ) = @_;
     my $id;
-    $c->stash( default_backref => $c->uri_for_action('/alias/list') );
     my @my_ips;
 
     my $def_ipreq = $c->req->param('def_ipreq');
     my $ipreq = $c->model("IPAdminDB::IPRequest")->find($def_ipreq);
-
+    
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    $c->stash( default_backref => $c->uri_for_action('userldap/view',[$user->username]) );
+    $c->stash( default_backref => $c->uri_for_action('alias/list') ) if( $realm eq  "normal" );
+    
     #Controlla che la richiesta sia attiva
     if(defined $ipreq and $ipreq->state ne $IPAdmin::ACTIVE ){
         $c->flash( error_msg => "Per creare una richiesta di Alias l'IP deve essere attivo (e la richiesta IP accettata)" );
@@ -194,8 +197,6 @@ sub create : Chained('base') : PathPart('create') : Args(0) {
         my $done = $c->forward('process_create');
         if ($done) {
             $c->flash( message => $c->stash->{message} );
-            $c->stash( default_backref =>
-                $c->uri_for_action( "alias/list" ) );
             $c->detach('/follow_backref');
         }
     }
@@ -253,11 +254,17 @@ sub process_create : Private {
 
 sub check_alias_form : Private {
     my ( $self, $c) = @_;
-    my $schema      = $c->stash->{'resultset'};
-    my $alias      = $c->req->param('alias');
+    my $schema  = $c->stash->{'resultset'};
+    my $alias   = $c->req->param('alias');
+    my $r       = $c->stash->{object};
 
     if ( $alias eq '' ) {
         $c->stash(error => {alias => "L'alias non può essere vuoto"});
+        return 0;
+    }
+
+    if( $schema->search({cname => $alias})->single ){
+        $c->stash(error => {alias => "Alias già esistente! Scegliere un altro nome"});
         return 0;
     }
     return 1;
@@ -269,9 +276,11 @@ sub check_alias_form : Private {
 =cut
 
 sub delete : Chained('object') : PathPart('delete') : Args(0) {
-     my ( $self, $c ) = @_;
-   my $alias = $c->stash->{'object'};
-   $c->stash( default_backref => $c->uri_for_action('alias/list') );
+    my ( $self, $c ) = @_;
+    my $alias = $c->stash->{'object'};
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    $c->stash( default_backref => $c->uri_for_action('userldap/view',[$user->username]) );
+    $c->stash( default_backref => $c->uri_for_action('alias/list') ) if( $realm eq  "normal" );
 
   
     if ( lc $c->req->method eq 'post' ) {
@@ -292,8 +301,9 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
 sub activate : Chained('object') : PathPart('activate') : Args(0) {
     my ( $self, $c ) = @_;
     my $req = $c->stash->{'object'};
-    $c->stash( default_backref => $c->uri_for_action('alias/list') );
-
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    $c->stash( default_backref => $c->uri_for_action('userldap/view',[$user->username]) );
+    $c->stash( default_backref => $c->uri_for_action('alias/list') ) if( $realm eq  "normal" );
     if ( lc $c->req->method eq 'post' ) {
         if ( $c->req->param('discard') ) {
             $c->detach('/follow_backref');
@@ -301,8 +311,6 @@ sub activate : Chained('object') : PathPart('activate') : Args(0) {
         my $done = $c->forward('process_activate');
         if ($done) {
             $c->flash( message => $c->stash->{message} );
-            $c->stash( default_backref =>
-                $c->uri_for_action( "alias/list" ) );
             $c->detach('/follow_backref');
         }
     }

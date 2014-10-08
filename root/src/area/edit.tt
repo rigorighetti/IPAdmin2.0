@@ -43,7 +43,7 @@
 		[% FOREACH s IN subnets -%]
 		[% id = s.id %]
     	<input type="checkbox" name="[% s.id -%]" value="[% s.id -%]" 
-    	[% IF !filtered.$id -%] checked="true" [% END -%] > 151.100.[%s.id%].0
+    	[% IF filtered.$id -%] checked="true" [% END -%] > 151.100.[%s.id%].0
     	[% IF !loop.last -%]<br>[% END -%]
 		[% END -%]
 		</td>
@@ -51,8 +51,8 @@
 	<tr>
    <td colspan="2" class="buttons-form">
    <div class="buttons">
-   <input type="submit" name="submit" value="Submit">
-   <input type="submit" name="discard" value="Discard">
+   <input type="submit" name="submit" value="Invia">
+   <input type="submit" name="discard" value="Annulla">
    </div>
    </tr>
 </table>

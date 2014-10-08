@@ -35,8 +35,8 @@
     [% add_css_tableinfo -%]
     <p>
 	<div class="buttons">
-             <input type="submit" name="submit" value="Submit">
-             <input type="submit" name="discard" value="Discard">
+             <input type="submit" name="submit" value="Attiva la richiesta">
+             <input type="submit" name="discard" value="Annulla">
         </div>
     </p>
 

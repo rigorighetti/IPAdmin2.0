@@ -24,7 +24,7 @@
         <td>
             [% FOREACH s IN object.building.vlan.map_subnet -%]
             [% id = s.id %]
-            [% IF !filtered.$id -%]<a href="[%c.uri_for_action('/subnet/view', [s.id]) %]">  151.100.[%s.id%].0</a><br>[% END -%]
+            [% IF filtered.$id -%]<a href="[%c.uri_for_action('/subnet/view', [s.id]) %]">  151.100.[%s.id%].0</a><br>[% END -%]
             [%END%]
         </td>
       </tr>
