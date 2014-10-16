@@ -1163,7 +1163,8 @@ sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
 
 
     });
-
+    
+    $c->stash(ip_search => 1) if($c->request->param('sSearch') =~ m/(\d+)\.(\d*)/g);
     $c->detach("datatable_response");
 }
 

@@ -96,6 +96,39 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
    $c->stash( template        => 'managerrequest/list.tt' );
 }
 
+=head2 public_list
+
+=cut
+
+sub public_list : Chained('base') : PathPart('public_list') : Args(0) {
+   my ( $self, $c ) = @_;
+
+   #TODO
+   #$self->tot_assigned_ip($c,$_->department)
+    #$c->model("IPAdminDB::IPRequest")->search({ state   => $IPAdmin::ACTIVE,
+    #'area.department'    => $dep->id },{join => 'area'})
+   
+    my @requests = $c->stash->{resultset}->search({state => $IPAdmin::ACTIVE}, {prefetch => ['department', 'user']})->all;
+    my @managerrequest_table;
+    foreach my $r (@requests){
+        my @aree =  $r->department->map_area_build;
+        my @subnets;
+        foreach my $a (@aree){   
+            push @subnets, $a->filtered;
+        }
+
+        push @managerrequest_table, {
+            department => $r->department,
+            user       => $r->user,
+            subnets    =>  \@subnets,
+            };
+    }
+
+   
+   $c->stash( request_table => \@managerrequest_table );
+   $c->stash( template        => 'managerrequest/public_list.tt' );
+}
+
 =head2 view
 
 =cut

@@ -203,7 +203,7 @@ after setup_finalize => sub {
 
 
     my @actions = qw{ userldap/list iprequest/list iprequest/activate managerrequest/list 
-    managerrequest/delete managerrequest/activate alias/list };
+    managerrequest/delete managerrequest/activate alias/list userldap/listmanager};
 
     #additional ACL for admin
     foreach my $ctrl (@actions) {
