@@ -314,12 +314,9 @@ sub activate : Chained('object') : PathPart('activate') : Args(0) {
         my $done = $c->forward('process_activate');
         if ($done) {
             $c->flash( message => $c->stash->{message} );
-<<<<<<< HEAD
             $c->forward('process_notify');
             $c->stash( default_backref =>
                 $c->uri_for_action( "alias/list" ) ); # da cambiare!
-=======
->>>>>>> ef2a3c21d52153b5ed0880cc6439d6fe572e96bc
             $c->detach('/follow_backref');
         }
     }
