@@ -127,7 +127,44 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
    #              });
 
    # $c->stash( iprequest_table => \@iprequest_table );
+   my %stats;
+   $stats{nuove}       =  $c->model('IPAdminDB::IPRequest')->search({state => $IPAdmin::NEW })->count();
+   $stats{validate}    =  $c->model('IPAdminDB::IPRequest')->search({state => $IPAdmin::PREACTIVE})->count();
+   $stats{attivi}      =  $c->model('IPAdminDB::IPRequest')->search({state => $IPAdmin::ACTIVE })->count();
+   $stats{archiviati}  =  $c->model('IPAdminDB::IPRequest')->search({state => $IPAdmin::ARCHIVED})->count();
+   $stats{client}      =  $c->model('IPAdminDB::IPRequest')->search({-and => 
+                                                     [ state => $IPAdmin::ACTIVE,
+                                                       -or     =>[ 'type.type' => 'Computer Fisso',
+                                                                    'type.type' => 'Computer Portatile', 
+                                                                    'type.type' => 'Stampante', 
+                                                                  ],
+                                                                  ]},
+                                                       {prefetch => ['type']}
+                                                                  )->count();
 
+    # Gestisce la grandezza dei pallini della legenda in base al numero a 2,3,4 o 5 cifre.
+    my @stati = qw {nuove validate attivi archiviati}; 
+    foreach (@stati) {
+        if     ($stats{$_} < 100)       { $stats{"raggio_$_"} = 15;
+                                          $stats{"posx_$_"}   = 27 if ($_ eq "nuove" or $_ eq "validate");
+                                          $stats{"posx_$_"}   = 241 if ($_ eq "attivi" or $_ eq "archiviati"); 
+                                      }
+        elsif  ($stats{$_} < 1000)      { $stats{"raggio_$_"} = 17.5;   
+                                          $stats{"posx_$_"}   = 22.5 if ($_ eq "nuove" or $_ eq "validate");
+                                          $stats{"posx_$_"}   = 236.5 if ($_ eq "attivi" or $_ eq "archiviati"); 
+                                      }
+        elsif  ($stats{$_} < 10000)     { $stats{"raggio_$_"} = 20;   
+                                          $stats{"posx_$_"}   = 19.5 if ($_ eq "nuove" or $_ eq "validate");
+                                          $stats{"posx_$_"}   = 233.5 if ($_ eq "attivi" or $_ eq "archiviati"); 
+                                      }
+        elsif  ($stats{$_} < 100000)    { $stats{"raggio_$_"} = 22.5;   
+                                          $stats{"posx_$_"}   = 15 if ($_ eq "nuove" or $_ eq "validate");
+                                          $stats{"posx_$_"}   = 230 if ($_ eq "attivi" or $_ eq "archiviati"); 
+                                      }
+    
+    }
+
+   $c->stash(%stats);
    $c->stash( template        => 'iprequest/list.tt' );
 }
 

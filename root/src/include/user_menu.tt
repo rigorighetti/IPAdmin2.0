@@ -6,7 +6,7 @@
  		 },		 
 		 {
 		     name = 'About',
-     		     path = c.uri_for('/about'),
+     		     path = c.uri_for('/help/view',{page => 'about'}),
  		 },
 		 {
 		     name = 'Logout',

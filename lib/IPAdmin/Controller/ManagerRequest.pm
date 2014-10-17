@@ -253,7 +253,7 @@ sub create : Chained('base') : PathPart('create') : Args() {
     my @users;
     if($realm eq "normal") {
             $c->flash( error_msg => "Spiacente, solo un utente strutturato può fare richiesta di diventare referente." );
-            $c->stash( default_backref => $c->uri_for_action('iprequest/list') );
+            $c->stash( default_backref => $c->uri_for_action('managerrequest/list') );
             $c->detach('/follow_backref');
     }
     #TODO ordinamento aree per nome dipartimento

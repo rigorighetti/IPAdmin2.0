@@ -34,11 +34,13 @@
           <a href=[% c.uri_for_action('/subnet/view', [i.id]) %]>[% i.id %]</a> 
 		      [% UNLESS loop.last %], [% END -%]
         [%END%]</td>
-	  <td>
-          <a href="[% c.uri_for_action('/area/edit',[a.id])%]">[% icon('edit') %]</a>
-          <a href="[% c.uri_for_action('/area/delete',[a.id])%]">[% icon('remove') %]</a>
-         </td>
-         </tr>
+          <td class="white">
+      <span style="color:white">-</span>
+      <a href="[% c.uri_for_action('/area/edit',[a.id])%]" style="position:absolute;right:40px;" title="Modifica">
+      [% ui_icon('pencil') %]</a>
+      <a href="[% c.uri_for_action('/area/delete',[a.id])%]" style="position:absolute;right:10px" title="Elimina">[% ui_icon('closethick') %]</a>
+      </td>
+  </tr>
 [% END %]
    </tbody>
 </table>
