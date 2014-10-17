@@ -24,22 +24,22 @@
    </thead>  
    <tbody>
 [% FOREACH a IN area_table %]
-
+   [% area_id = a.id %]
          <tr class="row">
 	 <td><a id="click_ref" href=[% c.uri_for_action('/area/view', [a.id]) %]>[% a.id %]</a></td>
  	 <td><a href=[% c.uri_for_action('/building/view', [a.building.id]) %]>[% a.building.name %]</a> in [% a.building.address %]</td>
  	 <td><a href=[% c.uri_for_action('/department/view', [a.department.id]) %]>[% a.department.name %]</a></td>
  	 <td><a href=[% c.uri_for_action('/userldap/view', [a.manager.username]) %]>[% a.manager.fullname %]</a></td>
-	 <td>[% FOREACH i IN a.building.vlan.map_subnet -%] 
-        [% area_id = a.id %]
-        [% sub_id  = i.id %]
-        [%IF ! filtered.$area_id.$sub_id -%]<a href=[% c.uri_for_action('/subnet/view', [i.id]) %]>[% i.id %]</a> 
-		 [% UNLESS loop.last -%], [% END -%][% END -%][%END-%]</td>
-	  <td class="white">
+	 <td>[% FOREACH i IN filtered.$area_id  -%] 
+          <a href=[% c.uri_for_action('/subnet/view', [i.id]) %]>[% i.id %]</a> 
+		      [% UNLESS loop.last %], [% END -%]
+        [%END%]</td>
+          <td class="white">
       <span style="color:white">-</span>
-      <a href="[% c.uri_for_action('/area/edit',[a.id])%]" style="position:absolute;right:40px;" title="Modifica">[% ui_icon('pencil') %]</a>
+      <a href="[% c.uri_for_action('/area/edit',[a.id])%]" style="position:absolute;right:40px;" title="Modifica">
+      [% ui_icon('pencil') %]</a>
       <a href="[% c.uri_for_action('/area/delete',[a.id])%]" style="position:absolute;right:10px" title="Elimina">[% ui_icon('closethick') %]</a>
-    </td>
+      </td>
   </tr>
 [% END %]
    </tbody>

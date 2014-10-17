@@ -21,6 +21,14 @@
       <td>Tipi di richiesta archiviabile?</td>
       <td>[%IF object.archivable%]Si[%ELSE%]No[%END%]</td>
       </tr>
+      <tr>
+      [%IF object.service_manager %]
+      <td>Referente del Servizio:</td>
+      <td><a href="[% c.uri_for_action('/userldap/view',[object.service_manager.username])%]"> 
+          [%object.service_manager.fullname%]</a> 
+      </td>
+      </tr>
+      [%END%]
 
 
     </table>

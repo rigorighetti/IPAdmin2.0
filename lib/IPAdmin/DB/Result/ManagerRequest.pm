@@ -55,7 +55,7 @@ __PACKAGE__->add_columns(
         size           => 1,
 	    is_nullable    => 0,
     },
-    area => {
+    department => {
         data_type      => 'int',
         is_nullable    => 0,
         is_foreign_key => 1,
@@ -69,8 +69,8 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key(qw(id));
 
-__PACKAGE__->belongs_to( area   => 'IPAdmin::DB::Result::Area',
-    { 'foreign.id' => 'self.area' } 
+__PACKAGE__->belongs_to( department   => 'IPAdmin::DB::Result::Department',
+    { 'foreign.id' => 'self.department' } 
 );
 __PACKAGE__->belongs_to( user       => 'IPAdmin::DB::Result::UserLDAP' );
 

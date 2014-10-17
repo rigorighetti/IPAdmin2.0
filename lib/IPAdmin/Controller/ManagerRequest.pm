@@ -59,14 +59,11 @@ sub object : Chained('base') : PathPart('id') : CaptureArgs(1) {
 
 
 sub tot_assigned_ip :Private {
-    my ( $self, $c, $area ) = @_;
+    my ( $self, $c, $dep ) = @_;
     my $count = 0;
-    return 0 unless(defined $area->building->vlan);
-
    ###TODO: sistemare
     $count += $c->model("IPAdminDB::IPRequest")->search({ state   => $IPAdmin::ACTIVE,
-                                                          area    => $area->id })->count;
-    
+                                                          'area.department'    => $dep->id },{join => 'area'})->count;
 
     return $count;
 }
@@ -78,23 +75,58 @@ sub tot_assigned_ip :Private {
 sub list : Chained('base') : PathPart('list') : Args(0) {
    my ( $self, $c ) = @_;
 
+   #TODO
+   #$self->tot_assigned_ip($c,$_->department)
+
    my @managerrequest_table =  map +{
             id           => $_->id,
             date         => IPAdmin::Utils::print_short_timestamp($_->date),
             date_in      => $_->date_in  ? IPAdmin::Utils::print_short_timestamp($_->date_in) : '',
             date_out     => $_->date_out ? IPAdmin::Utils::print_short_timestamp($_->date_out) : '',
-            area         => $_->area,
-            dir_fullname => $_->dir_fullname,
-            dir_phone    => $_->dir_phone,
-            dir_email    => $_->dir_email,
-            user         => $_->user,
+            department   => $_->department || '',
+            dir_fullname => $_->dir_fullname || '',
+            dir_phone    => $_->dir_phone || '',
+            dir_email    => $_->dir_email || '',
+            user         => $_->user || '',
             state   	 => $_->state,
-            n_ip         => $self->tot_assigned_ip($c,$_->area),
-	    },  $c->stash->{resultset}->search({}, {prefetch => [{area => ['department', {building => 'vlan'}, 'manager'],'user'} ]});
+            n_ip         => $self->tot_assigned_ip($c,$_->department),
+	    },  $c->stash->{resultset}->search({}, {prefetch => ['department', 'user']});
    
-
    $c->stash( request_table => \@managerrequest_table );
    $c->stash( template        => 'managerrequest/list.tt' );
+}
+
+=head2 public_list
+
+=cut
+
+sub public_list : Chained('base') : PathPart('public_list') : Args(0) {
+   my ( $self, $c ) = @_;
+
+   #TODO
+   #$self->tot_assigned_ip($c,$_->department)
+    #$c->model("IPAdminDB::IPRequest")->search({ state   => $IPAdmin::ACTIVE,
+    #'area.department'    => $dep->id },{join => 'area'})
+   
+    my @requests = $c->stash->{resultset}->search({state => $IPAdmin::ACTIVE}, {prefetch => ['department', 'user']})->all;
+    my @managerrequest_table;
+    foreach my $r (@requests){
+        my @aree =  $r->department->map_area_build;
+        my @subnets;
+        foreach my $a (@aree){   
+            push @subnets, $a->filtered;
+        }
+
+        push @managerrequest_table, {
+            department => $r->department,
+            user       => $r->user,
+            subnets    =>  \@subnets,
+            };
+    }
+
+   
+   $c->stash( request_table => \@managerrequest_table );
+   $c->stash( template        => 'managerrequest/public_list.tt' );
 }
 
 =head2 view
@@ -138,11 +170,6 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
         $c->detach('/follow_backref');
     }
 
-    if($req->user->id != $user->id ){
-        $c->flash( message => 'Si possono modificare solo le proprie richieste');
-        $c->detach('/follow_backref');
-    }
-
     if ( lc $c->req->method eq 'post' ) {
         if ( $c->req->param('discard') ) {
             $c->detach('/follow_backref');
@@ -157,43 +184,32 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
     }
     #set form defaults
     my %tmpl_param;
-    my @users;
-    if($realm eq "normal") {
-        @users = $c->model('IPAdminDB::UserLDAP')->search({})->all;
-        $tmpl_param{users}      = \@users;
-    }
     #TODO ordinamento aree per nome dipartimento
-    my @aree  = $c->model('IPAdminDB::Area')->search({}, {order_by => 'department'})->all;
+    my @departments = $c->model('IPAdminDB::Department')->search({}, {order_by => 'name'})->all;
 
 
     $tmpl_param{realm}        = $realm;
     $tmpl_param{user}         = $req->user;
-    $tmpl_param{aree}         = \@aree;
+    $tmpl_param{departments}  = \@departments;
     $tmpl_param{data}         = IPAdmin::Utils::print_short_timestamp(time);
     $tmpl_param{dir_fullname} = $req->dir_fullname;
     $tmpl_param{dir_phone}    = $req->dir_phone;
     $tmpl_param{dir_email}    = $req->dir_email;
     $tmpl_param{skill}        = $req->skill;
-    $tmpl_param{area}         = $req->area->id;
-
-
-
-
-    $tmpl_param{template}  = 'managerrequest/edit.tt';
-
-
+    $tmpl_param{dep_def}      = $req->department->id;
+    $tmpl_param{template}     = 'managerrequest/edit.tt';
     $c->stash(%tmpl_param);
 }
 
 sub process_edit : Private { 
     my ( $self, $c ) = @_;
-    my $area      = $c->req->param('area');
-    my $user      = $c->req->param('user');
-    my $dir_name  = $c->req->param('dir_fullname');
-    my $dir_phone = $c->req->param('dir_phone');
-    my $dir_email = $c->req->param('dir_email');
-    my $skill     = 1; #$c->req->param('skill');
-    my $req       = $c->stash->{'object'};
+    my $department = $c->req->param('department');
+    my $user       = $c->req->param('user');
+    my $dir_name   = $c->req->param('dir_fullname');
+    my $dir_phone  = $c->req->param('dir_phone');
+    my $dir_email  = $c->req->param('dir_email');
+    my $skill      = 1; #$c->req->param('skill');
+    my $req        = $c->stash->{'object'};
     my $error;
 
     # check form
@@ -201,7 +217,7 @@ sub process_edit : Private {
 
     $user and $req->user($user);
     my $ret = $req->update({
-                        area          => $area,
+                        department    => $department,
                         dir_fullname  => $dir_name,
                         dir_phone     => $dir_phone,
                         dir_email     => $dir_email,
@@ -241,13 +257,14 @@ sub create : Chained('base') : PathPart('create') : Args() {
             $c->detach('/follow_backref');
     }
     #TODO ordinamento aree per nome dipartimento
-    my @aree  = $c->model('IPAdminDB::Area')->search({},{join => 'department', prefetch => 'department', order_by => 'department.name'})->all;
-    my @dipartimenti = $c->model('IPAdminDB::Department')->search({})->all;
+    #my @aree  = $c->model('IPAdminDB::Area')->search({},{prefetch => ['department', 'building'], order_by => 'department.name'})->all;
+    my @departments  = $c->model('IPAdminDB::Department')->search({})->all;
 
     $tmpl_param{realm}     = $realm;
     $tmpl_param{user}      = $user;
-    $tmpl_param{aree}      = \@aree;
-    $tmpl_param{dipartimenti} = \@dipartimenti;
+    #$tmpl_param{aree}      = \@aree;
+    $tmpl_param{departments} = \@departments;
+
     $tmpl_param{data}      = IPAdmin::Utils::print_short_timestamp(time);
     $tmpl_param{dir_fullname} = $c->req->param('dir_fullname');
     $tmpl_param{dir_phone}    = $c->req->param('dir_phone');
@@ -258,11 +275,11 @@ sub create : Chained('base') : PathPart('create') : Args() {
 
 sub process_create : Private {
     my ( $self, $c ) = @_;
-    my $area      = $c->req->param('area');
-    my $user      = $c->req->param('user');
-    my $dir_name  = $c->req->param('dir_fullname');
-    my $dir_phone = $c->req->param('dir_phone');
-    my $dir_email = $c->req->param('dir_email');
+    my $department = $c->req->param('department');
+    my $user       = $c->req->param('user');
+    my $dir_name   = $c->req->param('dir_fullname');
+    my $dir_phone  = $c->req->param('dir_phone');
+    my $dir_email  = $c->req->param('dir_email');
 
     my $error;
 
@@ -271,20 +288,28 @@ sub process_create : Private {
  
     #prima di tutto controlla se per l'area in oggetto non esiste già un referente
     #in caso  va abortita l'attivazione della nuova richiesta
-    my $result = $c->model('IPAdminDB::Area')->find($area);
+    # my $result = $c->model('IPAdminDB::Area')->find($area);
 
-    if(defined  $result->manager){
-        $c->flash( message => "Non è stato possibile creare la richiesta. Esiste già un referente per il dipartimento di ".$result->department->name.
-        " presso ".$result->building->name."." );
-        $c->detach('/follow_backref');
-    }
+    # if(defined  $result->manager){
+    #     $c->flash( message => "Non è stato possibile creare la richiesta. Esiste già un referente per il dipartimento di ".$result->department->name.
+    #     " presso ".$result->building->name."." );
+    #     $c->detach('/follow_backref');
+    # }
 
     #state == 0 non validata
     #state == 1 convalidata
     #state == 2 archiviata
 
+    my @areas = $c->model('IPAdminDB::Area')->search({department => $department}); 
+
+    if(!scalar(@areas)){
+        $c->stash->{message} = "Richiesta non accettata. Il dipartimento scelto non si trova in nessun edificio. Contattare l'amministratore" ;
+        return 0;
+    }
+
+
     my $ret = $c->stash->{'resultset'}->create({
-                        area          => $area,
+                        department    => $department,
                         dir_fullname  => $dir_name,
                         dir_phone     => $dir_phone,
                         dir_email     => $dir_email,
@@ -294,11 +319,11 @@ sub process_create : Private {
                         skill         => 1,#$skill 
                         });
     if (! $ret ) {
-    $c->stash->{message} = "Errore nella creazione della richiesta referente";
-    return 0;
+        $c->stash->{message} = "Errore nella creazione della richiesta referente";
+        return 0;
     } else {
-    $c->stash->{message} = "La richiesta per il referente è stata creata.";
-    return 1;
+        $c->stash->{message} = "La richiesta per il referente è stata creata.";
+        return 1;
     }
 }
 
@@ -347,37 +372,31 @@ sub activate : Chained('object') : PathPart('activate') : Args(0) {
     else{
         $c->stash( template => 'generic_confirm.tt' );
     }
-}
 
+}
 
 sub process_activate : Private {
     my ( $self, $c ) = @_;
-    my $error;
+    my ($error, $msg, $err_msg);
     my $req  = $c->stash->{'object'};
     my $user = $c->stash->{'object'}->user;
-    
-    #prima di tutto controlla se per l'area in oggetto non esiste già un referente
-    #in caso  va abortita l'attivazione della nuova richiesta
-    if(defined  $req->area->manager){
-        $c->flash( message => "Non è stato possibile autorizzare la richiesta. Esiste già un referente per il dipartimento di ".$req->area->department->name.
-        " presso ".$req->area->building->name."." );
-        $c->stash( default_backref =>
-        $c->uri_for_action( "managerrequest/list" ) );
-        $c->detach('/follow_backref');
-    }
-
+    my @free;
+    my @nofree;
     #Aggiusta le date
     ##TODO se la richiestra è scaduta reimposta date
+    my @areas = $req->department->map_area_build;
+    foreach my $area (@areas){
+        if(! defined $area->manager){
+        #aggiunge referente all'area
+        $area->manager($req->user->id);
+        $area->update;
+        push @free, $area->building->name;
+        }
+        else{
+        push @nofree, $area->building->name;
+        }
+    }
 
-    #Cambia lo stato dell'managerrequest
-    $req->state($IPAdmin::ACTIVE);
-    $req->date_in(time);
-    $req->date_out(time + 63113852);
-    my $ret1 =$req->update;
-
-    #aggiunge referente all'area
-    $req->area->manager($req->user->id);
-    $req->area->update;
     my $ret2;
      #Add new roles
      my $user_role_id = $c->model('IPAdminDB::Role')->search( { 'role' => "manager"} )->single;
@@ -390,12 +409,27 @@ sub process_activate : Private {
            );
      }
 
-
-    if (! ($ret1 and $ret2) ) {
+    if (! ($ret2) ) {
     $c->stash->{message} = "Errore nell'aggiornamento dell'assegnazione IP";
     return 0;
     } else {
-    $c->stash->{message} = "La richiesta del referente è stata attivata. ".$user->fullname." è ora un referente.";
+    if(scalar(@free)){
+     $msg = "La richiesta del referente è stata attivata. ".        
+        $user->fullname." è ora un referente per il dipartimento di ".$req->department->name;
+
+        #Cambia lo stato dell'managerrequest
+        $req->state($IPAdmin::ACTIVE);
+        $req->date_in(time);
+        $req->date_out(time + 63113852);
+        my $ret1 =$req->update;
+    }
+    if(scalar(@nofree)){
+    $err_msg = "Attenzione, nei seguenti edifici esiste già un referente per questo dipartimento:\n";
+    $err_msg .= join("\n", @nofree);
+    }
+
+    $msg     and $c->stash->{message}   = $msg;
+    $err_msg and $c->flash->{error_msg} = $err_msg;
     }
 
 }
@@ -411,7 +445,7 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
     my $req = $c->stash->{'object'};
     $c->stash( default_backref => $c->uri_for_action( "managerrequest/list" ));
     my $user = $req->user;
-  
+    my $msg;
     if($req->state == $IPAdmin::ARCHIVED){
         $c->flash( message => 'Richiesta già archiviata.');
     $c->detach('/follow_backref');
@@ -419,14 +453,20 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
 
 
     if ( lc $c->req->method eq 'post' ) {
+        $msg = 'Richiesta archiviata. ';
+        $req->state eq $IPAdmin::ACTIVE and $msg .= $user->fullname." non è più un referente per il dipartimento di "
+        .$req->department->name;
         #Archivia la richiesta
         $req->state($IPAdmin::ARCHIVED);
         $req->date_out(time);
         $req->update;
         #resetta referente dell'area in cui l'utente era referente
-        $req->area->manager(undef);
-        $req->area->update;
-
+        foreach my $area ($req->department->map_area_build){
+         if(defined $area->manager and $area->manager->id eq $req->user->id){
+         $area->manager(undef);
+         $area->update;
+         }
+        }   
         #se era l'ultima area gestita, allora elimina il ruolo di manager
         if(defined($user->managed_area)){
         my $user_role_id = $c->model('IPAdminDB::Role')->search( { 'role' => "manager"} )->single;
@@ -439,8 +479,7 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
            )->delete;
           }
         }
-    $c->flash( message => 'Richiesta archiviata. '.$user->fullname." non è più un referente della struttra di "
-        .$req->area->building->name." presso ".$req->area->department->name);
+    $c->flash( message => $msg);
     $c->detach('/follow_backref');
     }
    else {

@@ -17,6 +17,7 @@
         <th>Nome</th>
         <th>Descrizione</th>
         <th>Archiviabile</th>
+        <th>Ref. del servizio</th>
      </tr>
    </thead>  
    <tbody>
@@ -25,6 +26,9 @@
      	 <td><a id="click_ref"  href=[% c.uri_for_action('/typerequest/view', [t.id]) %]>[% t.type %]</a></td>
      	 <td>[% t.description %]</td>
        <td>[% IF t.archivable == 1 -%] Si [% ELSE -%] No [% END -%]</td>
+       <td><a href="[% c.uri_for_action('/userldap/view',[t.service_manager.username])%]"> 
+          [%t.service_manager.fullname%]</a> 
+       </td>
       </tr>
     [% END %]
    </tbody>

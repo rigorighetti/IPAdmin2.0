@@ -50,9 +50,9 @@ has_field 'archivable' => (
     label => 'IP archiviabili automaticamente'
 );
 
-
-has_field 'submit'  => ( type => 'Submit', value => 'Submit' );
-has_field 'discard' => ( type => 'Submit', value => 'Discard' );
+ 
+has_field 'submit'  => ( type => 'Submit', value => 'Invia' );
+has_field 'discard' => ( type => 'Submit', value => 'Annulla' );
 
 sub options_vlan {
     my $self = shift;

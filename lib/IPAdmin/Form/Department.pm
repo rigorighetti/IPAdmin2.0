@@ -16,7 +16,7 @@ has_field 'name' => (
 		'Str',
 		{
 			check => sub { $_[0] =~ /\w/ },
-			messagge => 'Invalid Name'
+			messagge => 'Nome non valido'
 		},
 	]
 );
@@ -24,7 +24,7 @@ has_field 'name' => (
 has_field 'description' => (
     type     => 'TextArea',
     required => 1,
-    label    => 'Descrizione Vlan',
+    label    => 'Descrizione Dipartimento',
     apply    => [
         'Str',
         {
@@ -35,8 +35,8 @@ has_field 'description' => (
 );
 
 has_field 'domain' => ( type => 'Text',label => 'Dominio DNS', required => 1 );
-
-has_field 'submit'  => ( type => 'Submit', value => 'Submit' );
-has_field 'discard' => ( type => 'Submit', value => 'Discard' );
+ 
+has_field 'submit'  => ( type => 'Submit', value => 'Invia' );
+has_field 'discard' => ( type => 'Submit', value => 'Annulla' );
 
 1;

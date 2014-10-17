@@ -21,7 +21,7 @@
          <th>Validata</th>
          <th>Scadenza</th>
  	       <th>Direttore</th>
-         <th>Area</th>
+         <th>Dipartimento</th>
  	       <th>Referente di Rete</th>
 	       <th>Nr. IP ass</th>
          <th>Comandi</th>
@@ -38,18 +38,15 @@
       <td>[% i.date_in %]</td>
       <td>[% i.date_out %]</td>
       <td>[% i.dir_fullname %]</td>
- 	    <td> <a href="[%c.uri_for_action('/area/view',[i.area.id])%]">
-            [% i.area.department.name %] <i>presso</i> [% i.area.building.name %] </a></td>
+ 	    <td> <a href="[%c.uri_for_action('/department/view',[i.department.id])%]"> [% i.department.name %] </a></td>
  	    <td><a href=[% c.uri_for_action('/userldap/view', [i.user.username]) %]>[% i.user.fullname %]</a></td>
       <td>[%i.n_ip%]</td>
 	    <td class="white">
-       [% IF i.state == 0 %] 
-        <a href="[% c.uri_for_action('managerrequest/edit',[i.id])%]" style="position:absolute;right:40px" title="Modifica">[% ui_icon('pencil') %]</a>
+       [% IF !i.state%] 
+        <a href="[% c.uri_for_action('managerrequest/edit',[i.id])%]" style="position:absolute;right:40px" title="Modifica">
+        [% ui_icon('pencil') %] </a>
         <a href="[% c.uri_for_action('managerrequest/activate',[i.id])%]" title="Convalida e attiva">[% ui_icon('check') %]</a> 
        [% END -%]
-	     [% IF i.state != 0 %]
-        <span title="Attiva">[% ui_icon('circle-check') %]</span> 
-       [%END -%]
        [% IF i.state != 4 %] 
         <a href="[% c.uri_for_action('managerrequest/delete',[i.id])%]" style="position:absolute;right:10px" title="Rinuncia">[% ui_icon('closethick') %]</a> 
        [% END -%]

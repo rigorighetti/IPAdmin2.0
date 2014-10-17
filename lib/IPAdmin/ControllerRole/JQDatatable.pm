@@ -27,10 +27,21 @@ sub datatable_response : Private {
     # create filter (WHERE clause)
     my $search = $c->request->param('sSearch');
     if ($search) {
-        foreach my $col (@$searchable_columns) {
+        my ($subnet,$host);
+        if($c->stash->{'ip_search'} and $search =~ m/(\d+)\.(\d*)/g){
+            #IP search!
+            $subnet = $1; $host=$2;
+            push @$search_filter_crit, {'-and' =>  [
+                                                subnet => "$subnet",
+                                                host   => { like => "%$host%"},
+                                                ]}  ;
+        }
+        else{
+         foreach my $col (@$searchable_columns) {
             push @$search_filter_crit,  $col =>  { -like =>  "%$search%" } ;
 
             $c->log->debug("$col like $search");
+         }
         }
         $search_filter = $search_filter_crit;
     }

@@ -29,11 +29,18 @@ __PACKAGE__->add_columns(
         is_nullable    => 0,
         default        => 1,
     },
+    service_manager => {
+        data_type      => 'int',
+        is_nullable    => 1,
+        is_foreign_key => 1,
+    },
 );
 
 __PACKAGE__->set_primary_key(qw(id));
 
-__PACKAGE__->has_many( request => 'IPAdmin::DB::Result::IPRequest' );
+__PACKAGE__->has_many( request => 'IPAdmin::DB::Result::IPRequest', { cascade_delete => 0 } );
+
+__PACKAGE__->belongs_to( service_manager => 'IPAdmin::DB::Result::UserLDAP', 'service_manager', { cascade_delete => 0 } );
 
 
 =head1 NAME

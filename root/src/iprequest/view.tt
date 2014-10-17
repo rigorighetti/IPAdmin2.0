@@ -7,7 +7,7 @@
   <ul>
     <li><a href="#tabs-1">Informazioni</a></li>
     <li><a href="#tabs-2">Assegnazioni IP</a></li>
-    <li><a href="#tabs-3">Alias</a></li>
+    [%IF aliases.0 %]<li><a href="#tabs-3">Alias</a></li>[%END%]
  </ul>
 
 
@@ -65,8 +65,8 @@
         <span class="left">Tipo:</span> <span class="right">[% object.type.type %]</span><br>
         <span class="left">Stanza:</span> <span class="right">[% object.location %]</span><br>
         <span class="left">Mac Address:</span> <span class="right">
-          [%IF realm %]
-          <a href="[% manoc_link %]/mac/[% object.macaddress%]" target="_blank"> 
+          [%IF realm == "normal" %]
+          <a href="[% manoc_link %]/mac/[% object.macaddress%]"> 
            [% object.macaddress%]
           </a> 
           [%ELSE%]
@@ -149,8 +149,9 @@
 
   </div>
 
+[%IF aliases.0%]
   <div id="tabs-3">
-  [% FOREACH a IN object.map_alias %]
+  [% FOREACH a IN aliases %]
     [% IF loop.first %]
     [% init_table('alias') %]
     <table class="display" id="alias">
@@ -163,7 +164,7 @@
         </tr>
       </thead>
       <tbody>
-        [% END %]
+    [% END %]
         <tr [% IF a.state == 0 -%]                 class="newip"     [% END -%]
             [% IF a.state == 1 or a.state == 3 -%] class="preactive" [% END -%]
             [% IF a.state == 2 -%]                 class="active"    [% END -%]
@@ -179,7 +180,7 @@
               <a href="[% c.uri_for_action('/alias/delete',[a.id])%]" title="Rinuncia">[% ui_icon('closethick') %]</a>
               [% ELSE -%]
               <span title="Archiviata">[% ui_icon('circle-close') %]</span>
-            [%END -%]
+            [%END-%]
           </td>
         </tr>
         [% IF loop.last %]
@@ -187,8 +188,7 @@
     </table>
     [% END %]
     [% END %]
-
   </div>
-
+[%END%]
 </div>
   

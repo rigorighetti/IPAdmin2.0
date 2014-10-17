@@ -60,6 +60,8 @@ __PACKAGE__->has_many(managed_area => 'IPAdmin::DB::Result::Area', 'manager', { 
 
 __PACKAGE__->has_many(is_manager => 'IPAdmin::DB::Result::Area', 'manager', { cascade_delete => 0, join_type => 'left' } );
 
+__PACKAGE__->has_many(managed_services => 'IPAdmin::DB::Result::TypeRequest', 'service_manager', { cascade_delete => 0 } );
+
 =head1 NAME
 
 IPAdmin:DB::UserLDAP - A model object representing a person with access to the system.

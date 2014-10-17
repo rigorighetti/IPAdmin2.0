@@ -22,11 +22,39 @@ has_field 'type' => (
 );
 
 has_field 'description' => ( type => 'TextArea' );
+
 has_field 'archivable' => (
     type  => 'Checkbox',
     label => 'Tipi di richiesta archiviabili'
 );
-has_field 'submit'  => ( type => 'Submit', value => 'Submit' );
-has_field 'discard' => ( type => 'Submit', value => 'Discard' );
+
+has_field 'service_manager' => (
+	type		 => 'Select',
+	label		 => 'Referente del servizio (opzionale)',
+	empty_select => '---Nessun referente---',
+    required     => 0,
+);
+
+sub options_service_manager {
+    my $self = shift;
+    return unless $self->schema;
+
+    my $users = $self->schema->resultset('UserLDAP')->search(
+        {},
+        {
+            order_by => 'me.fullname',
+        }
+    );
+    my @selections;
+    while ( my $user = $users->next ) {
+        push @selections, { value => $user->id, label => $user->fullname." (".$user->email.")" };
+    }
+     
+    return  @selections;
+
+}
+
+has_field 'submit'  => ( type => 'Submit', value => 'Invia' );
+has_field 'discard' => ( type => 'Submit', value => 'Annulla' );
 
 1;

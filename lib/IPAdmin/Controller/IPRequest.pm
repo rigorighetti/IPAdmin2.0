@@ -61,10 +61,18 @@ sub object : Chained('base') : PathPart('id') : CaptureArgs(1) {
     my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
     $c->stash(realm => $realm);
 
-    if($realm  eq "ldap" and $c->stash->{object}->user->id ne $user->id ){
+
+
+#and $c->stash->{object}->user->id ne $user->id 
+
+    if($realm  eq "ldap" ){
         #don'block if the user is the manager of that request
         return if(  defined $c->stash->{object}->area->manager and 
                     $c->stash->{object}->area->manager->id eq $user->id );
+        #non bloccare se sei referente di servizio per questa richiesta
+        return if( defined $c->stash->{object}->type->service_manager and 
+            $c->stash->{object}->type->service_manager->id eq $user->id );
+        return if( $c->stash->{object}->user->id eq $user->id );
         #block the action: an user can't see the reuqest of another user
         $c->detach('/access_denied');
     }
@@ -157,7 +165,6 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
     }
 
    $c->stash(%stats);
-
    $c->stash( template        => 'iprequest/list.tt' );
 }
 
@@ -184,10 +191,13 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
             },
             $req->map_assignement;
 
-    $c->stash( manoc_link => $c->config->{'Link'}->{'manoc'} );
-    $c->stash( data => IPAdmin::Utils::print_short_timestamp($req->date));
+    my @aliases = $req->map_alias;
+
+    $c->stash( manoc_link  => $c->config->{'Link'}->{'manoc'} );
+    $c->stash( data        => IPAdmin::Utils::print_short_timestamp($req->date));
     $c->stash( assignement => \@assignement );
-    $c->stash( template => 'iprequest/view.tt' );
+    $c->stash( aliases     => \@aliases );
+    $c->stash( template    => 'iprequest/view.tt' );
 }
 
 
@@ -687,10 +697,24 @@ sub find_subnet : Private {
 sub validate : Chained('object') : PathPart('validate') : Args(0) {
     my ( $self, $c ) = @_;
     my $req = $c->stash->{'object'};
+    my $error_flag = 0;
 
     my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
     $c->stash( default_backref => $c->uri_for_action('userldap/view',[$user->username]) );
     $c->stash( default_backref => $c->uri_for_action('iprequest/list') ) if( $realm eq  "normal" );
+
+    my ($id_manager, $id_ser_manager);
+    defined $req->area->manager and $id_manager = $req->area->manager->id;
+    defined $req->type->service_manager and $id_manager = $req->type->service_manager->id;
+
+    if($realm  eq "ldap" ){
+       #se l'utente non è referente blocca tutto
+       #qui devo solo controllare che l'utente non stiamo validando la propria richiesta
+       #senza essere referente (di area o di servizio)
+       $c->detach('/access_denied') 
+            if($user->id ne $id_manager and $user->id ne $id_ser_manager);
+    }
+
 
     if ( lc $c->req->method eq 'post' ) {
         if ( $c->req->param('discard') ) {
@@ -704,30 +728,29 @@ sub validate : Chained('object') : PathPart('validate') : Args(0) {
         }
     }
 
-
     #set form defaults
     my %tmpl_param;
 
     $tmpl_param{data}      = IPAdmin::Utils::print_short_timestamp($req->date);
     #a regime deve proporre un indirizzo IP tra le subnet associate 
     #all'area
-    my $vlan   = $req->area->building->vlan;
+    my $vlan   = $req->area->building->vlan->id;
     my %filter = map {$_->id =>1}  $req->area->filtered;
-    my $subnets; 
-    defined $vlan and $subnets = $vlan->map_subnet;
+    my @subnets = $req->area->filtered->all; 
 
-    if(!defined $subnets){
-        $c->flash( message => "Nessuna subnet associata alla vlan $vlan!" );
+    if(! scalar(@subnets)){
+        $c->flash( message => "Nessuna subnet associato al dipartimento di ".
+                        $req->area->department->name." presso ".$req->area->building->name );
         return;
     }
 
     my ($free_ip, $used_ip);
     my @availables;
-    while(my $subnet = $subnets->next) {
+    foreach my $subnet (@subnets){
     	$used_ip = undef;
         my $sub_id = $subnet->id;
         
-        next if($filter{$sub_id});
+       #next if($filter{$sub_id});
         foreach my $ip (6..247){
 	        $used_ip = $c->model("IPAdminDB::IPRequest")->search({-and => 
                                                      [ subnet => $sub_id,
@@ -811,39 +834,39 @@ sub process_validate : Private {
     }
 }
 
-sub unactivate : Chained('object') : PathPart('unactivate') : Args(0) {
- my ( $self, $c ) = @_;
- my $iprequest = $c->stash->{'object'};
+# sub unactivate : Chained('object') : PathPart('unactivate') : Args(0) {
+#  my ( $self, $c ) = @_;
+#  my $iprequest = $c->stash->{'object'};
 
-    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
-    $c->stash( default_backref => $c->uri_for_action('userldap/view',[$user->username]) );
-    $c->stash( default_backref => $c->uri_for_action('iprequest/list') ) if( $realm eq  "normal" );
- if ( lc $c->req->method eq 'post' ) {
-     #TODO invalidare ogni assegnazione associata alla richiesta
+#     my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+#     $c->stash( default_backref => $c->uri_for_action('userldap/view',[$user->username]) );
+#     $c->stash( default_backref => $c->uri_for_action('iprequest/list') ) if( $realm eq  "normal" );
+#  if ( lc $c->req->method eq 'post' ) {
+#      #TODO invalidare ogni assegnazione associata alla richiesta
 
-        $iprequest->state($IPAdmin::INACTIVE);
-        $iprequest->update;
-        #invalida la vecchia assegnazione IP
-        my $ret = $c->model('IPAdminDB::IPAssignement')->search({-and =>
-                                                     [ ip_request => $iprequest->id, state=>$IPAdmin::ACTIVE ]})->single;
-        $ret->update({
-                        date_out => time,
-                        state    => $IPAdmin::ARCHIVED,
-                        });
-        #crea la nuova assegnazione (riattivabile dall'utente entro tot giorni)
-        $c->model('IPAdminDB::IPAssignement')->create({
-                        date_in     => time,
-                        state       => $IPAdmin::ACTIVE,
-                        ip_request  => $c->stash->{'object'}->id,
-                        });
-        $c->forward('process_notify');
-        $c->flash( message => 'Richiesta IP invalidata.' );
-        $c->detach('/follow_backref');
-   }
-   else {
-       $c->stash( template => 'iprequest/unactivate.tt' );
-   }
-}
+#         $iprequest->state($IPAdmin::INACTIVE);
+#         $iprequest->update;
+#         #invalida la vecchia assegnazione IP
+#         my $ret = $c->model('IPAdminDB::IPAssignement')->search({-and =>
+#                                                      [ ip_request => $iprequest->id, state=>$IPAdmin::ACTIVE ]})->single;
+#         $ret->update({
+#                         date_out => time,
+#                         state    => $IPAdmin::ARCHIVED,
+#                         });
+#         #crea la nuova assegnazione (riattivabile dall'utente entro tot giorni)
+#         $c->model('IPAdminDB::IPAssignement')->create({
+#                         date_in     => time,
+#                         state       => $IPAdmin::ACTIVE,
+#                         ip_request  => $c->stash->{'object'}->id,
+#                         });
+#         $c->forward('process_notify');
+#         $c->flash( message => 'Richiesta IP invalidata.' );
+#         $c->detach('/follow_backref');
+#    }
+#    else {
+#        $c->stash( template => 'iprequest/unactivate.tt' );
+#    }
+# }
 
 
 sub activate : Chained('object') : PathPart('activate') : Args(0) {
@@ -965,11 +988,8 @@ c'è una nuova richiesta IP che richiede il suo intervento:
 EOF
 	if(defined $ipreq->area->manager){
         $to = $ipreq->area->manager->email;
-        if ($ipreq->type->type eq "WiFi Sapienza AP") {
-            $to = 's.italiano@cineca.it';
-        }
-        elsif ($ipreq->type->type eq "Marcatempo") {
-            $to = 'e.liguori@cineca.it';
+        if (defined $ipreq->type->service_manager) {
+            $to = $c->stash->{object}->type->service_manager->email;
         }
 	}
 	else{
@@ -1096,7 +1116,7 @@ sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
                        manager macaddress hostname domain subnet host);
 
     $c->stash(col_names => \@col_names);
-    my @col_searchable = qw( me.id me.state me.date type.type user.fullname building.name department.name 
+    my @col_searchable = qw(  me.state type.type user.fullname building.name department.name 
                             manager.fullname me.macaddress me.hostname department.domain subnet.id host);
     $c->stash(col_searchable => \@col_searchable);
 
@@ -1149,7 +1169,7 @@ sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
         },        
         manager => sub {
             my ($c, $rs)= @_;
-            return $rs->area->manager->fullname;
+            defined $rs->area->manager and return $rs->area->manager->fullname;
         },
         macaddress => sub {
             my ($c, $rs)= @_;
@@ -1180,7 +1200,8 @@ sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
 
 
     });
-
+    
+    $c->stash(ip_search => 1) if($c->request->param('sSearch') =~ m/(\d+)\.(\d*)/g);
     $c->detach("datatable_response");
 }
 
