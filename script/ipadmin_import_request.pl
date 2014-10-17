@@ -103,12 +103,16 @@ while ( my ($id,$email,$nom1,$tel,$email_dir,$data,$corso,$struttura) = $sth->fe
     #trasforma data
     my $date_in = IPAdmin::Utils::eng_str_to_time($data);
     my $date_out = $date_in + '63113852'; #date_in + 2 anni
-
-    if(!defined($self->schema->resultset('Area')->find($self->area_map->{$id}))){
+    my $area = $self->schema->resultset('Area')->find($self->area_map->{$id});
+    if(!defined $area ){
         $self->log->error("Area ".$self->area_map->{$id}." non trovata nel nuovo IPAdmin");
         next;
     }
 
+    if(defined($area->manager)){
+#      print $area->manager->fullname,"\n\n\n\n\n";
+      $self->log->info("Il referente già esiste in quest\'area ".$area->id." ".$area->manager->fullname);
+    }
 
     $self->schema->resultset('ManagerRequest')->update_or_create({
         dir_fullname => $nom1,

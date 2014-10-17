@@ -17,7 +17,7 @@
  	<h1>Il servizio VPN Sapienza</h1>
  	<h2>Descrizione sintetica</h2>
  	
- 	<p>Il servizio VPN permette agli utenti connessi a Internet da qualsiasi luogo e per mezzo di un qualsiasi tipo di connettività (ADSL, 3G, LAN) la  	navigazione con indirizzo IP della Sapienza,  godendo dei relativi benefici - ad esempio l'accesso a pubblicazioni riservate alla rete di ateneo. </p>
+ 	<p>Il servizio VPN permette agli utenti connessi a Internet da qualsiasi luogo e per mezzo di un qualsiasi tipo di connettività (ADSL, 3G, LAN) la navigazione con indirizzo IP della Sapienza, godendo dei relativi benefici - ad esempio l'accesso a pubblicazioni riservate alla rete di ateneo. </p>
  	<h2>A chi è riservato</h2>
  	<p>Al personale docente e tecnico amministrativo dell'Ateneo dotato delle credenziali di posta elettronica d'ateneo.</p>
  	
@@ -28,11 +28,10 @@
  	<li>un indirizzo di posta elettronica <em>@uniroma1.it</em></li>
  	</ul>
  	
- 	<p>Il dispositivo può essere  una postazione fissa, un portatile, un netbook, un tablet o uno smartphone. 
+ 	<p>Il dispositivo può essere una postazione fissa, un portatile, un netbook, un tablet o uno smartphone. 
  	A seconda del sistema operativo è necessario l'uso di una specifica soluzione software.
- 	Per l'installazione e la configurazione del software invitiamo a seguire le guide presenti al link sottostante.
+ 	Per l'installazione e la configurazione del software invitiamo a seguire le guide presenti nelle schede in alto.
  	</p>
- 	<div style="text-align:center"><h2><a href="prorete/vpn/index.asp" target="_blank">Istruzioni e Software</a></h2></div>
  </div>
  
  <div id="tabs-2">

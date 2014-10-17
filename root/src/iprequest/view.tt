@@ -66,7 +66,7 @@
         <span class="left">Stanza:</span> <span class="right">[% object.location %]</span><br>
         <span class="left">Mac Address:</span> <span class="right">
           [%IF realm %]
-          <a href="[% manoc_link %]/mac/[% object.macaddress%]"> 
+          <a href="[% manoc_link %]/mac/[% object.macaddress%]" target="_blank"> 
            [% object.macaddress%]
           </a> 
           [%ELSE%]
@@ -95,7 +95,15 @@
          [% END -%]
            <br><hr>
            <span class="left">Indirizzo IP:</span> <span class="right"><b>
-            [% IF object.subnet && object.host -%] 151.100.[% object.subnet.id %].[% object.host %] [% END -%] 
+            [% IF object.subnet && object.host -%]
+              [%IF realm %]
+                <a href="[% manoc_link %]/ip/151.100.[% object.subnet.id %].[% object.host %]/view" target="_blank"> 
+                  151.100.[% object.subnet.id %].[% object.host %] 
+                </a>
+              [% ELSE%]
+                  151.100.[% object.subnet.id %].[% object.host %] 
+              [% END -%]
+            [% END -%]
             [% IF !object.subnet -%] non assegnato [% END -%] </b>
            </span><br>
            [% IF object.state != 0 and object.host -%]

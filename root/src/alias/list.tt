@@ -4,6 +4,16 @@
    section='Richieste'
 -%]
 
+<div id ="legenda" class="right rightbox">
+      Legenda: <br><br>
+      <table>
+        <tr>
+         <td bgcolor="#F97A7A" width=20></td><td>Nuova</td><td bgcolor="#DFDD41" width=20></td><td>Convalidata</td>
+         <td bgcolor="#7FCD31" width=20></td><td>Attiva</td><td bgcolor="#A96FDA" width=20></td><td>Archiviata</td>
+        </tr>
+      </table>
+</div>
+
 [% init_table('alias_list',[5,20,31,20,5,4],{sortby => 0, order => 'desc'}) %]
  <table class="display" id="alias_list">
    <thead>  

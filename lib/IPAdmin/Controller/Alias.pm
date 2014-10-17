@@ -195,7 +195,7 @@ sub create : Chained('base') : PathPart('create') : Args(0) {
         if ($done) {
             $c->flash( message => $c->stash->{message} );
             $c->stash( default_backref =>
-                $c->uri_for_action( "alias/list" ) );
+                $c->uri_for_action( "alias/list" ) ); # da cambiare!
             $c->detach('/follow_backref');
         }
     }
@@ -282,6 +282,7 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
         #TODO: Cancella il CNAME dal DNS
 
          $c->flash( message => "L'alias non è più attivo." );
+         $c->forward('process_notify');
          $c->detach('/follow_backref');
    }
    else {
@@ -301,8 +302,9 @@ sub activate : Chained('object') : PathPart('activate') : Args(0) {
         my $done = $c->forward('process_activate');
         if ($done) {
             $c->flash( message => $c->stash->{message} );
+            $c->forward('process_notify');
             $c->stash( default_backref =>
-                $c->uri_for_action( "alias/list" ) );
+                $c->uri_for_action( "alias/list" ) ); # da cambiare!
             $c->detach('/follow_backref');
         }
     }
@@ -363,6 +365,10 @@ sub process_notify : Private {
     my $alias_id = $alias->id;
     my $alias_cname = $alias->cname;
     my $ipreq_id = $alias->ip_request->id;
+    my $ipreq_subnet = $alias->ip_request->subnet->id;
+    my $ipreq_host = $alias->ip_request->host;
+    my $ipreq_hostname = $alias->ip_request->hostname;
+    my $ipreq_domain = $alias->ip_request->area->department->domain;
     my $ret; #status invio messaggio con Mail::Sendmail
     my ($body, $to, $cc, $subject);
     my $url = $c->uri_for_action('/alias/view',[$alias->id]);
@@ -374,7 +380,8 @@ sub process_notify : Private {
         #A seguito di alias/activate, preparo il messaggio per l'utente: "Il tuo alias è attivo"
         $body = <<EOF;
 Gentile Utente, 
-l'alias $alias_cname.uniroma1.it è stato attivato. E' possibile visualizzare i dettagli seguendo il link: 
+l'alias $alias_cname.uniroma1.it è stato attivato sul nome a dominio $ipreq_hostname.$ipreq_domain.uniroma1.it (151.100.$ipreq_subnet.$ipreq_host). 
+E' possibile visualizzare i dettagli seguendo il link: 
     $url
 EOF
         $subject = "Richiesta Alias id: $alias_id attiva";

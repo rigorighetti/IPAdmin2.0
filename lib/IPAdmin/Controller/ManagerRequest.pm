@@ -237,15 +237,17 @@ sub create : Chained('base') : PathPart('create') : Args() {
     my @users;
     if($realm eq "normal") {
             $c->flash( error_msg => "Spiacente, solo un utente strutturato può fare richiesta di diventare referente." );
-            $c->stash( default_backref => $c->uri_for_action('iprequest/list') );
+            $c->stash( default_backref => $c->uri_for_action('managerrequest/list') );
             $c->detach('/follow_backref');
     }
     #TODO ordinamento aree per nome dipartimento
     my @aree  = $c->model('IPAdminDB::Area')->search({},{join => 'department', prefetch => 'department', order_by => 'department.name'})->all;
+    my @dipartimenti = $c->model('IPAdminDB::Department')->search({})->all;
 
     $tmpl_param{realm}     = $realm;
     $tmpl_param{user}      = $user;
     $tmpl_param{aree}      = \@aree;
+    $tmpl_param{dipartimenti} = \@dipartimenti;
     $tmpl_param{data}      = IPAdmin::Utils::print_short_timestamp(time);
     $tmpl_param{dir_fullname} = $c->req->param('dir_fullname');
     $tmpl_param{dir_phone}    = $c->req->param('dir_phone');

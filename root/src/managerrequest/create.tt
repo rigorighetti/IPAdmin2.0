@@ -11,9 +11,37 @@
     <hr style="clear:both">
 	<div class="title">Dati della Struttura:</div>
     <div class="section">
-     <span class="left">Struttura:</span>
+     <span class="left">Struttura (area):</span>
      <select class="right" name="area" id="area">
       <option value="">Seleziona Struttura</option>
+       [% FOREACH a IN aree %] 
+        <option value="[% a.id %]" 
+        [% IF a.id == area_def -%] 
+         selected="1"
+        [% END -%] >
+        [%a.department.name%]</option>
+       [% END %]
+      </select><br>
+      [% IF error.area %]
+     <span class="error" id="error">[% error.area %] </span>
+    [%END%]
+
+      <span class="left">Struttura (dipartimento):</span>
+     <select class="right" name="department" id="department">
+      <option value="">Seleziona Struttura</option>
+        [% FOREACH d in dipartimenti %]
+          <option value="[% d.id %]"
+          [% IF d.id == area_def -%]
+            selected = "1"
+          [% END -%] >
+          [% d.name %]</option>
+          [% END %]
+        </select><br>
+        [% IF error.area %]
+        <span class="error" id="error">[% error.area %] </span>
+        [%END%]
+
+       <!--
        [% FOREACH a IN aree %] 
         <option value="[% a.id %]" 
         [% IF a.id == area_def -%] 
@@ -25,6 +53,7 @@
       [% IF error.area %]
 	   <span class="error" id="error">[% error.area %] </span>
 	  [%END%]
+       -->
     </div>
     <div class="title"> Dati del Responsabile della Struttura </div>
       <div class="section">

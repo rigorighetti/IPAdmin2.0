@@ -32,6 +32,12 @@
       <tr>
 	     <td>Hostname:</td><td>[% object.ip_request.hostname %].[% object.ip_request.area.department.domain %].uniroma1.it</td>
       </tr>
+      <tr>
+        <td>Stato:</td><td>
+        [% IF object.state == 0 -%]In attesa di attivazione[% END -%]
+        [% IF object.state == 2 -%]Attiva[% END -%]
+        [% IF object.state == 4 -%]Archiviata[% END -%]
+      </tr>
     </table>
     [% add_css_tableinfo -%]
     <p>

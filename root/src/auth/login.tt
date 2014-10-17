@@ -3,23 +3,27 @@
  <form method="POST">
  <table class="ui-widget-content ui-corner-all manoc-form" align="center" >
  <tr>
-   <td><label>Username:</label></td>
+   <td align="center"><label>Nome Utente:</label></td>
    <td>
    <input type="text" name="username" value="" />
    </td>
  </tr>
  <tr>
-   <td><label>Password:</label></td>
-   <td><input type="password" name="password" value="" /></td>
+   	<td><label>Password:</label></td>
+   	<td><input type="password" name="password" value="" /></td>
  </tr>
  <tr>
-<td colspan="2" class="buttons-form">
-<div class=buttons>
- <input type="submit" name="submit" value="submit" />
-</div>
-</td>
+	<td colspan="2" class="buttons-form">
+		<div class=buttons>
+ 			<input type="submit" name="submit" value="Accedi" />
+		</div>
+	</td>
  </tr>
 </table>
+
+<div align="center" style="padding-top:10px">Utilizzare le credenziali di accesso alla <b>posta elettronica UniRoma1</b><br>
+inserendo come nome utente: <b>Nome Cognome</b> (<i>nome spazio cognome</i>)</div>
+
 
  </form>
 

@@ -18,7 +18,7 @@
  		 },		 
 		 {
 		     name = 'About',
-     		     path = c.uri_for('/about'),
+     		     path = c.uri_for('/help/view',{page => 'about'}),
  		 },
 		 {
 		     name = 'Logout',
@@ -31,7 +31,7 @@
   menu_subsections = {
           Richieste = [
 	       {
-		     name = 'Referente di Rete'
+		     name = 'Referenti di Rete'
 		     path = c.uri_for('/managerrequest'),
 		   },	     
 		   {	
@@ -45,11 +45,11 @@
 		   ],
 		  Configurazione = [
   	       {
-		     name = 'Dipartimento', 
+		     name = 'Dipartimenti', 
 		     path = c.uri_for('/department/list'),
 	       },
 	       {
-		     name = 'Edificio',
+		     name = 'Edifici',
 		     path = c.uri_for('/building/list'),
 		   },
 		   {

@@ -1,6 +1,8 @@
 [% META section = 'About' %]
 
-
+<div>IPAdmin è il software di gestione delle registrazioni IP per gli Utenti sulla rete (Wired) Sapienza.
+</div>
+<!--
 <img  class="logo" src="[% c.uri_for('/static/images/manoc-logo.jpg') %]">
 <div style="position:fixed;left:250px">
 <div id="fir">One Query to know them all,</div>
@@ -29,3 +31,4 @@ $( "#fir" ).show("slide",null,1000,second);
 });
 [% END -%]
 [% js_scripts.push(script) -%]
+-->

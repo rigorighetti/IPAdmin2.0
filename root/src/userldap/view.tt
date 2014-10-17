@@ -24,7 +24,9 @@
       <a href="[% c.uri_for_action('/iprequest/create') %]" >
       [% ui_icon('circle-plus') %] Nuova Richiesta IP</a><br><br>
       <a href="[% c.uri_for_action('/managerrequest/create') %]" >
-      [% ui_icon('circle-plus') %] Nomina o Conferma Referente di Rete</a>
+      [% ui_icon('circle-plus') %] Nomina o Conferma Referente di Rete</a><br><br>
+      <a href="[% c.uri_for_action('/managerrequest/create') %]" >
+      [% ui_icon('search') %] Elenco Referenti di Rete</a>
     </div>
   </div>
     <table id="info">
@@ -67,7 +69,7 @@
   [%END%] 
   [% FOREACH i IN myrequests %]
     [% IF loop.first %]
-    [% init_table('iprequest_list',[3,4,8,48,10,7,15,2,3]) %]
+    [% init_table('iprequest_list',[3,4,11,45,10,7,15,2,3]) %]
     <table class="display" id="iprequest_list">
       <thead>
         <tr>
@@ -126,7 +128,7 @@
  <div id="tabs-3">
   [% FOREACH i IN requests %]
     [% IF loop.first %]
-    [% init_table('requests',[3,4,8,10,48,7,15,2,3]) %]
+    [% init_table('requests',[3,4,10,11,45,7,15,2,3]) %]
     <table class="display" id="requests">
       <thead>
         <tr>

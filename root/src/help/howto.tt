@@ -27,11 +27,11 @@
         <li><b>Dati del responsabile</b>: i campi sono inseriti in automatico dal sistema in base alle informazioni inserite alla prima autenticazione.</li>
         <li><b>Dati della struttura</b>: selezionare la struttura di riferimento (dipartimento, facoltà o centro servizi) e l'edificio dove è collocata.<br>
         <li><b>Opzione richiedente a tempo determinato</b>: Fanno parte di questa categoria gli studenti laureandi, dottorandi e specializzandi, borsisti, assegnisti di ricerca, il personale collaboratore con contratto a tempo determinato, i professori visitatori, i professori a contratto e gli ospiti a qualunque titolo. I docenti di riferimento dovranno compilare il modulo a proprio nome inserendo i dati del richiedente all’interno di questa sezione, assumendosi la responsabilità dell'indirizzo registrato.<br>
-        <li><b>Dati dell’apparato:</b> inserire le informazioni riguardanti l'apparato sul quale si vuole configurare l’indirizzo IP. In caso di difficoltà nel trovare il proprio mac address si seguano le istruzioni [icona con il punto interrogativo] accanto allo spazio per l'inserimento del mac.</li>
+        <li><b>Dati dell’apparato:</b> inserire le informazioni riguardanti l'apparato sul quale si vuole configurare l’indirizzo IP. In caso di difficoltà nel trovare il proprio mac address si seguano le istruzioni (icona con la "i") accanto a indirizzo ethernet.</li>
        </ul>
-      <li>Leggere le norme di utilizzo di SapienzaNET e le norme del GaRR, e selezionare la casella per accettare tali norme ai sensi del Codice in materia di protezione dei dati personali D.Lgs. 196/03.</li>  
+      <li>Leggere le <a href=[%c.uri_for('/help/view',{page => 'norme'})%] target="_blank">norme di utilizzo di SapienzaNET e le norme del GaRR</a>, e selezionare la casella per accettare tali norme ai sensi del Codice in materia di protezione dei dati personali D.Lgs. 196/03.</li>  
       <li>Dopo aver completato la compilazione fare click sul pulsante <b><i>"Invia la richiesta"</i></b>. Il sistema invierà una email al referente di rete, che dovrà convalidare la richiesta.</li>
-      <li>A convalida avvenuta si riceverà una email contenente il link al modulo. Seguire il link e fare click sul pulsante in fondo alla pagina <b><i>"Stampa"</i></b>. Stampare, firmare il foglio e inviarlo via fax allo 06-4991 3837 (int 23837).</b></li>
+      <li>A convalida avvenuta si riceverà una email contenente il link al modulo. Seguire il link e fare click sul pulsante <b><i>"Stampa"</i></b> in fondo alla pagina. Stampare, firmare il foglio e inviarlo via fax allo 06-4991 3837 (int 23837).</b></li>
       <li>Alla ricezione del FAX il personale tecnico del Settore Reti per le Strutture Periferiche confermerà la registrazione IP.</li>
       <li>Alla conclusione del processo il Richiedente riceverà una email con la configurazione di rete da applicare sul proprio apparato. </li>
       </ol>

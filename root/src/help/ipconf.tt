@@ -31,11 +31,11 @@
 <li>Fare doppio clic sull'icona <b>Connessioni di rete</b></li>
 <li>Fare doppio clic sull'icona <b>Connessione alla rete locale (LAN)</b></li>
 <li>Fare clic sul pulsante <b>Proprietà</b></li>
-<img class="frame" src="[% c.uri_for('/static/images/ipconf/ip_xp-1.jpg') %]" /><br><br>
+<img class="frame" src="[% c.uri_for('/static/images/help/ip_xp-1.jpg') %]" /><br><br>
 <li>Selezionare <b>Protocollo Internet (TCP/IP)</b> e cliccare su <b>Proprieta'</b></li>
-<img class="frame" src="[% c.uri_for('/static/images/ipconf/ip_xp-2.jpg') %]" /><br><br>
+<img class="frame" src="[% c.uri_for('/static/images/help/ip_xp-2.jpg') %]" /><br><br>
 <li>Selezionare <b>Utilizza il seguente indirizzo IP</b> e il campo <b>Utilizza i seguenti indirizzi server DNS</b> e riempire i campi indicati dalla freccia rossa con gli indirizzi assegnati alla fine della procedura di registrazione IP.</li>
-<img class="frame" src="[% c.uri_for('/static/images/ipconf/ip_xp-3.jpg') %]" /><br>
+<img class="frame" src="[% c.uri_for('/static/images/help/ip_xp-3.jpg') %]" /><br>
 </ol>
 
 <br><hr>
@@ -45,13 +45,13 @@
 <li>Dal pulsante <b>Start</b> selezionare <b>Pannello di controllo</b></li>
 <li>Fare doppio clic sull'icona <b>Centro connessioni di rete e condivisione</b></li>
 <li>Fare clic su <b>Visualizza stato</b></li>
-<img class="frame" src="[% c.uri_for('/static/images/ipconf/ip_vista-1.jpg') %]" /><br><br>
+<img class="frame" src="[% c.uri_for('/static/images/help/ip_vista-1.jpg') %]" /><br><br>
 <li>Fare clic sul pulsante <b>Proprietà</b></li>
-<img class="frame" src="[% c.uri_for('/static/images/ipconf/ip_vista-2.jpg') %]" /><br><br>
+<img class="frame" src="[% c.uri_for('/static/images/help/ip_vista-2.jpg') %]" /><br><br>
 <li>Selezionare <b>Protocollo Internet versione 4 (TCP/IPv4)</b> e cliccare su <b>Proprieta'</b></li>
-<img class="frame" src="[% c.uri_for('/static/images/ipconf/ip_vista-3.jpg') %]" /><br><br>
+<img class="frame" src="[% c.uri_for('/static/images/help/ip_vista-3.jpg') %]" /><br><br>
 <li>Selezionare <b>Utilizza il seguente indirizzo IP</b> e il campo <b>Utilizza i seguenti indirizzi server DNS</b> e riempire i campi con gli indirizzi assegnati alla fine delle procedura di registrazione IP</li>
-<img class="frame" src="[% c.uri_for('/static/images/ipconf/ip_vista-4.jpg') %]" /><br><br>
+<img class="frame" src="[% c.uri_for('/static/images/help/ip_vista-4.jpg') %]" /><br><br>
 </ol>
 
 <br><hr>
@@ -59,15 +59,15 @@
 <h4 id="7">Windows 7</h4>
 <ol>
 <li>Fare clic sull'icona della connessione internet vicino all'orologio e successivamente su <b>Apri Centro connessioni di rete e condivisione</b></li>
-<img class="frame" src="[% c.uri_for('/static/images/ipconf/ip_7-1.jpg') %]" /><br><br>
+<img class="frame" src="[% c.uri_for('/static/images/help/ip_7-1.jpg') %]" /><br><br>
 <li>Fare clic su <b>Connessione alla rete locale (LAN)</b></li>
-<img class="frame" src="[% c.uri_for('/static/images/ipconf/ip_7-2.jpg') %]" /><br><br>
+<img class="frame" src="[% c.uri_for('/static/images/help/ip_7-2.jpg') %]" /><br><br>
 <li>Fare clic su <b>Proprietà</b></li>
-<img class="frame" src="[% c.uri_for('/static/images/ipconf/ip_7-3.jpg') %]" /><br><br>
+<img class="frame" src="[% c.uri_for('/static/images/help/ip_7-3.jpg') %]" /><br><br>
 <li>Selezionare <b>Protocollo Internet versione 4 (TCP/IPv4)</b> e cliccare su <b>Proprieta'</b></li>
-<img class="frame" src="[% c.uri_for('/static/images/ipconf/ip_7-4.jpg') %]" /><br><br>
+<img class="frame" src="[% c.uri_for('/static/images/help/ip_7-4.jpg') %]" /><br><br>
 <li>Selezionare <b>Utilizza il seguente indirizzo IP</b> e il campo <b>Utilizza i seguenti indirizzi server DNS</b> e riempire i campi con gli indirizzi assegnati alla fine delle procedura di registrazione IP</li>
-<img class="frame" src="[% c.uri_for('/static/images/ipconf/ip_7-5.jpg') %]" /><br><br>
+<img class="frame" src="[% c.uri_for('/static/images/help/ip_7-5.jpg') %]" /><br><br>
 </ol>
 
 </div>
@@ -86,7 +86,7 @@
 <li>Inserire gli indirizzi IP assegnati alla fine della procedura di registrazione IP</li>
 </ol>
 <br>
-<img src="[% c.uri_for('/static/images/ipconf/ip_mac.jpg') %]" /><br><br>
+<img src="[% c.uri_for('/static/images/help/ip_mac.jpg') %]" /><br><br>
 
 </div>
 	</div>
