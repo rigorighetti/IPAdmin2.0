@@ -1,0 +1,39 @@
+[% META 
+   title='Lista Referenti di Rete'
+   use_table=1
+   section='Richieste'
+-%]
+
+
+[% FOREACH i IN request_table %]
+   [% IF loop.first %] 
+     [%init_table('request') %]  
+    <table class="display" id="request">
+      <thead>  
+	      <tr>
+         <th>Dipartimento</th>
+ 	       <th>Nome</th>
+	       <th>Telefono</th>
+         <th>Email</th>
+         <th>Subnet</th>
+        </tr>
+      </thead>  
+      <tbody>
+     [% END %]
+     <tr>
+ 	    <td> <a href="[%c.uri_for_action('/department/view',[i.department.id])%]"> [% i.department.name %] </a></td>
+ 	    <td>[% i.user.fullname %] </td>
+      <td>[% i.user.telephone %]</td>
+      <td>[% i.user.email %]    </td>
+	    <td>
+            [% FOREACH s IN i.subnets -%]   
+              [% s.id %]
+             [% UNLESS loop.last %], [% END -%]
+            [%END%]
+      </td>
+     </tr>
+  [% IF loop.last %]
+      </tbody>
+    </table>
+  [% END %]
+[% END %]

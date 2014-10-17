@@ -36,6 +36,9 @@ sub datatable_response : Private {
                                                 host   => { like => "%$host%"},
                                                 ]}  ;
         }
+        elsif($search =~ m/(\d{2}\/\d{2}\/\d{4})/g){
+            push @$search_filter_crit, { date => IPAdmin::Utils::str_to_time($search) } ;            
+        }
         else{
          foreach my $col (@$searchable_columns) {
             push @$search_filter_crit,  $col =>  { -like =>  "%$search%" } ;
