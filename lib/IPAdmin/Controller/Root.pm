@@ -46,7 +46,10 @@ sub auto : Private {
   if ( $c->controller eq $c->controller('Auth') ) {
    return 1;
   }
-  $c->log->debug($c->request->uri);
+
+  if($c->request->path eq "managerrequest/public_list" ){
+    return 1;
+  }
 
   # If a user doesn't exist, force login
   if (!$c->user_exists) {
