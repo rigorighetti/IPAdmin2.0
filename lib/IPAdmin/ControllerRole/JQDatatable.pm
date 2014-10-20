@@ -31,11 +31,16 @@ sub datatable_response : Private {
         if($c->stash->{'ip_search'} and $search =~ m/(\d+)\.(\d*)/g){
             #IP search!
             $subnet = $1; $host=$2;
-            push @$search_filter_crit, {'-and' =>  [
-                                                subnet => "$subnet",
-                                                host   => { like => "%$host%"},
+	    if(defined $host and $host ne ''){
+            	push @$search_filter_crit, {'-and' =>  [
+                                                subnet => $subnet,
+                                                host   => $host,
                                                 ]}  ;
-        }
+            }
+	    else{
+		push @$search_filter_crit, { subnet => $subnet };
+	    }
+	}
         elsif($search =~ m/(\d{2}\/\d{2}\/\d{4})/g){
             push @$search_filter_crit, { date => IPAdmin::Utils::str_to_time($search) } ;            
         }

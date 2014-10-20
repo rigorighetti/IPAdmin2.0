@@ -7,7 +7,7 @@
 
 [% FOREACH i IN request_table %]
    [% IF loop.first %] 
-     [%init_table('request') %]  
+     [%init_table('request', [40,15,10,20,10]) %]  
     <table class="display" id="request">
       <thead>  
 	      <tr>
@@ -21,10 +21,10 @@
       <tbody>
      [% END %]
      <tr>
- 	    <td> <a href="[%c.uri_for_action('/department/view',[i.department.id])%]"> [% i.department.name %] </a></td>
- 	    <td>[% i.user.fullname %] </td>
-      <td>[% i.user.telephone %]</td>
-      <td>[% i.user.email %]    </td>
+ 	    <td>[% i.department.name %] </td>
+ 	    <td>[% i.user.fullname %]   </td>
+      <td>[% i.user.telephone %]  </td>
+      <td>[% i.user.email %]      </td>
 	    <td>
             [% FOREACH s IN i.subnets -%]   
               [% s.id %]
