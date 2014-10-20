@@ -237,6 +237,8 @@ sub create : Chained('base') : PathPart('create') : Args() {
     my $id;
     my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
     $c->stash( default_backref => $c->uri_for_action('userldap/view',[$user->username]) );
+    $realm eq "normal" and 
+                 $c->stash( default_backref => $c->uri_for_action('managerrequest/list') );
 
     if ( lc $c->req->method eq 'post' ) {
         if ( $c->req->param('discard') ) {
@@ -252,9 +254,8 @@ sub create : Chained('base') : PathPart('create') : Args() {
     my %tmpl_param;
     my @users;
     if($realm eq "normal") {
-            $c->flash( error_msg => "Spiacente, solo un utente strutturato può fare richiesta di diventare referente." );
-            $c->stash( default_backref => $c->uri_for_action('managerrequest/list') );
-            $c->detach('/follow_backref');
+        @users =  $c->model('IPAdminDB::UserLDAP')->search({},{order_by => 'username'})->all;
+        $tmpl_param{users} = \@users;
     }
     #TODO ordinamento aree per nome dipartimento
     #my @aree  = $c->model('IPAdminDB::Area')->search({},{prefetch => ['department', 'building'], order_by => 'department.name'})->all;
@@ -269,6 +270,8 @@ sub create : Chained('base') : PathPart('create') : Args() {
     $tmpl_param{dir_fullname} = $c->req->param('dir_fullname');
     $tmpl_param{dir_phone}    = $c->req->param('dir_phone');
     $tmpl_param{dir_email}    = $c->req->param('dir_email');
+    $tmpl_param{user_def}     = $c->req->param('user_ref');
+    $tmpl_param{dep_def}      = $c->req->param('department');
     $tmpl_param{template}  = 'managerrequest/create.tt';
     $c->stash(%tmpl_param);
 }
@@ -276,7 +279,7 @@ sub create : Chained('base') : PathPart('create') : Args() {
 sub process_create : Private {
     my ( $self, $c ) = @_;
     my $department = $c->req->param('department');
-    my $user       = $c->req->param('user');
+    my $user       = $c->req->param('user_ref');
     my $dir_name   = $c->req->param('dir_fullname');
     my $dir_phone  = $c->req->param('dir_phone');
     my $dir_email  = $c->req->param('dir_email');
