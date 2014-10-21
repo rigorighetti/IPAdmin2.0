@@ -38,7 +38,7 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key(qw(id));
 
-__PACKAGE__->has_many( request => 'IPAdmin::DB::Result::IPRequest', { cascade_delete => 0 } );
+__PACKAGE__->has_many( request => 'IPAdmin::DB::Result::IPRequest', 'type', { cascade_delete => 0 } );
 
 __PACKAGE__->belongs_to( service_manager => 'IPAdmin::DB::Result::UserLDAP', 'service_manager', { cascade_delete => 0 } );
 
