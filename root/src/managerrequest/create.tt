@@ -4,7 +4,7 @@
 
 <form name="form1" method="POST">
 
-<input type=hidden name="user" value="[% user.id %]" />
+[%IF realm != "normal"-%]<input type=hidden name="user_ref" value="[% user.id %]" />[%END-%]
 
 <div id="infoipreq">
 	<div class="right">Data Richiesta: [% data %]</div>
@@ -15,7 +15,11 @@
      <select class="right" name="department" id="department">
       <option value="">Seleziona il dipartimento</option>
        [% FOREACH a IN departments %] 
-        <option value="[% a.id %]">
+        <option value="[% a.id %]"
+         [% IF a.id == dep_def -%] 
+            selected="1"
+         [% END -%]
+        >
         [%a.name%] </option>
        [% END %]
       </select><br>
@@ -42,12 +46,27 @@
       <br>
 	  </div>
      <div class="title">Dati del Referente di Rete</div>
-     <div class="section">
-       <span class="left">Nome e Cognome:</span> <span class="right">[%user.fullname%]</span><br>
-        <span class="left">Telefono:</span> <span class="right">[% user.telephone %]</span><br>
-        <span class="left">Fax:</span> <span class="right">[% user.fax %]</span><br>
-        <span class="left">Email:</span> <span class="right">[% user.email %]</span><br>
-      </div>
+       <div class="section">
+        <span class="left data">Nome e Cognome:</span> <span class="right">
+         [%IF realm == "normal" -%]
+          <select id="user_sel" name="user_ref">
+           <option value="[% a.id %]">
+            [% FOREACH a IN users %]
+              <option value="[% a.id %]"
+              [% IF a.id == user_def -%] 
+                 selected="1"
+               [% END -%] 
+              >[%a.fullname%]</option>
+            [% END %]
+          </select>
+         [%ELSE -%]
+          [% user_ref.fullname%]
+         [%END -%]
+        </span><br>
+        <span class="left">Telefono:</span> <span class="right" id="user_tel">[% user.telephone %]</span><br>
+        <span class="left">Fax:</span> <span class="right" id="user_fax">[% user.fax %]</span><br>
+        <span class="left">Email:</span> <span class="right" id="user_email">[% user.email %]</span><br>
+        </div>
       <br>
       <div class="buttons section">
 	     <input type="submit" name="submit" value="Invia Richiesta">
@@ -58,3 +77,54 @@
 
 </form>
 
+[% fragment = BLOCK -%]
+
+[%IF realm == "normal"%]
+var hash_usertel = {
+  [% FOREACH u IN users -%]
+    "[%u.id %]" : "[%u.telephone %]" [% ',' UNLESS loop.last -%] 
+  [% END -%]
+};
+var hash_userfax = {
+  [% FOREACH u IN users -%]
+    "[%u.id %]" : "[%u.fax %]" [% ',' UNLESS loop.last -%] 
+  [% END -%]
+};
+var hash_useremail = {
+  [% FOREACH u IN users -%]
+    "[%u.id %]" : "[%u.email %]" [% ',' UNLESS loop.last -%] 
+  [% END -%]
+};
+
+  $("#user_sel").bind("change",
+  function() {
+    var i = this.value; 
+    if(i==0){
+      $("#user_tel").html("");
+      $("#user_fax").html("");
+      $("#user_email").html("");
+      } else {
+      var tel = hash_usertel[i];
+      var fax = hash_userfax[i];
+      var email  = hash_useremail[i];
+      if(tel == null ) {
+       tel = "-";
+      }
+      if(fax == null ) {
+       fax = "-";
+      }
+      if(email == null ) {
+       email = "-";
+      }
+      $("#user_tel").html(tel) ;
+      $("#user_fax").html(fax) ;
+      $("#user_email").html(email) ; 
+    }
+
+    }            // function end
+ );
+[%END -%]
+
+
+[% END -%]
+[% js_scripts.push(fragment) -%]
