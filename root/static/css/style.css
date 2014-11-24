@@ -25,7 +25,7 @@ h2 {
 }
 
 #logged {
- color: rgba(0, 123, 1, 1);
+ color: #822433;
  font-weight:bold;
  float:left;
  height:30px;
@@ -91,7 +91,7 @@ h1.logo a {
     text-decoration:none;
 }
 #dock ul li a:hover, #dock ul li.selected a {
-    border-bottom: 2px solid #459E00;
+    border-bottom: 2px solid #822433;
 }
 #dock ul li.selected a {
     font-weight:bold;
@@ -131,7 +131,7 @@ h1.logo a {
 
 }
 #navigation ul li a:hover {
-    color:rgba(0, 123, 1, 1);
+    color:#822433;
 }
 
 #content-wrapper {

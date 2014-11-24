@@ -1,5 +1,5 @@
 [% META
-   title="LDAP"
+   title="Referenti"
    use_table=1
    section="Utenti"
 -%]

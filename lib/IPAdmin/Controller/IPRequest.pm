@@ -1134,7 +1134,7 @@ sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
         state => sub {
             my ($c, $rs)= @_;
             my $label;
-            $rs->state eq 0 and $label = "Da Conv";
+            $rs->state eq 0 and $label = "Nuova";
             $rs->state eq 1 and $label = "Convalidata";
             $rs->state eq 2 and $label = "Attiva";
             $rs->state eq 3 and $label = "Pre-Arch.";
