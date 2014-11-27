@@ -62,7 +62,7 @@ sub _build_prorete_query {
 
     # Prepare the SQL query for execution
     my $sth = $dbh->prepare(<<End_SQL) or die "Couldn't prepare statement: $DBI::errstr; stopped";
-SELECT id,data,email1,tipo,apparato,ubicazione,macaddress,nomenodo,ip1,ip2,tempodet,td_posizu,td_cognom,td_telefo,td_email,td_datate,id_referente,convalida FROM s_ipadd where email1 LIKE '%\@uniroma1.it' and ip1 is not null and ip1 <> 101 and ip1 <> 100 and ip1 <> 102 and ip1 <> 54 and ip1 <> 73
+SELECT id,data,email1,tipo,apparato,ubicazione,macaddress,nomenodo,ip1,ip2,tempodet,td_posizu,td_cognom,td_telefo,td_email,td_datate,id_referente,convalida FROM s_ipadd where email1 LIKE '%\@uniroma1.it' and id_referente is null and ip1 is not null and ip1 <> 101 and ip1 <> 100 and ip1 <> 102 and ip1 <> 54 and ip1 <> 73
 End_SQL
 
     $sth->execute() or die "Couldn't execute statement: $DBI::errstr; stopped";
@@ -113,7 +113,7 @@ sub notify_ref {
         my $body = <<EOF;
 Gentile Utente, 
 ci risulta registrata negli archivi degli indirizzi IP, un richiesta a suo nome relativa all'indirizzo 151.100.$subnet.$host effettuata in data $data, nella quale non e' presente il referente di rete.
-La preghiamo di segnalarci - rispondendo a questa email entro il 30/09/2014 - il nominativo del referente.
+La preghiamo di segnalarci - rispondendo a questa email entro il 26/10/2014 - il nominativo del referente.
 In assenza di tale comunicazione provvederemo al blocco dell'indirizzo IP e all'archiviazione della sua richiesta.
 
 Cordiali saluti,
@@ -124,6 +124,8 @@ EOF
         my $to = $email;
 
         sleep(1);
+
+        $self->log->info("$count - $email - 151.100.$subnet.$host - $id_old");
 
         $self->debug or $self->send_email($email, undef,$subject,$body);
         

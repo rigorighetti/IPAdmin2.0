@@ -51,7 +51,7 @@ $(function() {
        	   "bServerSide": true,
        	   "sAjaxSource": "[% json_url %]",
  		   "createdRow": function( row, data, dataIndex ) {
-    		  if ( data[1] == "Da Conv" ) {
+    		  if ( data[1] == "Nuova" ) {
       				$(row).addClass( 'newip' );
     		  }
     		  if ( data[1] == 'Convalidata' || data[1] == 'Pre-Arch.' ) {
