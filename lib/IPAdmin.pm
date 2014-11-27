@@ -139,12 +139,12 @@ __PACKAGE__->config(
                 mailer => 'SMTP',
                 # mailer_args is passed directly into Email::Sender::Simple 
                 mailer_args => {
-                    host     => 'smtp.googlemail.com', # defaults to localhost
+                    host     => '', # defaults to localhost
                     ssl      => 1, 
                     port     => 465,
 		                timeout => 10,
-                    sasl_username => 'w3.staff@uniroma1.it',
-                    sasl_password => 'C1t1c0rd',
+		    sasl_username => '',
+                    sasl_password => '',
             }
           }
         },
