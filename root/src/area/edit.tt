@@ -37,6 +37,23 @@
 		 [%END%]
         </td>
     </tr>
+  <tr>
+        <td><label>Referente:</label></td>
+        <td>
+          <select name="managers">
+            [% FOREACH a IN managers %]
+                    <option value="[% a.value %]" [%IF a.value == object.manager.id %] selected="1" [%END%]>
+                    [%a.label%]</option>
+            [% END %]
+            </select>
+        </td>    
+    <td>
+     [% IF error.department %]
+        <span class="error" id="error">[% error.department %] </span>
+     [%END%]
+        </td>
+    </tr>
+
 	<tr>
         <td><label>Subnet:</label></td>
         <td>

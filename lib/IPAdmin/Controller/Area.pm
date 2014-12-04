@@ -120,13 +120,25 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
     my @building   = $c->model('IPAdminDB::Building')->search({}) ;
     my @department = $c->model('IPAdminDB::Department')->search({}) ;
 
-    $c->stash( subnets     => \@subnets );
-    $c->stash( department  => \@department );
-    $c->stash( building    => \@building );
+    $c->stash( subnets    => \@subnets );
+    $c->stash( department => \@department );
+    $c->stash( building   => \@building );
 
-    $c->stash( filtered    => \%filtered);
+    my @aree = $c->stash->{'object'}->department->map_area_build;
 
-    $c->stash( template => 'area/edit.tt' );
+    my @managers;
+    my $bit_map = {};
+    foreach my $area ( @aree ) {
+        next unless(defined($area->manager));
+        next if($bit_map->{$area->manager->id});
+        push @managers, { value => $area->manager->id, label => $area->manager->fullname};
+        $bit_map->{$area->manager->id} = 1;
+    }
+    $c->stash( managers   => \@managers );
+
+
+    $c->stash( filtered   => \%filtered);
+    $c->stash( template   => 'area/edit.tt' );
 
 }
 

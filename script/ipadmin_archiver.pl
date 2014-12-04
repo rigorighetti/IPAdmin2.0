@@ -137,7 +137,7 @@ sub process_archive {
         my $body; 
         my $cc;
         #Archivia la richiesta
-        $iprequest->state($IPAdmin::ARCHIVED);
+        $iprequest->state($ARCHIVED);
         $iprequest->update;
         #chiude l'ultima assegnazione
         my @assignements = $iprequest->map_assignement;
@@ -187,8 +187,7 @@ EOF
 Gentile Utente,
 il suo indirizzo IP $ip è stato bloccato poiché sono scaduti i termini di utilizzo.
 EOF
-            send_email($iprequest->guest->email, $iprequest->user->email,
-                            #$subject,$body);
+            send_email($iprequest->guest->email, $iprequest->user->email,$subject,$body);
           }
           else{
             $body = <<EOF;
@@ -258,6 +257,48 @@ sub archive_pre {
     }
     return \@archived;
 }
+
+=head2  archive_active_manager
+
+=cut
+
+sub archive_active_manager {
+  my ($self, $time) = @_;
+  my $schema         = $self->schema;
+  my @archived;
+  my $warn_date    = $time + $A_WEEK;
+
+  $self->log->info("Archiviazione richieste referenti scadute oggi" );
+
+  my $it = $schema->resultset('ManagerRequest')->search({
+            'date_out' => { '<=', $time }, 
+            'state'   => $ACTIVE,
+            });
+
+    while(my $i = $it->next){
+
+      if(!$self->dryrun){
+        $i->update({ state => $ARCHIVED });
+        my $subject = "Archiviazione Richiesta Referente di Rete con Id ".$i->id;
+        my $fullname = $i->user->fullname;
+        my $body = <<EOF;
+Gentile referente di rete $fullname,
+la inforiamo che la sua richiesta di referente è scaduta in data odierna. Contattare gli amministratori di rete.
+EOF
+        send_email($i->user->email, undef,$subject,$body);
+
+       }
+
+      push @archived, { 
+                         id     => $i->id,
+                         name   => $i->user->fullname,
+                         mail   => $i->user->email, 
+                         department => $i->department->name,
+                       };
+    }
+    return \@archived;
+}
+
 
 =head2 archive_active
 
@@ -383,7 +424,7 @@ sub send_email {
     my $email = Email::Simple->create(
     header =>  [ 
       To      => $to,
-      From    => 'sapienzanet@uniroma1.it',
+      From    => 'w3 staff@uniroma1.it',
       Subject => $subject,
       Cc      => $cc,
     ],
@@ -397,13 +438,17 @@ sub run {
     my ($self) = @_;
     my $time = time;
 
-    my $archived_new        = $self->archive_new($time);
-    my $archived_preactive  = $self->archive_pre($time);
-    my $archived_active     = $self->archive_active($time);
+    my $archived_new       = $self->archive_new($time);
+    my $archived_preactive = $self->archive_pre($time);
+    my $archived_active    = $self->archive_active($time);
 
-   print Dumper(\@archived_new);
-   print Dumper(\@archived_preactive);
-   print Dumper(\@archived_active);
+    my $archived_active_man = $self->archive_active_manager($time);
+
+
+   print Dumper($archived_new);
+   print Dumper($archived_preactive);
+   print Dumper($archived_active);
+   print Dumper($archived_active_man);
 
     my $body = $self->prepare_blocked_mail($archived_new, $archived_preactive, $archived_active);
     $self->send_email('e.liguori@cineca.it',undef,
