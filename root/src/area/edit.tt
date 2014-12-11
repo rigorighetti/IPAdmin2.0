@@ -40,7 +40,8 @@
   <tr>
         <td><label>Referente:</label></td>
         <td>
-          <select name="managers">
+          <select name="manager">
+           <option value="">-</option>
             [% FOREACH a IN managers %]
                     <option value="[% a.value %]" [%IF a.value == object.manager.id %] selected="1" [%END%]>
                     [%a.label%]</option>

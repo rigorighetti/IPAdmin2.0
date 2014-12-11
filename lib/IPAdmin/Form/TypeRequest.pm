@@ -12,6 +12,7 @@ extends 'HTML::FormHandler::Model::DBIC';
 has_field 'type' => (
 	type	 => 'Text',
 	required => 1,
+    label => 'Nome',
 	apply	 => [
 		'Str',
 		{
@@ -21,7 +22,9 @@ has_field 'type' => (
 	]
 );
 
-has_field 'description' => ( type => 'TextArea' );
+has_field 'description' => ( type => 'TextArea',
+                             label => 'Descrizione',
+ );
 
 has_field 'archivable' => (
     type  => 'Checkbox',

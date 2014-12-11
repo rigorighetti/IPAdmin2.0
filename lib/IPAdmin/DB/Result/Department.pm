@@ -26,7 +26,7 @@ __PACKAGE__->add_columns(
     domain => {
         data_type   => 'varchar',
         size        => '32',
-        is_nullable => 0,
+        is_nullable => 1,
     },
 );
 

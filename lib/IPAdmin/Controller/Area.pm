@@ -148,6 +148,7 @@ sub process_edit : Private {
     my $id_build       = $c->req->param('building');
     my $id_dep         = $c->req->param('department');
     my $area           = $c->stash->{'object'};
+    my $id_man         = $c->req->param('manager') || undef;
     my @subnets        = $area->building->vlan->map_subnet;
 
     # check form
@@ -166,7 +167,8 @@ sub process_edit : Private {
     my $ret = $area->update(
         {
             building    => $id_build,
-            department  => $id_dep
+            department  => $id_dep,
+            manager     => $id_man, 
         }
         );
 
@@ -218,10 +220,10 @@ sub process_edit : Private {
     }
     return unless $form->process( params => $c->req->params);
 
-    foreach my $subnet ($item->building->vlan->map_subnet){
-        $c->log->debug("Creazione ".$item->id." ".$subnet->id);
-        $c->model('IPAdminDB::FilterSubnet')->update_or_create({area_id => $item->id, subnet_id => $subnet->id});        
-    }
+    # foreach my $subnet ($item->building->vlan->map_subnet){
+    #     $c->log->debug("Creazione ".$item->id." ".$subnet->id);
+    #     $c->model('IPAdminDB::FilterSubnet')->update_or_create({area_id => $item->id, subnet_id => $subnet->id});        
+    # }
 
     $c->flash( message => 'Success! Area created.' );
     $def_br = $c->uri_for_action( 'area/view', [ $item->id ] );

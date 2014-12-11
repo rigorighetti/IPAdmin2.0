@@ -12,6 +12,7 @@ extends 'HTML::FormHandler::Model::DBIC';
 has_field 'name' => (
 	type	 => 'Text',
 	required => 1,
+    label    => 'Nome',
 	apply	 => [
 		'Str',
 		{
@@ -24,7 +25,7 @@ has_field 'name' => (
 has_field 'description' => (
     type     => 'TextArea',
     required => 1,
-    label    => 'Descrizione Vlan',
+    label    => 'Descrizione Edificio',
     apply    => [
         'Str',
         {
@@ -34,7 +35,10 @@ has_field 'description' => (
     ]
 );
 
-has_field 'address' => ( type => 'Text', required => 1 );
+has_field 'address' => ( type => 'Text', 
+                         required => 1,
+                         label    => 'Indirizzo',
+ );
 
 
 has_field 'vlan' => (
