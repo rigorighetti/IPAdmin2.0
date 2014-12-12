@@ -19,7 +19,8 @@
 	     <td>Indirizzo IP:</td><td>[% object.ipaddr %]</td>
       </tr>
       <tr>
-       <td>Nome a dominio:</td><td>[% object.ip_request.hostname%].[%object.ip_request.area.department.domain%].uniroma1.it</td>
+       <td>Nome a dominio:</td><td>[% object.ip_request.hostname%][%IF 
+        object.ip_request.area.department.domain%].[%object.ip_request.area.department.domain%][%END -%].uniroma1.it</td>
       </tr>
       <tr>
        <td>MAC Address:</td><td>[% object.ip_request.macaddress%]</td>

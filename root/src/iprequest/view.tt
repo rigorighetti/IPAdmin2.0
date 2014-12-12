@@ -73,7 +73,9 @@
           [% object.macaddress%]
           [%END%]
          </span><br>
-        <span class="left">Nome a Dominio:</span> <span class="right">[% object.hostname%].[%object.area.department.domain%].uniroma1.it</span><br>
+        <span class="left">Nome a Dominio:</span> <span class="right">[% object.hostname%][%IF 
+        object.area.department.domain%].[%object.area.department.domain%][%END -%].uniroma1.it
+</span><br>
         <span class="left">Note:</span> <span class="right">[% object.notes%]</span><br>
       </div>
         <div class="title">Configurazione della Scheda di Rete</div>
@@ -171,7 +173,8 @@
             [% IF a.state == 4 -%]                 class="archived"  [% END -%] >
           <td class="white"><a href="[% c.uri_for_action('/alias/view',[a.id])%]">[% a.id %]</a></td>
           <td>[% a.cname %]</td>
-          <td>[% a.ip_request.hostname %].[% a.ip_request.area.department.domain %].uniroma1.it </td>
+          <td>[% a.ip_request.hostname %][%IF 
+        a.ip_request.area.department.domain%].[%a.ip_request.area.department.domain%][%END -%].uniroma1.it</td>
           <td class="white">
             [% IF a.state == 2 -%]
               <span title="Attiva">[% ui_icon('circle-check') %]</span>

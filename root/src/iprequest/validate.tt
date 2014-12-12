@@ -23,7 +23,8 @@
        <td>Referente di rete:</td><td>[% object.area.manager.fullname%]</td>
       </tr>
       <tr>
-       <td>Nome a dominio:</td><td>[% object.hostname%].[%object.area.department.domain%].uniroma1.it</td>
+       <td>Nome a dominio:</td><td>[% object.hostname%][%IF 
+        object.area.department.domain%].[%object.area.department.domain%][%END -%].uniroma1.it</td>
       </tr>
       <tr>
        <td>MAC Address:</td><td>[% object.macaddress%]</td>

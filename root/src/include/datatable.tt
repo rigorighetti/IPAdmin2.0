@@ -27,7 +27,7 @@ $(function() {
 	     dTable = $("#[% id  %]").dataTable( {
 	       "bJQueryUI"       : true,
 	       //to decide which column to sort at the beginning
-	       [% IF options.sortby %]"aaSorting"       : [[ [% options.sortby %] , "[% options.order %]" ]],[%END%]
+	       [% IF options %]"aaSorting"       : [[ [% options.sortby %] , "[% options.order %]"]],[%END%]
 	       //pagination button (two_button, full_numbers)
  	       "sPaginationType" : "full_numbers",
 	       "iDisplayLength" : 25,

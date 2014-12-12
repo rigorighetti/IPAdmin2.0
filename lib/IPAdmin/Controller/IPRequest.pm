@@ -367,6 +367,9 @@ sub process_edit : Private {
     #state == 3 bloccata
     #state == 4 archiviata
     my $ret;
+
+    #sanitize hostname 
+    $hostname =~ s/\s+//mxgo;
     
     if($c->stash->{realm} eq  "normal" ){
         if(!$fixed) {
@@ -526,6 +529,9 @@ sub process_create : Private {
             " presso ".$check_area->building->name.". Contattare l'amministratore di rete.";
     return 0;
     }
+
+    #sanitize hostname 
+    $hostname =~ s/\s+//mxgo;
 
     #state == 0 non validata
     #state == 1 convalidata

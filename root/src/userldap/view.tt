@@ -101,7 +101,8 @@
 	      <td>[% i.area.department.name %] <i>presso</i> [% i.area.building.name %]</td>
 	      <td>[% i.area.manager.fullname %]</td>
 	      <td>[% i.macaddress %]</td>
-	      <td>[% i.hostname %].[% i.area.department.domain %]</td>
+	      <td>[% i.hostname %][%IF 
+        i.area.department.domain%].[%i.area.department.domain%][%END -%].uniroma1.it</td>
         <td>[% IF i.state != 0 -%] [% i.subnet.id %].[% i.host %] [% ELSE -%]---[% END -%]</td> 
         <td class="white">
          [% IF i.state != 4 -%]
@@ -150,7 +151,8 @@
            [% IF a.state == 4 -%]                 class="archived"  [% END -%] >
         <td style="background:white"><a id="click_ref" href=[% c.uri_for_action('/iprequest/view', [a.ip_request.id]) %]>[% a.id %]</a></td>
         <td>[% a.cname %]</th>
-        <td>[% a.ip_request.hostname %].[% a.ip_request.area.department.domain %].uniroma1.it</td>
+        <td>[% a.ip_request.hostname %][%IF 
+        a.ip_request.area.department.domain%].[%a.ip_request.area.department.domain%][%END -%].uniroma1.it</td>
         <td class="white">
            [% IF a.state == 2 -%]
               <span title="Attiva">[% ui_icon('circle-check') %]</span>
@@ -176,7 +178,7 @@
  <div id="tabs-4">
   [% FOREACH i IN requests %]
     [% IF loop.first %]
-    [% init_table('requests',[3,4,10,11,45,7,15,2,3]) %]
+    [% init_table('requests',[3,4,10,11,45,7,15,2,3], {sortby => 0, order => 'desc'}) %]
     <table class="display" id="requests">
       <thead>
         <tr>
@@ -203,7 +205,8 @@
 	      <td>[% i.user.fullname %]</td>
         <td>[% i.area.department.name %] presso [% i.area.building.name %]</td>
         <td>[% i.macaddress %]</td>
-        <td>[% i.hostname %].[% i.area.department.domain %]</td>
+        <td>[% i.hostname %][%IF 
+        i.area.department.domain%].[%i.area.department.domain%][%END -%].uniroma1.it</td>
         <td>[% IF i.state != 0 -%][% i.subnet.id %].[% i.host %][% ELSE -%]---[% END -%]</td> 
 	      <td class="white">
             [%IF i.state == 0 -%]
@@ -232,7 +235,7 @@
  <div id="tabs-5">
   [% FOREACH i IN myservice_requests %]
     [% IF loop.first %]
-    [% init_table('s_requests',[3,4,8,10,48,7,15,2,3]) %]
+    [% init_table('s_requests',[3,4,8,10,48,7,15,2,3],{sortby => 0, order => 'desc'}) %]
     <table class="display" id="s_requests">
       <thead>
         <tr>
@@ -259,7 +262,8 @@
         <td>[% i.user.fullname %]</td>
         <td>[% i.area.department.name %] presso [% i.area.building.name %]</td>
         <td>[% i.macaddress %]</td>
-        <td>[% i.hostname %].[% i.area.department.domain %]</td>
+        <td>[% i.hostname %][%IF 
+        i.area.department.domain%].[%i.area.department.domain%][%END -%].uniroma1.it</td>
         <td>[% IF i.state != 0 -%][% i.subnet.id %].[% i.host %][% ELSE -%]---[% END -%]</td> 
         <td class="white">
             [%IF i.state == 0 -%]
@@ -315,7 +319,8 @@
         <td>[% i.user.fullname %]</td>
         <td>[% i.area.department.name %] presso [% i.area.building.name %]</td>
         <td>[% i.macaddress %]</td>
-        <td>[% i.hostname %].[% i.area.department.domain %]</td>
+        <td>[% i.hostname %][%IF 
+        i.area.department.domain%].[%i.area.department.domain%][%END -%].uniroma1.it</td>
         <td>[% IF i.state != 0 -%][% i.subnet.id %].[% i.host %][% ELSE -%]---[% END -%]</td> 
         <td class="white">
             [%IF i.state == 0 -%]

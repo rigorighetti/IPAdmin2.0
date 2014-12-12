@@ -136,7 +136,8 @@ var hash_addr = {
 
 var hash_dom = {
   [% FOREACH a IN aree -%]
-   [%IF a.department.id -%] "[%a.id %]" : "[%a.department.domain %].uniroma1.it" [% ',' UNLESS loop.last -%] [%END-%]
+   [%IF a.department.id -%] 
+   "[%a.id -%]" : "[%IF a.department.domain -%][%a.department.domain -%].[%END -%]uniroma1.it" [% ',' UNLESS loop.last -%] [%END-%]
   [% END -%]
 };
 

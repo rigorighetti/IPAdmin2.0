@@ -23,7 +23,7 @@ has_field 'name' => (
 
 has_field 'description' => (
     type     => 'TextArea',
-    required => 1,
+    required => 0,
     label    => 'Descrizione Dipartimento',
     apply    => [
         'Str',
@@ -34,7 +34,7 @@ has_field 'description' => (
     ]
 );
 
-has_field 'domain' => ( type => 'Text',label => 'Dominio DNS', required => 1 );
+has_field 'domain' => ( type => 'Text',label => 'Dominio DNS', required => 0 );
  
 has_field 'submit'  => ( type => 'Submit', value => 'Invia' );
 has_field 'discard' => ( type => 'Submit', value => 'Annulla' );

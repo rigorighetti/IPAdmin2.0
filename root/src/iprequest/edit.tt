@@ -115,7 +115,7 @@ td.data {padding-left:20px;}
         <div class="confirm"><a href="[% c.uri_for('/help/view',{page => 'howto'}) %]">Il Richiedente accetta le norme di utilizzo di SapienzaNET e le norme del GaRR</a><span><input type="checkbox" id="confirm" value="confirm" name="confirm" checked="checked"></span></div> 
           <br>
          <div class="buttons">
-           <input id="submit" type="submit" name="submit" value="Invia la  Richiesta"> 
+           <input id="submit" type="submit" name="submit" value="Salva le modifiche"> 
            <input type="submit" name="discard" value="Annulla">
          </div>
         </div>
@@ -143,7 +143,8 @@ var hash_addr = {
 
 var hash_dom = {
   [% FOREACH a IN aree -%]
-   [%IF a.department.id -%] "[%a.id %]" : "[%a.department.domain %].uniroma1.it" [% ',' UNLESS loop.last -%] [%END-%]
+   [%IF a.department.id -%] 
+   "[%a.id -%]" : "[%IF a.department.domain -%][%a.department.domain -%].[%END -%]uniroma1.it" [% ',' UNLESS loop.last -%] [%END-%]
   [% END -%]
 };
 
