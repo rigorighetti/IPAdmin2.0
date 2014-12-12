@@ -114,6 +114,7 @@ while ( my ($id,$email,$nom1,$tel,$email_dir,$data,$corso,$struttura) = $sth->fe
       $self->log->info("Il referente già esiste in quest\'area ".$area->id." ".$area->manager->fullname);
     }
 
+    $self->log->info("Aggiorno o creo la richiesta per il dipartimento con id ".$area->department->id. " ".$area->department->name." ".$area->id);
     $self->schema->resultset('ManagerRequest')->update_or_create({
         dir_fullname => $nom1,
         dir_email    => $email_dir,
@@ -123,7 +124,8 @@ while ( my ($id,$email,$nom1,$tel,$email_dir,$data,$corso,$struttura) = $sth->fe
         date_out     => $date_out,
         skill        => $corso,
         state        => 2,
-        area         => $self->area_map->{$id},
+        #area         => $self->area_map->{$id},
+        department   => $area->department->id,
         user         => $user_ldap->id,
         });
 
