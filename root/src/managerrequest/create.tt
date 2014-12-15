@@ -60,7 +60,7 @@
             [% END %]
           </select>
          [%ELSE -%]
-          [% user_ref.fullname%]
+          [% user.fullname%]
          [%END -%]
         </span><br>
         <span class="left">Telefono:</span> <span class="right" id="user_tel">[% user.telephone %]</span><br>

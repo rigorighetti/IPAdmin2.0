@@ -163,7 +163,10 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
     my $req = $c->stash->{object};
     my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
 
-    $c->stash( default_backref => $c->uri_for_action('/managerrequest/list') );
+    $c->stash( default_backref => $c->uri_for_action( 'userldap/view', [$user->username] ) );
+    $realm eq "normal" and $c->stash( default_backref => $c->uri_for_action('/managerrequest/list'));
+
+
 
     if($req->state != $IPAdmin::NEW){
         $c->flash( message => 'Solo le richieste non ancora validate possono essere modificate.');
@@ -177,8 +180,6 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
         my $done = $c->forward('process_edit');
         if ($done) {
             $c->flash( message => $c->stash->{message} );
-            $c->stash( default_backref =>
-                $c->uri_for_action( "managerrequest/list" ) );
             $c->detach('/follow_backref');
         }
     }

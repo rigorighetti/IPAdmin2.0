@@ -116,6 +116,7 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
     my $date_myreq = {};
     my $date_req = {};
     my $date_ser = {};
+    my $id = $c->stash->{'object'}->id;
 
     my ($e,$it);
 
@@ -137,7 +138,7 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
         }
     }
 
-    @myrequests = $c->model("IPAdminDB::IPRequest")->search( {user => $c->stash->{'object'}->id},
+    @myrequests = $c->model("IPAdminDB::IPRequest")->search( {user => $id },
                 {prefetch => [qw(type subnet),{area => ['building','department','manager']}],
                  select   => [qw(id date type.type area.department area.building
                               area.manager macaddress area.department hostname state subnet host )]
@@ -162,16 +163,28 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
         push @service_requests, $e;
         }
     }
-
-    $c->stash(date_req      => $date_req);
-    $c->stash(date_myreq    => $date_myreq);
-    $c->stash( managed_area => \@managed_area );
-    $c->stash( requests     => \@requests );
-    $c->stash( myrequests   => \@myrequests );
-    $c->stash( myservice_requests   => \@myservice_requests );
-    $c->stash( service_requests     => \@service_requests );
-    $c->stash( myaliases    => \@myaliases );
-    $c->stash( template     => 'userldap/view.tt' );
+    my @managerrequest_table =  map +{
+            id           => $_->id,
+            date         => IPAdmin::Utils::print_short_timestamp($_->date),
+            date_in      => $_->date_in  ? IPAdmin::Utils::print_short_timestamp($_->date_in) : '',
+            date_out     => $_->date_out ? IPAdmin::Utils::print_short_timestamp($_->date_out) : '',
+            department   => $_->department || '',
+            dir_fullname => $_->dir_fullname || '',
+            dir_phone    => $_->dir_phone || '',
+            dir_email    => $_->dir_email || '',
+            state        => $_->state,
+       },  $c->model('IPAdminDB::ManagerRequest')->search({user => $id }, {prefetch => ['department', 'user']});
+   
+   $c->stash( request_table => \@managerrequest_table );
+   $c->stash(date_req      => $date_req);
+   $c->stash(date_myreq    => $date_myreq);
+   $c->stash( managed_area => \@managed_area );
+   $c->stash( requests     => \@requests );
+   $c->stash( myrequests   => \@myrequests );
+   $c->stash( myservice_requests   => \@myservice_requests );
+   $c->stash( service_requests     => \@service_requests );
+   $c->stash( myaliases    => \@myaliases );
+   $c->stash( template     => 'userldap/view.tt' );
 }
 
 =head2 edit

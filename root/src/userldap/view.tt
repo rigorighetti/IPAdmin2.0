@@ -9,14 +9,15 @@
     <li><a href="#tabs-1">Informazioni</a></li>
     <li><a href="#tabs-2">Le mie richieste IP</a></li>
      <li><a href="#tabs-3">I miei Alias</a></li>
+     <li><a href="#tabs-4">Nomine ref. di rete</a></li>
     [% IF object.managed_area -%]
-     <li><a href="#tabs-4">Area referente di rete</a></li>
+     <li><a href="#tabs-5">Area referente di rete</a></li>
     [% END -%]
     [% IF myservice_requests.0 -%]
-     <li><a href="#tabs-5">Richieste per servizio</a></li>
+     <li><a href="#tabs-6">Richieste per servizio</a></li>
     [% END -%]
     [% IF object.managed_services -%]
-     <li><a href="#tabs-6">Area referente di servizio</a></li>
+     <li><a href="#tabs-7">Area referente di servizio</a></li>
     [% END -%]
 
   </ul>
@@ -173,9 +174,45 @@
   </div>
 [%END -%]
 
+ <div id="tabs-4">
+[% FOREACH i IN request_table %]
+   [% IF loop.first %] 
+     [%init_table('request') %]  
+    <table class="display" id="request">
+      <thead>  
+        <tr>
+         <th>Id</th>
+         <th>Data</th>
+         <th>Validata</th>
+         <th>Scadenza</th>
+         <th>Direttore</th>
+         <th>Dipartimento</th>
+        </tr>
+      </thead>  
+      <tbody>
+     [% END %]
+     <tr [% IF i.state == 0 -%]                 class="newip"     [% END -%]
+         [% IF i.state == 1 or i.state == 3 -%] class="preactive" [% END -%]
+         [% IF i.state == 2 -%]                 class="active"    [% END -%]
+         [% IF i.state == 4 -%]                 class="archived"  [% END -%] >
+      <td class="white" ><a id="click_ref" href=[% c.uri_for_action('/managerrequest/view', [i.id]) %]>[% i.id %]</a></td>
+      <td>[% i.date %]</td>
+      <td>[% i.date_in %]</td>
+      <td>[% i.date_out %]</td>
+      <td>[% i.dir_fullname %]</td>
+      <td> <a href="[%c.uri_for_action('/department/view',[i.department.id])%]"> [% i.department.name %] </a></td>
+     </tr>
+  [% IF loop.last %]
+      </tbody>
+    </table>
+  [% END %]
+[% END %]
+ </div>
+
+
 
 [% IF object.managed_area -%]
- <div id="tabs-4">
+ <div id="tabs-5">
   [% FOREACH i IN requests %]
     [% IF loop.first %]
     [% init_table('requests',[3,4,10,11,45,7,15,2,3], {sortby => 0, order => 'desc'}) %]
@@ -232,7 +269,7 @@
 [%END -%]
 
 [% IF myservice_requests.0 -%]
- <div id="tabs-5">
+ <div id="tabs-6">
   [% FOREACH i IN myservice_requests %]
     [% IF loop.first %]
     [% init_table('s_requests',[3,4,8,10,48,7,15,2,3],{sortby => 0, order => 'desc'}) %]
@@ -289,7 +326,7 @@
 [%END -%]
 
 [% IF object.managed_services -%]
- <div id="tabs-6">
+ <div id="tabs-7">
   [% FOREACH i IN service_requests %]
     [% IF loop.first %]
     [% init_table('ss_requests',[3,4,8,10,48,7,15,2,3]) %]
