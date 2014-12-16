@@ -689,8 +689,6 @@ sub find_subnet : Private {
     my ( $c , $area, $subnet_id )  = @_;
     my ($e,$it);
 
-    print "TEST $area \n\n\n";
-
     my $ret = $c->model("IPAdminDB::Area")->find($area);
     my @subnets = $ret->building->vlan->map_subnet;
 
