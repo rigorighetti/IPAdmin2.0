@@ -28,7 +28,7 @@
       <hr style="clear:both">
       <div class="title">Dati del Referente</div>
       <div class="section">
-        <span class="left">Nome e Cognome:</span> <span class="right">[% object.user.fullname %]</span><br>
+        <span class="left">Nome e Cognome:</span> <span class="right"><a href=[% c.uri_for_action('/userldap/view', [object.user.username]) %]>[% object.user.fullname %]</a></span><br>
         <span class="left">Telefono:</span> <span class="right">[% object.user.telephone %]</span><br>
         <span class="left">Fax:</span> <span class="right">[% object.user.fax %]</span><br>
         <span class="left">Email:</span> <span class="right">[% object.user.email %]</span><br>

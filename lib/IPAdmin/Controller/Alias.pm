@@ -235,7 +235,7 @@ sub process_create : Private {
     }
     #l'utente che fa richiesta per l'alias deve aver assegnato l'ip
     if ($realm eq "ldap" and $user->id ne $ipreq->user->id) {
-     $c->stash->{error_msg} = "Solo l'assegnatario di un IP può definire un Alias su quel determinato IP";
+     $c->stash->{error_msg} = "Solo il responsabile di un indirizzo IP può definire un Alias su quel determinato IP";
      return 0;
     }    
 
