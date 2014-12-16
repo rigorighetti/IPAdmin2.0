@@ -111,9 +111,6 @@ while ( my ($id,$email,$nom1,$tel,$email_dir,$data,$corso,$struttura,$valido_ref
     my $state = 0;
     $state = 2 if($valido_ref eq 1 );
 
-    $self->log->info("$state");
-
-
     if(defined($area->manager)){
 #      print $area->manager->fullname,"\n\n\n\n\n";
       $self->log->info("Il referente già esiste in quest\'area ".$area->id." ".$area->manager->fullname);

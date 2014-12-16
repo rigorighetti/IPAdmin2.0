@@ -83,7 +83,7 @@ my $dbh = DBI->connect('DBI:mysql:database=prorete;hostname=151.100.4.23', 'root
 
 # Prepare the SQL query for execution    --- and ip1 <> 101 and ip1 <> 100 and ip1 <> 102 and ip1 <> 54 and ip1 <> 73
 my $sth = $dbh->prepare(<<End_SQL) or die "Couldn't prepare statement: $DBI::errstr; stopped";  
-SELECT id,data,email1,tipo,apparato,ubicazione,macaddress,nomenodo,ip1,ip2,tempodet,td_posizu,td_cognom,td_telefo,td_email,td_datate,id_referente,convalida FROM s_ipadd where email1 LIKE '%\@uniroma1.it' and ip1 is not null 
+SELECT id,data,email1,tipo,apparato,ubicazione,macaddress,nomenodo,ip1,ip2,tempodet,td_posizu,td_cognom,td_telefo,td_email,td_datate,id_referente,convalida FROM s_ipadd where email1 LIKE '%\@uniroma1.it' order by id 
 End_SQL
 
 # Execute the query
@@ -107,7 +107,8 @@ my @apmac = qw(00:16:46:6b:29:16 20:aa:4b:6e:3a:06 20:aa:4b:6e:3a:06 00:1c:58:8e
 # Fetch each row and print it
 while ( my ($id_old,$data,$email,$type,$subtype,$location,$mac,$hostname,$subnet,$host,$tempodet,$g_type,$g_fullname,$g_tel,$g_email,$g_date_out,$id,$stato) = $sth->fetchrow_array() ) {
     $count++;
-    next if $stato == 0; #SEMBRA siano solo 32 secondo simone
+    my $state = 2;
+    #next if $stato == 0; #SEMBRA siano solo 32 secondo simone
     my $user_ldap = $self->schema->resultset('UserLDAP')->search({email=>$email})->single;
     
     # -- richieste con referente mancante -- 
@@ -115,7 +116,11 @@ while ( my ($id_old,$data,$email,$type,$subtype,$location,$mac,$hostname,$subnet
         $BUG_ERR{$id_old} = $id_old;
         next;
     }
-    
+
+    if(!defined($subnet) or $subnet eq ""){
+	   $state = 0;    
+    } 
+
     # -- richieste con Associazione Area-Referente mancante nel file -- 
     if(!defined $self->area_map->{$id}) {
        #$self->log->error("$countref - Area (id $id) non trovata. ID referente $id");
@@ -166,7 +171,7 @@ while ( my ($id_old,$data,$email,$type,$subtype,$location,$mac,$hostname,$subnet
         $self->schema->resultset('Alias')->create({
             cname       => $hostname,
             ip_request  => $ipreq->id,
-            state       => 2,
+            state       => $state,
             }) if defined $ipreq;
         $self->log->error($count." Alias di ".$subnet.".".$host);
         $self->log->error("Alias non aggiunto: IP non trovato") if(!defined $ipreq);
@@ -175,19 +180,16 @@ while ( my ($id_old,$data,$email,$type,$subtype,$location,$mac,$hostname,$subnet
         #next;
     } else { next; }
 
-    #if ( my $doppione = $self->schema->resultset('IPRequest')->search({-and => 
+    #if ( defined $subnet and my $doppione = $self->schema->resultset('IPRequest')->search({-and => 
     #                                                 [ subnet => $subnet,
     #                                                   host   => $host,]
-    #                                               })->single  ) {
+    #                                               })->single ) {
     #    $self->log->error("Esiste già una richiesta per questo IP ".$subnet." ".$host);
     #    $DUP_ERR{$id_old} = $subnet.".".$host;
-#
-#    #   if($date > $doppione->date) {
-#    #        $doppione->delete;
-#    #    }else {
-#    #        next;
-#    #    }
-    #}
+    #    if($date > $doppione->date) {
+    #      $doppione->delete;
+    #      }  
+    #  }
 
 
     #my $guest = $self->schema->resultset('Guest')->search({email=>$g_email})->single;
@@ -202,13 +204,13 @@ while ( my ($id_old,$data,$email,$type,$subtype,$location,$mac,$hostname,$subnet
     #    });
     #  defined($guest) or $self->log->error("Guest ".$email." non trovato!");
     #}
-#
+
     #defined $location or $location = "sconosciuta";
     
     # -- richieste con tipo non definito --
     #if (!defined $type) {
-      #$count++;
-      #$self->log->error($count."Alias di ".$subnet.".".$host) if $type eq 'ALIAS';
+    #  #$count++;
+    #  #$self->log->error($count."Alias di ".$subnet.".".$host) if $type eq 'ALIAS';
     #  $self->log->error($count."Tipo non definito per ".$subnet.".".$host) if !defined $type;
     #  next;
     #}
@@ -219,19 +221,18 @@ while ( my ($id_old,$data,$email,$type,$subtype,$location,$mac,$hostname,$subnet
     #$type = 4 if $type eq 'CLIENT' and $subtype eq 2; # pc portatile
     #$type = 5 if $type eq 'CLIENT' and $subtype eq 3; # stampante
     #$type = 9 if $type eq 'CLIENT' and $subtype eq 0; # altro
-    #$type = 3 if $type eq 'SERVER' and $subtype eq 1; # ma che ho scritto?
     #$type = 2 if $type eq 'FIREWALL';
     #$type = 10 if $hostname =~ /marcatempo/i;
     
     # -- Controllo che i nodi WAP siano di Sapienza Wifi o AP personali --
     #if ( $type eq 'WAP') {
-    #  $countap++;
+    #  #$countap++;
     #  foreach my $apmac (@apmac) {
     #    $type = 8 if $apmac eq lc($mac); 
     #  }
     #  $countwifi++ if $type eq 8;
     #  $type = 7 if $type eq 'WAP';
-      #$countap++ if $type eq 7; 
+    #  $countap++ if $type eq 7; 
     #}
 
     #my $ipreq;
@@ -241,7 +242,7 @@ while ( my ($id_old,$data,$email,$type,$subtype,$location,$mac,$hostname,$subnet
     #    user         => $user_ldap->id,  #Cercare id su base email
     #    location     => $location,
     #    date         => $date,
-    #    state        => 2,
+    #    state        => $state,
     #    type         => $type,
     #    macaddress   => $mac,
     #    subnet       => $subnet,
@@ -256,7 +257,7 @@ while ( my ($id_old,$data,$email,$type,$subtype,$location,$mac,$hostname,$subnet
     #    user         => $user_ldap->id,  #Cercare id su base email
     #    location     => $location,
     #    date         => $date,
-    #    state        => 2,
+    #    state        => $state,
     #    type         => $type,
     #    macaddress   => $mac,
     #    subnet       => $subnet,
@@ -266,13 +267,11 @@ while ( my ($id_old,$data,$email,$type,$subtype,$location,$mac,$hostname,$subnet
     #}
     #undef $guest;
 
-    #$self->schema->resultset('IPAssignement')->create({date_in => $date, state => 2, ip_request => $ipreq->id});
+    #$self->schema->resultset('IPAssignement')->create({date_in => $date, state => 2, ip_request => $ipreq->id}) if $state eq 2;
    
     #$self->log->info("Richiesta IP aggiunta".$ipreq->id) if defined $ipreq;
-            
-    ###$self->schema->resultset('Area')->find($self->area_map->{$id})->update({manager => $user_ldap->id});
-
-    #$self->schema->resultset('UserRole')->update_or_create({user_id => $user_ldap->id,role_id => 3});
+       
+    $self->schema->resultset('UserRole')->update_or_create({user_id => $user_ldap->id,role_id => 2});
 }
 
 
@@ -295,10 +294,10 @@ $self->log->info("DUP:".scalar(keys (%DUP_ERR)));
 #$self->log->info(Dumper(\%DUP_ERR));
 
 $self->log->info("ALIAS:".scalar(keys (%ALIAS_ERR)));
-#$self->log->info(Dumper(\%ALIAS_ERR));
+$self->log->info(Dumper(\%ALIAS_ERR));
 
 $self->log->info("MAC:".scalar(keys (%MAC_ERR)));
-$self->log->info(Dumper(\%MAC_ERR));
+#$self->log->info(Dumper(\%MAC_ERR));
 
 $self->log->info("Record totali: $count - SapienzaWifi: $countwifi di AP totali: $countap");
 }

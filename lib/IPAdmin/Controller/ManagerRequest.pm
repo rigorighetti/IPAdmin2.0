@@ -93,6 +93,35 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
 	    },  $c->stash->{resultset}->search({}, {prefetch => ['department', 'user']});
    
    $c->stash( request_table => \@managerrequest_table );
+   # -- Costruzione dei contatori della legenda --
+   my %stats;
+   $stats{nuove}       =  $c->model('IPAdminDB::ManagerRequest')->search({state => $IPAdmin::NEW })->count();
+   $stats{attivi}      =  $c->model('IPAdminDB::ManagerRequest')->search({state => $IPAdmin::ACTIVE })->count();
+   $stats{archiviati}  =  $c->model('IPAdminDB::ManagerRequest')->search({state => $IPAdmin::ARCHIVED})->count();
+   
+    # Gestisce la grandezza dei pallini della legenda in base al numero a 2,3,4 o 5 cifre.
+    my @stati = qw {nuove validate attivi archiviati}; 
+    foreach (@stati) {
+        if     ($stats{$_} < 100)       { $stats{"raggio_$_"} = 15;
+                                          $stats{"posx_$_"}   = 27 if ($_ eq "nuove" or $_ eq "validate");
+                                          $stats{"posx_$_"}   = 241 if ($_ eq "attivi" or $_ eq "archiviati"); 
+                                      }
+        elsif  ($stats{$_} < 1000)      { $stats{"raggio_$_"} = 17.5;   
+                                          $stats{"posx_$_"}   = 22.5 if ($_ eq "nuove" or $_ eq "validate");
+                                          $stats{"posx_$_"}   = 236.5 if ($_ eq "attivi" or $_ eq "archiviati"); 
+                                      }
+        elsif  ($stats{$_} < 10000)     { $stats{"raggio_$_"} = 20;   
+                                          $stats{"posx_$_"}   = 19.5 if ($_ eq "nuove" or $_ eq "validate");
+                                          $stats{"posx_$_"}   = 233.5 if ($_ eq "attivi" or $_ eq "archiviati"); 
+                                      }
+        elsif  ($stats{$_} < 100000)    { $stats{"raggio_$_"} = 22.5;   
+                                          $stats{"posx_$_"}   = 15 if ($_ eq "nuove" or $_ eq "validate");
+                                          $stats{"posx_$_"}   = 230 if ($_ eq "attivi" or $_ eq "archiviati"); 
+                                      }
+    
+    }
+
+   $c->stash(%stats);
    $c->stash( template        => 'managerrequest/list.tt' );
 }
 
@@ -163,10 +192,7 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
     my $req = $c->stash->{object};
     my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
 
-    $c->stash( default_backref => $c->uri_for_action( 'userldap/view', [$user->username] ) );
-    $realm eq "normal" and $c->stash( default_backref => $c->uri_for_action('/managerrequest/list'));
-
-
+    $c->stash( default_backref => $c->uri_for_action('/managerrequest/list') );
 
     if($req->state != $IPAdmin::NEW){
         $c->flash( message => 'Solo le richieste non ancora validate possono essere modificate.');
@@ -180,6 +206,8 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
         my $done = $c->forward('process_edit');
         if ($done) {
             $c->flash( message => $c->stash->{message} );
+            $c->stash( default_backref =>
+                $c->uri_for_action( "managerrequest/list" ) );
             $c->detach('/follow_backref');
         }
     }
