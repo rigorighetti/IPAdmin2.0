@@ -4,7 +4,22 @@
    section='Richieste'
 -%]
 
-<div class="buttons create_btn">
+<div class="right">
+      <svg height="160" width="300">
+         <rect x="5" y="5" rx="20" ry="20" width="275" height="130" style="fill:white;stroke:black;stroke-width:3;opacity:0.5" />
+         <text x="80" y="25" fill="black">Legenda richieste</text> 
+         <!-- raggio cerchio = 2 cifre: 15, 3 cifre: 17.5, 4 cifre: 20, 5 cifre: 22.5 --> 
+          <circle cx="35" cy="50" r="[%raggio_nuove%]" stroke="#E2667A" stroke-width="2" fill="#F97A7A" />
+            <text x="[%posx_nuove%]" y="55" fill="white">[% nuove %]</text><text x="60" y="55" fill="#E2667A">Nuove</text>
+          <circle cx="250" cy="50" r="[%raggio_attivi%]" stroke="#68B831" stroke-width="2" fill="#7FCD31" />
+            <text x="[%posx_attivi%]" y="55" fill="white">[% attivi %]</text><text x="190" y="55" fill="#68B831">Attive</text>
+          <circle cx="250" cy="100" r="[%raggio_archiviati%]" stroke="#925ADA" stroke-width="2" fill="#A96FDA" />
+            <text x="[%posx_archiviati%]" y="105" fill="white">[% archiviati %]</text><text x="163" y="105" fill="#925ADA">Archiviate</text>
+      </svg> 
+</div>
+
+
+<div class="buttons create_btn left">
 <a href="[% c.uri_for_action('/managerrequest/create') %]" >
    [% ui_icon('circle-plus') %] Nuova Richiesta per Referente</a>
 [% add_css_create_btn %]

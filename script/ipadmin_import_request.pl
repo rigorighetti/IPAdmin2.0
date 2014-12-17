@@ -83,14 +83,14 @@ my $dbh = DBI->connect('DBI:mysql:database=prorete;hostname=151.100.4.23', 'root
 
 # Prepare the SQL query for execution
 my $sth = $dbh->prepare(<<End_SQL) or die "Couldn't prepare statement: $DBI::errstr; stopped";
-SELECT id_ref,email2_ref,nominativo1_ref,telefono1_ref,email1_ref,data_ref,corso_ref,struttura1_ref FROM s_referenti WHERE valido_ref = 1
+SELECT id_ref,email2_ref,nominativo1_ref,telefono1_ref,email1_ref,data_ref,corso_ref,struttura1_ref,valido_ref FROM s_referenti
 End_SQL
 
 # Execute the query
 $sth->execute() or die "Couldn't execute statement: $DBI::errstr; stopped";
 
 # Fetch each row and print it
-while ( my ($id,$email,$nom1,$tel,$email_dir,$data,$corso,$struttura) = $sth->fetchrow_array() ) {
+while ( my ($id,$email,$nom1,$tel,$email_dir,$data,$corso,$struttura,$valido_ref) = $sth->fetchrow_array() ) {
     my $user_ldap = $self->schema->resultset('UserLDAP')->search({email=>$email})->single;
     if(!defined $self->area_map->{$id}) {
        $self->log->error("Area (id $id) $struttura non trovata. ID referente $id");
@@ -108,6 +108,8 @@ while ( my ($id,$email,$nom1,$tel,$email_dir,$data,$corso,$struttura) = $sth->fe
         $self->log->error("Area ".$self->area_map->{$id}." non trovata nel nuovo IPAdmin");
         next;
     }
+    my $state = 0;
+    $state = 2 if($valido_ref eq 1 );
 
     if(defined($area->manager)){
 #      print $area->manager->fullname,"\n\n\n\n\n";
@@ -123,15 +125,15 @@ while ( my ($id,$email,$nom1,$tel,$email_dir,$data,$corso,$struttura) = $sth->fe
         date_in      => $date_in,
         date_out     => $date_out,
         skill        => $corso,
-        state        => 2,
+        state        => $state,
         #area         => $self->area_map->{$id},
         department   => $area->department->id,
         user         => $user_ldap->id,
         });
 
-    $self->schema->resultset('Area')->find($self->area_map->{$id})->update({manager => $user_ldap->id});
+    $self->schema->resultset('Area')->find($self->area_map->{$id})->update({manager => $user_ldap->id}) if $state == 2;
 
-    $self->schema->resultset('UserRole')->update_or_create({user_id => $user_ldap->id,role_id => 3});
+    $self->schema->resultset('UserRole')->update_or_create({user_id => $user_ldap->id,role_id => 3}) if $state == 2;
 }
 
 

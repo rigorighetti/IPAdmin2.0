@@ -35,7 +35,7 @@ sub options_building {
     my $builds = $self->schema->resultset('Building')->search(
         {},
         {
-            order_by => 'me.id',
+                    order_by => 'me.name',
         }
     );
     my @selections;

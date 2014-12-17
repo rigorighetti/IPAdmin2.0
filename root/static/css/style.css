@@ -375,6 +375,7 @@ div.section br {
 }
 
 div#tabs {
+    min-height: 250px;
     min-width: 1250px;
 }
 

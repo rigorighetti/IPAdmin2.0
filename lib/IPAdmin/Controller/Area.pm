@@ -123,16 +123,16 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
     $c->stash( subnets    => \@subnets );
     $c->stash( department => \@department );
     $c->stash( building   => \@building );
-
-    my @aree = $c->stash->{'object'}->department->map_area_build;
-
+    
     my @managers;
+    my $id_dep  = $c->stash->{'object'}->department->id;
+    my @man_req = $c->model('IPAdminDB::ManagerRequest')->search(department => $id_dep); 
     my $bit_map = {};
-    foreach my $area ( @aree ) {
-        next unless(defined($area->manager));
-        next if($bit_map->{$area->manager->id});
-        push @managers, { value => $area->manager->id, label => $area->manager->fullname};
-        $bit_map->{$area->manager->id} = 1;
+    foreach my $req ( @man_req ) {
+        next unless(defined($req->user));
+        next if($bit_map->{$req->user->id});
+        push @managers, { value => $req->user->id, label => $req->user->fullname};
+        $bit_map->{$req->user->id} = 1;
     }
     $c->stash( managers   => \@managers );
 

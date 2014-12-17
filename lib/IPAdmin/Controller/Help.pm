@@ -40,6 +40,14 @@ sub instruction : Path('view') Args(0) {
     $c->stash( template => 'help/index.tt' );
     my $page = $c->req->param("page");
     $c->stash(template => "help/$page.tt") if(defined $page);
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    if($realm eq "normal"){
+        $c->stash(visible => 1);
+	return;
+    }
+    my @aree = $user->managed_area;
+    scalar(@aree) and $c->stash(visible => 1);
+	
 }
 
 =head1 AUTHOR
