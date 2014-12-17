@@ -58,12 +58,9 @@ sub object : Chained('base') : PathPart('id') : CaptureArgs(1) {
         $c->detach('/error/index');
     }
 
-    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->session->{user_id}); 
+    !defined($user) and $c->detach('/access_denied');
     $c->stash(realm => $realm);
-
-
-
-#and $c->stash->{object}->user->id ne $user->id 
 
     if($realm  eq "ldap" ){
         #don'block if the user is the manager of that request
@@ -254,7 +251,8 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
 
     my $id;
 
-    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->session->{user_id}); 
+    !defined($user) and $c->detach('/access_denied');
     $c->stash( default_backref => $c->uri_for_action('userldap/view',[$user->username]) );
     $c->stash( default_backref => $c->uri_for_action('iprequest/list') ) if( $realm eq  "normal" );
 
@@ -449,7 +447,8 @@ sub process_edit : Private {
 sub create : Chained('base') : PathPart('create') : Args() {
     my ( $self, $c, $parent ) = @_;
     my $id;
-    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->session->{user_id}); 
+    !defined($user) and $c->detach('/access_denied');
     $c->stash( default_backref => $c->uri_for_action('userldap/view',[$user->username]) );
     $c->stash( default_backref => $c->uri_for_action('iprequest/list') ) if( $realm eq  "normal" );
 
@@ -713,7 +712,8 @@ sub validate : Chained('object') : PathPart('validate') : Args(0) {
     my $req = $c->stash->{'object'};
     my $error_flag = 0;
 
-    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->session->{user_id}); 
+    !defined($user) and $c->detach('/access_denied');
     $c->stash( default_backref => $c->uri_for_action('userldap/view',[$user->username]) );
     $c->stash( default_backref => $c->uri_for_action('iprequest/list') ) if( $realm eq  "normal" );
 
@@ -886,7 +886,8 @@ sub process_validate : Private {
 sub activate : Chained('object') : PathPart('activate') : Args(0) {
     my ( $self, $c ) = @_;
     my $req = $c->stash->{'object'};
-   my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->session->{user_id}); 
+    !defined($user) and $c->detach('/access_denied');
     $c->stash( default_backref => $c->uri_for_action('userldap/view',[$user->username]) );
     $c->stash( default_backref => $c->uri_for_action('iprequest/list') ) if( $realm eq  "normal" );
 
@@ -947,10 +948,11 @@ il delete deve archiviare prima la richiesta e poi cancellarla.
 sub delete : Chained('object') : PathPart('delete') : Args(0) {
     my ( $self, $c ) = @_;
     my $iprequest = $c->stash->{'object'};
-    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->session->{user_id});
+    if(defined $user){
     $c->stash( default_backref => $c->uri_for_action('userldap/view',[$user->username]) );
     $c->stash( default_backref => $c->uri_for_action('iprequest/list') ) if( $realm eq  "normal" );
-
+    }
   
     if ( lc $c->req->method eq 'post' ) {
         #Archivia la richiesta

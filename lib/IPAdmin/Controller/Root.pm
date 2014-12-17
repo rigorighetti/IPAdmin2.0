@@ -41,7 +41,6 @@ sub index : Path : Args(0) {
 
 sub auto : Private {
   my ( $self, $c ) = @_;
-        use Data::Dumper;
 
   if ( $c->controller eq $c->controller('Auth') ) {
    return 1;
@@ -60,7 +59,7 @@ sub auto : Private {
        return 0;
    }
 
-  my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->session->{user_id}); 
 
   if($realm eq 'ldap' and defined($user) ){
     if(!$user->active){

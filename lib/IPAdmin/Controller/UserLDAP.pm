@@ -33,7 +33,7 @@ Catalyst Controller.
 
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
-    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->session->{user_id});
     $c->stash( default_backref => $c->uri_for_action( 'userldap/view', [$user->username] ) );
     $realm eq "normal" and $c->stash( default_backref => $c->uri_for_action('iprequest/list'));
     $c->detach('/follow_backref');
@@ -59,7 +59,7 @@ sub object : Chained('base') : PathPart('username') : CaptureArgs(1) {
     $cn = lc($cn);
     $c->stash( username => $cn );
     my $local_user = $c->stash->{resultset}->search({username => $cn })->single;
-    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->session->{user_id});
 
 
 
@@ -364,21 +364,25 @@ sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
     $c->stash(col_formatters => {
         id => sub {
             my ($c, $rs)= @_;
-            return $rs->id;
+            defined $rs ? return $rs->id : '';
         },
         username => sub {
             my ($c, $rs)= @_;
-            return'<a id="click_ref" href="' .
-              $c->uri_for_action('/userldap/view',  [ $rs->username ]) .
-                '">' . $rs->username . '</a>';
+            my $username = '';
+            defined $rs and $username = $rs->username;
+            $username ne '' ?
+                        return'<a id="click_ref" href="' .
+              $c->uri_for_action('/userldap/view',  [ $username ]) .
+                '">' . $username . '</a>' :
+                        return '';
         },
         fullname => sub {
             my ($c, $rs)= @_;
-            return $rs->fullname;
+            defined $rs ? return $rs->fullname : '';
         },
         email => sub {
             my ($c, $rs)= @_;
-            return $rs->email;
+            defined $rs ? return $rs->email : '';
         },
     });
 

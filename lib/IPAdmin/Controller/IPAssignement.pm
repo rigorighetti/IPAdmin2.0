@@ -104,7 +104,8 @@ Catalyst Controller.
  sub save : Private {
      my ( $self, $c ) = @_;
     #user info
-    my $user = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->session->{user_id}); 
+    !defined($user) and $c->detach('/access_denied');
     my $item = $c->stash->{object} || 
          $c->stash->{resultset}->new_result( {user => $user->id} );
 
@@ -151,7 +152,8 @@ sub create : Chained('base') : PathPart('create') : Args() {
     }
     #set form defaults
     my %tmpl_param;
-    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->session->{user_id}); 
+    !defined($user) and $c->detach('/access_denied');
 
     if($realm eq "normal") {
         #se non è un utente ldap ci deve stare un campo select per l'utente ldap

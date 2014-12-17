@@ -190,7 +190,7 @@ TODO
 sub edit : Chained('object') : PathPart('edit') : Args(0) {
     my ( $self, $c ) = @_;     
     my $req = $c->stash->{object};
-    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->session->{user_id});
 
     $c->stash( default_backref => $c->uri_for_action('/managerrequest/list') );
 
@@ -264,7 +264,7 @@ sub process_edit : Private {
 sub create : Chained('base') : PathPart('create') : Args() {
     my ( $self, $c, $parent ) = @_;
     my $id;
-    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->session->{user_id});
     $c->stash( default_backref => $c->uri_for_action('userldap/view',[$user->username]) );
     $realm eq "normal" and 
                  $c->stash( default_backref => $c->uri_for_action('managerrequest/list') );

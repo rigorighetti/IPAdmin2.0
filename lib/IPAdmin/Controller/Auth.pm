@@ -57,6 +57,7 @@ sub login : Local : CaptureArgs(0) {
                 }, 'ldap'
             )){
          	$c->flash( message => 'Logged In!' );
+          $c->session(user_id => $username);
 
 	 	if($c->user_in_realm('normal')){	
 		 $c->detach('/follow_backref');
@@ -84,6 +85,7 @@ sub logout : Local : CaptureArgs(0) {
 
     $c->logout();
     $c->stash( message => 'You have been logged out.' );
+    $c->session(user_id => undef);
 }
 
 =head2 access_denied

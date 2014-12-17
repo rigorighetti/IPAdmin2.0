@@ -98,7 +98,8 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
     my ( $self, $c ) = @_;     
 
     my $id;
-    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->user->username);
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->session->{user_id}); 
+    !defined($user) and $c->detach('/access_denied');
     $c->stash( default_backref => $c->uri_for_action('area/view',[$c->stash->{'object'}->id]) );
 
     if ( lc $c->req->method eq 'post' ) {
