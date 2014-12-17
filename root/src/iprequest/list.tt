@@ -30,7 +30,7 @@
 [% add_css_create_btn %]
 </div>
 
-[% init_table("ipreq",null,{sortby => '0', order => "asc"},json_url=c.uri_for('list/js')) -%]
+[% init_table("ipreq",null,{sortby => '0', order => "desc"},json_url=c.uri_for('list/js')) -%]
 <table class="display dataTable" id="ipreq">
 <thead>
 <tr>

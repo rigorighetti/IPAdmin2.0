@@ -86,25 +86,33 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
    $stats{archiviati}  =  $c->model('IPAdminDB::Alias')->search({state => $IPAdmin::ARCHIVED})->count();
 
     # Gestisce la grandezza dei pallini della legenda in base al numero a 2,3,4 o 5 cifre.
-    my @stati = qw {nuove validate attivi archiviati}; 
-    foreach (@stati) {
-        if     ($stats{$_} < 100)       { $stats{"raggio_$_"} = 15;
-                                          $stats{"posx_$_"}   = 27 if ($_ eq "nuove" or $_ eq "validate");
-                                          $stats{"posx_$_"}   = 241 if ($_ eq "attivi" or $_ eq "archiviati"); 
+    my @stati = qw {nuove validate attivi archiviati};
+    foreach (@stati) { 
+     if     ($stats{$_} < 100)       { $stats{"raggio_$_"} = 15;
+                                          $stats{"posx_$_"}   = 27  if $_ eq "nuove" ;
+                                          $stats{"posx_$_"}   = 122 if $_ eq "validate";
+                                          $stats{"posx_$_"}   = 262 if $_ eq "attivi";
+                                          $stats{"posx_$_"}   = 362 if $_ eq "archiviati";
                                       }
-        elsif  ($stats{$_} < 1000)      { $stats{"raggio_$_"} = 17.5;   
-                                          $stats{"posx_$_"}   = 22.5 if ($_ eq "nuove" or $_ eq "validate");
-                                          $stats{"posx_$_"}   = 236.5 if ($_ eq "attivi" or $_ eq "archiviati"); 
+        elsif  ($stats{$_} < 1000)      { $stats{"raggio_$_"} = 17.5;
+                                          $stats{"posx_$_"}   = 22.5  if $_ eq "nuove" ;
+                                          $stats{"posx_$_"}   = 117.5 if $_ eq "validate";
+                                          $stats{"posx_$_"}   = 257.5 if $_ eq "attivi";
+                                          $stats{"posx_$_"}   = 357.5 if $_ eq "archiviati";
                                       }
-        elsif  ($stats{$_} < 10000)     { $stats{"raggio_$_"} = 20;   
-                                          $stats{"posx_$_"}   = 19.5 if ($_ eq "nuove" or $_ eq "validate");
-                                          $stats{"posx_$_"}   = 233.5 if ($_ eq "attivi" or $_ eq "archiviati"); 
+        elsif  ($stats{$_} < 10000)     { $stats{"raggio_$_"} = 20;
+                                          $stats{"posx_$_"}   = 19.5  if $_ eq "nuove" ;
+                                          $stats{"posx_$_"}   = 114.5 if $_ eq "validate";
+                                          $stats{"posx_$_"}   = 253.5 if $_ eq "attivi";
+                                          $stats{"posx_$_"}   = 354.5 if $_ eq "archiviati";
                                       }
-        elsif  ($stats{$_} < 100000)    { $stats{"raggio_$_"} = 22.5;   
-                                          $stats{"posx_$_"}   = 15 if ($_ eq "nuove" or $_ eq "validate");
-                                          $stats{"posx_$_"}   = 230 if ($_ eq "attivi" or $_ eq "archiviati"); 
-                                      }
-    
+        elsif  ($stats{$_} < 100000)    { $stats{"raggio_$_"} = 22.5;
+                                          $stats{"posx_$_"}   = 15    if $_ eq "nuove" ;
+                                          $stats{"posx_$_"}   = 110   if $_ eq "validate";
+                                          $stats{"posx_$_"}   = 250   if $_ eq "attivi";
+                                          $stats{"posx_$_"}   = 350   if $_ eq "archiviati";   
+
+					}
     }
 
    $c->stash(%stats);
@@ -231,7 +239,7 @@ sub create : Chained('base') : PathPart('create') : Args(0) {
         if ($done) {
             $c->flash( message => $c->stash->{message} );
             $c->stash( default_backref =>
-                $c->uri_for_action( "alias/list" ) ); # da cambiare!
+                $c->uri_for_action( "alias/list" ) )if ( $realm eq  "normal" ); # da cambiare!
             $c->detach('/follow_backref');
         }
     }
@@ -448,7 +456,7 @@ EOF
 
 
     my $email = {
-            from    => 'w3.staff@uniroma1.it',
+            from    => 'ipsapienza@uniroma1.it',
             to      => $to,
             cc      => $cc,
             subject => $subject,
