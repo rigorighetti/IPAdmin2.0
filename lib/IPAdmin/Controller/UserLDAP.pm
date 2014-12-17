@@ -383,6 +383,7 @@ sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
         email => sub {
             my ($c, $rs)= @_;
             defined $rs ? return $rs->email : '';
+            return $rs->fullname || '';
         },
     });
 
