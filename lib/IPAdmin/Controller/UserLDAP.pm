@@ -63,8 +63,8 @@ sub object : Chained('base') : PathPart('username') : CaptureArgs(1) {
 
 
 
-    if($realm  eq "ldap" and $cn ne $user->username ){
-        $c->detach('/access_denied');
+    if($realm  eq "ldap" and defined $user ){
+        $c->detach('/access_denied') if($cn ne $user->username);
     }
     $c->stash( object => $local_user ) if($local_user);
     if ( !$local_user  ) {
