@@ -63,7 +63,7 @@
       <div class="title">Dati dell'Apparato</div>
       <div class="section">
         <span class="left">Tipo:</span> <span class="right">[% object.type.type %]</span><br>
-        <span class="left">Stanza:</span> <span class="right">[% object.location %]</span><br>
+        <span class="left">Ubicazione:</span> <span class="right">[% object.location %]</span><br>
         <span class="left">Mac Address:</span> <span class="right">
           [%IF realm == "normal" %]
           <a href="[% manoc_link %]/mac/[% object.macaddress%]"> 
@@ -98,7 +98,7 @@
            <br><hr>
            <span class="left">Indirizzo IP:</span> <span class="right"><b>
             [% IF object.subnet && object.host -%]
-              [%IF realm %]
+              [%IF realm == "normal" %]
                 <a href="[% manoc_link %]/ip/151.100.[% object.subnet.id %].[% object.host %]/view" target="_blank"> 
                   151.100.[% object.subnet.id %].[% object.host %] 
                 </a>

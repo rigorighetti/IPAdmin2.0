@@ -27,7 +27,7 @@
       <div class="title">Dati dell'Apparato</div>
       <div class="section">
         <span class="left">Tipo:</span> <span class="right">[% object.type.type %]</span><br>
-        <span class="left">Stanza:</span> <span class="right">[% object.location %]</span><br>
+        <span class="left">Ubicazione:</span> <span class="right">[% object.location %]</span><br>
         <span class="left">Mac Address:</span> <span class="right">
            [% object.macaddress%]
          </span><br>

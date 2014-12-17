@@ -13,12 +13,12 @@
 	</tr>
 	<tr>
 		<td><label>Hostname:</label></td>
-		<td>[% hostname %].uniroma1.it</td>
+		<td>[% hostname %].[% dominio %].uniroma1.it</td>
  		<td></td>
 	</tr>
 	<tr>
 		<td><label>Alias<label></td>
-		<td><input type="text" name="alias" value="[%alias%]" /></td>
+		<td><input type="text" name="alias" value="[%alias%]" />.uniroma1.it</td>
 		<td> [% IF error.alias %]<span class="error" id="error">[% error.alias %] </span>[%END%] </td>
 	</tr>
 	<tr>

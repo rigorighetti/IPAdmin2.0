@@ -67,8 +67,8 @@ sub _build_transport {
         ssl      => 1, 
         port     => 465,
         timeout => 10,
-        sasl_username => 'w3.staff@uniroma1.it',
-        sasl_password => 'C1t1c0rd',
+        sasl_username => 'ipsapienza@uniroma1.it',
+        sasl_password => 'grecia69',
     });
 }
 
@@ -424,7 +424,7 @@ sub send_email {
     my $email = Email::Simple->create(
     header =>  [ 
       To      => $to,
-      From    => 'w3 staff@uniroma1.it',
+      From    => 'ipsapienza@uniroma1.it',
       Subject => $subject,
       Cc      => $cc,
     ],

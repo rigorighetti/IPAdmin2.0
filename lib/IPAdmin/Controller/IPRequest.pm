@@ -1057,19 +1057,20 @@ EOF
     }
     elsif ($ipreq->state == $IPAdmin::ARCHIVED) {
         #A seguito di ipreq/delete, preparo il messaggio per l'utente: "Rinuncia dell'indirizzo IP terminata con successo"
+	my $ip = "151.100.".$ipreq->subnet->id.".".$ipreq->host;
         $body = <<EOF;
 Gentile Utente,
-il suo indirizzo IP, relativo alla richiesta id: ".$ipreq->id.", è stato archiviato.
+il suo indirizzo IP $ip è stato archiviato.
     $url
 EOF
-        $subject = "Richiesta di indirizzo IP id: ".$ipreq->id." archiviata";
+        $subject = "Richiesta di indirizzo IP $ip con id: ".$ipreq->id." archiviata";
     }
     else { #perchè hai richiamato questo metodo?
     }
 
 
     my $email = {
-            from    => 'w3.staff@uniroma1.it',
+            from    => 'ipsapienza@uniroma1.it',
             to      => $to,
             cc      => $cc,
             subject => $subject,
@@ -1079,7 +1080,7 @@ EOF
     $c->stash(email => $email);
 
     $c->log->debug(Dumper($email));
-    $c->forward( $c->view('Email') );
+    #$c->forward( $c->view('Email') );
 
     if ( scalar( @{ $c->error } ) ) {
         $c->flash(error_msg => "Errore nell'invio dell'Email. ".Dumper($c->error));
