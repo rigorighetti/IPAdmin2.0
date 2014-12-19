@@ -154,6 +154,10 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
         $c->detach('/follow_backref');
     }
     else {
+        if(defined $subnet->map_iprequest){
+            $c->flash(error_msg => ' Impossibile procedere alla cancellazione. Esistono delle richieste IP attive in questa subnet!');
+            $c->detach('/follow_backref');
+        }
         $c->stash( template => 'generic_delete.tt' );
     }
 }

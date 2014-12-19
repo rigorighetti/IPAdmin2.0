@@ -37,7 +37,7 @@ sub index : Path : Args(0) {
     $c->stash( default_backref => $c->uri_for_action( 'userldap/view', [$user->username] ) );
     $realm eq "normal" and $c->stash( default_backref => $c->uri_for_action('iprequest/list'));
     $c->detach('/follow_backref');
-    $c->detach();
+    #$c->detach();
 }
 
 =head2 base
@@ -93,12 +93,18 @@ sub list : Chained('base') : PathPart('list') : Args(0) {
 
 sub listmanager : Chained('base') : PathPart('listmanager') : Args(0) {
     my ( $self, $c ) = @_;
+    my @area_table = $c->model('IPAdminDB::Area')->search(
+        {'me.manager' => {'!='=> undef}},{prefetch => [{building => {vlan => 'map_subnet'}},'manager',
+                          'department',{filter_subnet=> 'area'}]
+        });
+    my %subnet;
+    foreach my $area (@area_table){
+       my @filtered = $area->filtered->all;
+       $subnet{$area->id}  =  \@filtered;
+    }
 
-    my $user_schema = $c->stash->{resultset};
-    my @man_table   = $user_schema->search({},{prefetch => 'is_manager', group_by => 'username'});
-
-
-    $c->stash( man_table => \@man_table );
+    $c->stash( man_table => \@area_table );
+    $c->stash( filtered => \%subnet );
     $c->stash( template  => 'userldap/listmanager.tt' );
 }
 
@@ -299,49 +305,49 @@ sub switch_status : Chained('object') : PathPart('switch_status') : Args(0) {
 }
 
 sub set_manager : Chained('object') : PathPart('set_manager') : Args(0) {
-    my ( $self, $c ) = @_;
-    my $user_id = $c->stash->{'object'}->id;
-    my $item = $c->model('IPAdminDB::Area')->new_result( {manager => $user_id} );
+    # my ( $self, $c ) = @_;
+    # my $user_id = $c->stash->{'object'}->id;
+    # my $item = $c->model('IPAdminDB::Area')->new_result( {manager => $user_id} );
 
-    $c->stash(manager_id => $user_id );
-     #set the default backref according to the action (create or edit)
-     my $def_br = $c->uri_for_action( '/userldap/list' );
-     $c->stash( default_backref => $def_br );
+    # $c->stash(manager_id => $user_id );
+    #  #set the default backref according to the action (create or edit)
+    #  my $def_br = $c->uri_for_action( '/userldap/list' );
+    #  $c->stash( default_backref => $def_br );
 
-     my $form = IPAdmin::Form::SetManager->new( item => $item );
-     $c->stash( form => $form, template => 'userldap/set_manager.tt' );
+    #  my $form = IPAdmin::Form::SetManager->new( item => $item );
+    #  $c->stash( form => $form, template => 'userldap/set_manager.tt' );
 
-     # the "process" call has all the saving logic,
-     #   if it returns False, then a validation error happened
+    #  # the "process" call has all the saving logic,
+    #  #   if it returns False, then a validation error happened
 
-     if ( $c->req->param('discard') ) {
-         $c->detach('/follow_backref');
-     }
-    return unless $form->process( params => $c->req->params, );
+    #  if ( $c->req->param('discard') ) {
+    #      $c->detach('/follow_backref');
+    #  }
+    # return unless $form->process( params => $c->req->params, );
 
-    $c->flash( message => "L'Utente è ora un referente" );
-    #Set user's roles
-    my @user_roles = $c->model('IPAdminDB::UserRole')->search( { 'user_id' => $user_id } );
+    # $c->flash( message => "L'Utente è ora un referente" );
+    # #Set user's roles
+    # my @user_roles = $c->model('IPAdminDB::UserRole')->search( { 'user_id' => $user_id } );
 
-    foreach my $role (@user_roles){
-      if($role eq "manager"){
-            #l'utente è già referente
-	    $c->detach('/follow_backref');
-        }
-     }
+    # foreach my $role (@user_roles){
+    #   if($role eq "manager"){
+    #         #l'utente è già referente
+	   #  $c->detach('/follow_backref');
+    #     }
+    #  }
 
-     #Add new roles
-     my $user_role_id = $c->model('IPAdminDB::Role')->search( { 'role' => "manager"} )->single;
-     if ($user_role_id) {
-       $c->model('IPAdminDB::UserRole')->update_or_create(
-               {
-                   user_id => $user_id,
-                   role_id => $user_role_id->id,
-               }
-           );
-     }
+    #  #Add new roles
+    #  my $user_role_id = $c->model('IPAdminDB::Role')->search( { 'role' => "manager"} )->single;
+    #  if ($user_role_id) {
+    #    $c->model('IPAdminDB::UserRole')->update_or_create(
+    #            {
+    #                user_id => $user_id,
+    #                role_id => $user_role_id->id,
+    #            }
+    #        );
+    #  }
 
-    $c->detach('/follow_backref');
+    # $c->detach('/follow_backref');
 }
 
 =head2 list_js
@@ -351,10 +357,10 @@ sub set_manager : Chained('object') : PathPart('set_manager') : Args(0) {
 sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
     my ($self, $c) = @_;
 
-    my @col_names = qw(id username fullname email); #TODO roles active
+    my @col_names = qw(username fullname email); #TODO roles active
 
     $c->stash(col_names => \@col_names);
-    my @col_searchable = qw( me.id me.username me.fullname me.email );
+    my @col_searchable = qw( me.username me.fullname me.email );
     $c->stash(col_searchable => \@col_searchable);
 
     # $c->stash(resultset_search_opt =>
@@ -362,10 +368,6 @@ sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
 
 
     $c->stash(col_formatters => {
-        id => sub {
-            my ($c, $rs)= @_;
-            defined $rs ? return $rs->id : '';
-        },
         username => sub {
             my ($c, $rs)= @_;
             my $username = '';
@@ -378,11 +380,11 @@ sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
         },
         fullname => sub {
             my ($c, $rs)= @_;
-            defined $rs ? return $rs->fullname : '';
+            defined $rs ? return $rs->fullname : return '';
         },
         email => sub {
             my ($c, $rs)= @_;
-            defined $rs ? return $rs->email : '';
+            defined $rs ? return $rs->email : return '';
             return $rs->fullname || '';
         },
     });

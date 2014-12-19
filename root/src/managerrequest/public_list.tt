@@ -5,32 +5,30 @@
 -%]
 
 
-[% FOREACH i IN request_table %]
+[% FOREACH i IN man_table %]
    [% IF loop.first %] 
-     [%init_table('request', [40,15,10,20,10]) %]  
+     [%init_table('request') %]  
     <table class="display" id="request">
       <thead>  
-	      <tr>
-         <th>Dipartimento</th>
- 	       <th>Nome</th>
-	       <th>Telefono</th>
+        <tr>
+         <th>Nome e Cognome</th>
          <th>Email</th>
+         <th>Area</th>
          <th>Subnet</th>
         </tr>
       </thead>  
       <tbody>
      [% END %]
+    [% area_id = i.id %]
      <tr>
- 	    <td>[% i.department.name %] </td>
- 	    <td>[% i.user.fullname %]   </td>
-      <td>[% i.user.telephone %]  </td>
-      <td>[% i.user.email %]      </td>
-	    <td>
-            [% FOREACH s IN i.subnets -%]   
-              [% s.id %]
-             [% UNLESS loop.last %], [% END -%]
-            [%END%]
-      </td>
+     <td>[% i.manager.fullname %]</td>
+     <td>[% i.manager.email %]</td>
+     <td>[%i.department.name%] presso [% i.building.name %] in [% i.building.address %] </td>
+     <td>[% FOREACH i IN filtered.$area_id  -%] 
+          [% i.id %]
+          [% UNLESS loop.last %], [% END -%]
+         [%END%]
+     </td>
      </tr>
   [% IF loop.last %]
       </tbody>

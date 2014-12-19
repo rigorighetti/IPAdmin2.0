@@ -374,9 +374,12 @@ sub process_edit : Private {
     #state == 4 archiviata
     my $ret;
 
-    #sanitize hostname 
+    #sanitize input 
     $hostname =~ s/\s+//mxgo;
-    
+    $subnet ||= $c->stash->{'object'}->subnet->id;
+    $host   ||= $c->stash->{'object'}->host;
+
+
     if($c->stash->{realm} eq  "normal" ){
         if(!$fixed) {
             $ret = $c->stash->{'object'}->update({
@@ -616,7 +619,7 @@ sub check_ipreq_form : Private {
         $c->stash->{error_msg} = "Selezionare un utente";
         return 0;
     }
-    if ( $area eq '' and !defined($c->stash->{object}) ) {
+    if ( $area eq '' ) {
         $c->stash->{error_msg} = "Selezionare una struttura";
         return 0;
     }
@@ -658,6 +661,12 @@ sub check_ipreq_form : Private {
         }
       }
     }
+    if($host eq '' or $subnet eq ''){
+      if($c->stash->{'object'} and $c->stash->{'object'}->state eq $IPAdmin::PREACTIVE){
+        $c->stash->{error_msg} = "Subnet e Host devono essere assegnate!";
+        return 0; 
+      }
+    }
 
     # if ($schema->search({ macaddress => $mac})->count() > 0 ) {
     #  $c->stash->{error_msg} = "Mac Address già registrato!";
@@ -695,8 +704,6 @@ sub check_ipreq_form : Private {
 sub find_subnet : Private {
     my ( $c , $area, $subnet_id )  = @_;
     my ($e,$it);
-
-    print "TEST $area \n\n\n";
 
     my $ret = $c->model("IPAdminDB::Area")->find($area);
     my @subnets = $ret->building->vlan->map_subnet;
@@ -970,7 +977,6 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
          $c->forward('process_notify');
          $c->flash( message => 'Richiesta IP archiviata. '. $c->stash->{mail_message} );
 
-         $c->flash( default_backref => $c->uri_for_action('userldap/view') );
          $c->detach('/follow_backref');
    }
    else {
@@ -1057,10 +1063,11 @@ EOF
     }
     elsif ($ipreq->state == $IPAdmin::ARCHIVED) {
         #A seguito di ipreq/delete, preparo il messaggio per l'utente: "Rinuncia dell'indirizzo IP terminata con successo"
-	my $ip = "151.100.".$ipreq->subnet->id.".".$ipreq->host;
+	  my $ip;
+    defined $ipreq->subnet and $ip = "151.100.".$ipreq->subnet->id.".".$ipreq->host;
         $body = <<EOF;
 Gentile Utente,
-il suo indirizzo IP $ip è stato archiviato.
+La sua richiesta di indirizzo IP è stata archiviata.
     $url
 EOF
         $subject = "Richiesta di indirizzo IP $ip con id: ".$ipreq->id." archiviata";
@@ -1071,7 +1078,7 @@ EOF
 
     my $email = {
             from    => 'ipsapienza@uniroma1.it',
-            to      => $to,
+            to      => 'e.liguori@cineca.it',
             cc      => $cc,
             subject => $subject,
             body    => $body,
@@ -1079,7 +1086,7 @@ EOF
 
     $c->stash(email => $email);
 
-    $c->log->debug(Dumper($email));
+    #$c->log->debug(Dumper($email));
     #$c->forward( $c->view('Email') );
 
     if ( scalar( @{ $c->error } ) ) {

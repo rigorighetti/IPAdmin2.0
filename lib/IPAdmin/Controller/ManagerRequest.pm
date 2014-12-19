@@ -145,25 +145,18 @@ sub public_list : Chained('base') : PathPart('public_list') : Args(0) {
     #$c->model("IPAdminDB::IPRequest")->search({ state   => $IPAdmin::ACTIVE,
     #'area.department'    => $dep->id },{join => 'area'})
    
-    my @requests = $c->stash->{resultset}->search({state => $IPAdmin::ACTIVE}, {prefetch => ['department', 'user']})->all;
-    my @managerrequest_table;
-    foreach my $r (@requests){
-        my @aree =  $r->department->map_area_build;
-        my @subnets;
-        foreach my $a (@aree){   
-            push @subnets, $a->filtered;
-        }
-
-        push @managerrequest_table, {
-            department => $r->department,
-            user       => $r->user,
-            subnets    =>  \@subnets,
-            };
+   my @area_table = $c->model('IPAdminDB::Area')->search(
+        {'me.manager' => {'!='=> undef}},{prefetch => [{building => {vlan => 'map_subnet'}},'manager',
+                          'department',{filter_subnet=> 'area'}]
+        });
+    my %subnet;
+    foreach my $area (@area_table){
+       my @filtered = $area->filtered->all;
+       $subnet{$area->id}  =  \@filtered;
     }
-
-   
-   $c->stash( request_table => \@managerrequest_table );
-   $c->stash( template        => 'managerrequest/public_list.tt' );
+    $c->stash( man_table     => \@area_table );
+    $c->stash( filtered      => \%subnet );
+    $c->stash( template      => 'managerrequest/public_list.tt' );
 }
 
 =head2 view
@@ -296,7 +289,7 @@ sub create : Chained('base') : PathPart('create') : Args() {
     }
     #TODO ordinamento aree per nome dipartimento
     #my @aree  = $c->model('IPAdminDB::Area')->search({},{prefetch => ['department', 'building'], order_by => 'department.name'})->all;
-    my @departments  = $c->model('IPAdminDB::Department')->search({})->all;
+    my @departments  = $c->model('IPAdminDB::Department')->search({},{order_by => 'name'})->all;
 
     $tmpl_param{realm}     = $realm;
     $tmpl_param{user}      = $user;

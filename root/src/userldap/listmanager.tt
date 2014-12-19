@@ -10,22 +10,27 @@
     <table class="display" id="request">
       <thead>  
         <tr>
-         <th>Id</th>
-         <th>Username</th>
          <th>Nome e Cognome</th>
          <th>Email</th>
+         <th>Area</th>
+         <th>Subnet</th>
         </tr>
       </thead>  
       <tbody>
      [% END %]
-     [%IF i.is_manager != NULL%]
+    [% area_id = i.id %]
      <tr>
-      <td>[% i.id %]</td>
-      <td><a id="click_ref" href=[% c.uri_for_action('/userldap/view', [i.username]) %]>[% i.username %]</a></td>
-      <td>[% i.fullname %]</td>
-      <td>[% i.email %]</td>
+     <td><a id="click_ref" href=[% c.uri_for_action('/userldap/view', [i.manager.username]) %]>[% i.manager.fullname %]</a></td>
+     <td>[% i.manager.email %]</td>
+     <td><a href=[% c.uri_for_action('/area/view', [i.id]) %]> 
+         [%i.department.name%] presso [% i.building.name %] in [% i.building.address %] </a>
+     </td>
+     <td>[% FOREACH i IN filtered.$area_id  -%] 
+          <a href=[% c.uri_for_action('/subnet/view', [i.id]) %]>[% i.id %]</a> 
+          [% UNLESS loop.last %], [% END -%]
+        [%END%]
+     </td>
      </tr>
-     [%END%]
   [% IF loop.last %]
       </tbody>
     </table>

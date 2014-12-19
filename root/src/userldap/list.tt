@@ -8,7 +8,6 @@
 <table class="display dataTable" id="userldap">
 <thead>
 <tr>
-      <th>Id</th>
       <th>Username</th>
       <th>Nome e Cognome</th>
       <th>Email</th>

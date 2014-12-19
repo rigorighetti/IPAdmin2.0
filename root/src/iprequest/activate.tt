@@ -32,16 +32,16 @@
       </tr>    
       <tr>
 	<td>Indirizzo IP:</td><td>151.100.[% object.subnet.id -%].[% object.host -%]</td>
-      </tr>
-    </table>
-    [% add_css_tableinfo -%]
-    <p>
-	<div class="buttons">
+      </tr>     
+      <tr>
+        <td colspan="2" class="buttons-form">
+          <div class="buttons">
              <input type="submit" name="submit" value="Attiva la richiesta">
              <input type="submit" name="discard" value="Annulla">
         </div>
-    </p>
+        </td>
+       </tr>
+    </table>
+    [% add_css_tableinfo -%]
 
-   [% add_css_tableinfo %]
-  </div>
   

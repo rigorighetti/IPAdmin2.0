@@ -174,6 +174,10 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
         $c->detach('/follow_backref');
     }
     else {
+        if(defined $typerequest->request){
+            $c->flash(error_msg => ' Impossibile procedere alla cancellazione. Alcune richieste IP sono di questo tipo');
+            $c->detach('/follow_backref');
+        }
         $c->stash( template => 'generic_delete.tt' );
     }
 }

@@ -1,3 +1,4 @@
+
 # Copyright 2011 by the Manoc Team
 #
 # This library is free software. You can redistribute it and/or modify
@@ -41,8 +42,6 @@ sub login : Local : CaptureArgs(0) {
     $c->stash( template => 'auth/login.tt' );
     $c->keep_flash("backref");
 
-    $c->stash( default_backref => $c->uri_for('/userldap/list') );
-
     if ( defined( $c->req->params->{'username'} ) ) {
      my $username = lc($c->req->params->{'username'});
 	 if ($c->authenticate(
@@ -58,15 +57,15 @@ sub login : Local : CaptureArgs(0) {
             )){
          	$c->flash( message => 'Logged In!' );
           $c->session(user_id => $username);
-
-	 	if($c->user_in_realm('normal')){	
-		 $c->detach('/follow_backref');
-        	}
-		if($c->user_in_realm('ldap') ){
-		$c->response->redirect(
-          $c->uri_for_action( '/userldap/view', [$username] ) );
-      		$c->detach();
-		}
+          $c->detach('/follow_backref');
+	 # 	if($c->user_in_realm('normal')){	
+		#  $c->detach('/follow_backref');
+  #       	}
+		# if($c->user_in_realm('ldap') ){
+		# $c->response->redirect(
+  #         $c->uri_for_action( '/userldap/view', [$username] ) );
+  #     		$c->detach();
+		# }
           }
          #not authenticated
 	 $c->flash( error_msg => 'Invalid Login' );

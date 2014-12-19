@@ -465,7 +465,7 @@ EOF
 
     $c->stash(email => $email);
 
-    $c->forward( $c->view('Email') );
+    #$c->forward( $c->view('Email') );
 
     if ( scalar( @{ $c->error } ) ) {
         $c->flash(error_msg => "Errore nell'invio dell'Email. ".Dumper($c->error));

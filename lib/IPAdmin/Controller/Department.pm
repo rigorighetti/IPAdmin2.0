@@ -165,6 +165,10 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
         $c->detach('/follow_backref');
     }
     else {
+    	if(defined $c->model('IPAdminDB::ManagerRequest')->search({department => $id})->single){
+            $c->flash(error_msg => 'Impossibile procedere alla cancellazione. Esistono delle richieste per referenti in questo dipartimento!');
+            $c->detach('/follow_backref');
+        }
         $c->stash( template => 'generic_delete.tt' );
     }
 }

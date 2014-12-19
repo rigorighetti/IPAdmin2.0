@@ -143,8 +143,8 @@ __PACKAGE__->config(
                     ssl      => 1, 
                     port     => 465,
 		                timeout => 10,
-		    sasl_username => 'ipsapienza@uniroma1.it',
-                    sasl_password => 'grecia69',
+		    sasl_username => '',
+                    sasl_password => '',
             }
           }
         },
