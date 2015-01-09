@@ -1104,28 +1104,35 @@ EOF
 invia un update al dns aggiungendo o rimuovendo un record a seconda dello stato della richiesta
 =cut
 
-sub process_dnsupdate : Private {
-    my ( $self, $c ) = @_;
-    my $error;
-    my $ipreq = $c->stash->{object};
-    my $ret; #status invio update con Net::DNS
+sub dnsupdate : Chained('object') : PathPart('dnsupdate') : Args(0) {
+     my ( $self, $c ) = @_;
+    my $iprequest = $c->stash->{'object'};
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->session->{user_id});
+    if(defined $user){
+    $c->stash( default_backref => $c->uri_for_action('userldap/view',[$user->username]) );
+    $c->stash( default_backref => $c->uri_for_action('iprequest/list') ) if( $realm eq  "normal" );
+    }
+  
+    if ( lc $c->req->method eq 'post' ) {
+      
+        if ($iprequest->state == $IPAdmin::ACTIVE) {
+            #A seguito di iprequest/activate, invio update per aggiungere il record A nella zona corretta
+        } 
+        elsif ($iprequest->state == $IPAdmin::ARCHIVED) {
+            #A seguito di iprequest/delete, invio update per rimuovere il record A dalla zona corretta, e gli eventuali CNAME da qualsiasi zona
+        }
+        else { #perchè hai richiamato questo metodo?
+        }
+ 
+       
+         #$c->forward('process_notify');
+         $c->flash( message => 'Update inviato correttamente.');
 
-    if ($ipreq->state == $IPAdmin::ACTIVE) {
-        #A seguito di ipreq/activate, invio update per aggiungere il record A nella zona corretta
-    } 
-    elsif ($ipreq->state == $IPAdmin::ARCHIVED) {
-        #A seguito di ipreq/delete, invio update per rimuovere il record A dalla zona corretta, e gli eventuali CNAME da qualsiasi zona
-    }
-    else { #perchè hai richiamato questo metodo?
-    }
-
-    if (! $ret ) {
-    $c->stash->{message} = "Errore nell'invio dell'update.";
-    return 0;
-    } else {
-    $c->stash->{message} = "Update inviato correttamente.";
-    return 1;
-    }
+         $c->detach('/follow_backref');
+   }
+   else {
+       $c->stash( template => 'generic_confirm.tt' );
+   }
 }
 
 
