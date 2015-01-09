@@ -20,7 +20,7 @@
           <a href=[%c.uri_for_action('alias/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica</a><br>
           <a href=[% c.uri_for_action('alias/delete', [object.id]) %]> [% ui_icon('closethick') %]  Rinuncia</a><br>
           <a href=[%c.uri_for_action('alias/print', [object.id]) %]> [%ui_icon('print')%]Stampa</a><br>
-          <a href=[% c.uri_for_action('alias/dnsupdate', [object.id]) %]> [% ui_icon('circle-plus') %] Aggiorna DNS</a><br>
+         <!-- <a href=[% c.uri_for_action('alias/dnsupdate', [object.id]) %]> [% ui_icon('circle-plus') %] Aggiorna DNS</a><br> -->
          [% END -%]
          <a href=[%c.uri_for_action('alias/notify', [object.id]) %]> [%ui_icon('mail-closed')%]Invia notifica</a><br>
       </div>
