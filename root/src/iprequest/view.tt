@@ -26,7 +26,7 @@
          [% IF object.state != 4 -%] 
           <a href=[%c.uri_for_action('iprequest/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica Dati dell'Apparato</a><br>
           <a href=[% c.uri_for_action('iprequest/delete', [object.id]) %]> [% ui_icon('closethick') %]  Rinuncia</a><br>
-          <a href=[% c.uri_for_action('iprequest/dnsupdate', [object.id]) %]> [% ui_icon('circle-plus') %] Aggiorna DNS</a><br>
+       <!--   <a href=[% c.uri_for_action('iprequest/dnsupdate', [object.id]) %]> [% ui_icon('circle-plus') %] Aggiorna DNS</a><br> -->
          [% END -%]
          [% IF object.state == 2 -%] 
           <a href=[% c.uri_for_action('alias/create', {def_ipreq=>object.id }) %]> Aggiungi Alias[% ui_icon('circle-plus')%]</a><br>
