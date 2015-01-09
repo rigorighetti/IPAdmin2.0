@@ -12,6 +12,7 @@ extends 'HTML::FormHandler::Model::DBIC';
 has_field 'name' => (
 	type	 => 'Text',
 	required => 1,
+	label    => 'Nome Dipartimento',
 	apply	 => [
 		'Str',
 		{
@@ -24,7 +25,7 @@ has_field 'name' => (
 has_field 'description' => (
     type     => 'TextArea',
     required => 0,
-    label    => 'Descrizione Dipartimento',
+    label    => 'Descrizione',
     apply    => [
         'Str',
         {

@@ -390,6 +390,42 @@ sub process_activate : Private {
     }
 }
 
+=head2 dnsupdate
+invia un update al dns aggiungendo o rimuovendo un record a seconda dello stato della richiesta
+=cut
+
+sub dnsupdate : Chained('object') : PathPart('dnsupdate') : Args(0) {
+     my ( $self, $c ) = @_;
+    my $request = $c->stash->{'object'};
+    my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->session->{user_id});
+    if(defined $user){
+    $c->stash( default_backref => $c->uri_for_action('userldap/view',[$user->username]) );
+    $c->stash( default_backref => $c->uri_for_action('iprequest/list') ) if( $realm eq  "normal" );
+    }
+  
+    if ( lc $c->req->method eq 'post' ) {
+      
+        if ($request->state == $IPAdmin::ACTIVE) {
+            #A seguito di request/activate, invio update per aggiungere il record A nella zona corretta
+        } 
+        elsif ($request->state == $IPAdmin::ARCHIVED) {
+            #A seguito di request/delete, invio update per rimuovere il record A dalla zona corretta, e gli eventuali CNAME da qualsiasi zona
+        }
+        else { #perchè hai richiamato questo metodo?
+        }
+ 
+       
+         #$c->forward('process_notify');
+         $c->flash( message => 'Update inviato correttamente.');
+
+         $c->detach('/follow_backref');
+   }
+   else {
+       $c->stash( template => 'generic_confirm.tt' );
+   }
+}
+
+
 =head2 print
 
 =cut
