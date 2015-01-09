@@ -213,6 +213,13 @@
 
 [% IF object.managed_area -%]
  <div id="tabs-5">
+    <div class="right rightbox">
+      Legenda: 
+      <table>
+        <tr><td bgcolor="#F97A7A" width=20></td><td>Nuova</td><td bgcolor="#DFDD41" width=20></td><td>Convalidata</td>
+            <td bgcolor="#7FCD31" width=20></td><td>Attiva</td><td bgcolor="#A96FDA" width=20></td><td>Archiviata</td>
+        </table>
+    </div>
   [% FOREACH i IN requests %]
     [% IF loop.first %]
     [% init_table('requests',[3,4,10,11,45,7,15,2,3], {sortby => 0, order => 'desc'}) %]

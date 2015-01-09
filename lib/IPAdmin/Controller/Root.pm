@@ -114,7 +114,7 @@ sub access_denied : Private {
     my ( $self, $c ) = @_;
     $c->flash( backref => $c->req->uri );
     $c->stash( template  => 'auth/access_denied.tt' );
-    $c->stash( error_msg => "Sorry, you are not allowed to see this page!" );
+    $c->stash( error_msg => "Attenzione: non hai i permessi per visualizzare questa pagina!" );
 }
 
 =head1 AUTHOR

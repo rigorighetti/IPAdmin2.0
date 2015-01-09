@@ -11,20 +11,17 @@
          <!-- raggio cerchio = 2 cifre: 15, 3 cifre: 17.5, 4 cifre: 20, 5 cifre: 22.5 --> 
           <circle cx="35" cy="50" r="[%raggio_nuove%]" stroke="#E2667A" stroke-width="2" fill="#F97A7A" />
             <text x="[%posx_nuove%]" y="55" fill="white">[% nuove %]</text><text x="60" y="55" fill="#E2667A">Nuove</text>
-          
           <circle cx="130" cy="50" r="[%raggio_validate%]" stroke="#C8C841" stroke-width="2" fill="#DFDD41" />
-            <text x="[%posx_validate%]" y="55" fill="white">[% validate %]</text><text x="160" y="55" fill="#C8C841">Convalidate</text>
-          
+            <text x="[%posx_validate%]" y="55" fill="white">[% validate %]</text><text x="155" y="55" fill="#C8C841">Convalidate</text>
           <circle cx="270" cy="50" r="[%raggio_attivi%]" stroke="#68B831" stroke-width="2" fill="#7FCD31" />
             <text x="[%posx_attivi%]" y="55" fill="white">[% attivi %]</text><text x="300" y="55" fill="#68B831">Attive</text>
-          
           <circle cx="370" cy="50" r="[%raggio_archiviati%]" stroke="#925ADA" stroke-width="2" fill="#A96FDA" />
-            <text x="[%posx_archiviati%]" y="55" fill="white">[% archiviati %]</text><text x="400" y="55" fill="#925ADA">Archiviate</text>
+            <text x="[%posx_archiviati%]" y="55" fill="white">[% archiviati %]</text><text x="395" y="55" fill="#925ADA">Archiviate</text>
       </svg> 
 </div>
 
 
-<div class="buttons create_btn">
+<div class="buttons create_btn big-button">
    <a href="[% c.uri_for_action('/iprequest/create') %]" >
    [% ui_icon('circle-plus') %] Nuova Richiesta IP</a>
 [% add_css_create_btn %]

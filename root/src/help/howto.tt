@@ -10,7 +10,10 @@
     [% IF visible == 1 -%]
     <li><a href="#tabs-2">Guida di IPAdmin per il Referente di Rete</a></li>
     [%  END -%]
-    <li><a href="#tabs-3">F.A.Q.</a></li>
+    [% IF visible == 1 and c.session.user_id == "admin" %]
+    <li><a href="#tabs-3">Guida di IPAdmin per l'Amministratore</a></li>
+    [% END -%]
+    <li><a href="#tabs-4">F.A.Q.</a></li>
   </ul>
 
 
@@ -40,6 +43,7 @@
       <br>
       <br>
       [% ui_icon('info') %]  Per problemi con la configurazione dell'indirizzo IP <a href=[%c.uri_for('/help/view',{page => 'ipconf'})%] target="_blank">consultare la guida</a>.
+      <br><br>
 
   	<h3>Modifica dati di una richiesta IP già esistente</h3>
       <p>E' possibile modificare alcuni campi di una richiesta attiva:</p>
@@ -50,12 +54,24 @@
         <li>Apportare le modifiche ai soli campi abilitati.</li>
         <li>Fare click su <i>Conferma</i> per completare le modifiche e tornare alla propria pagina Utente.</li>
       </ol>
+      <br>
+
   	<h3>Rinuncia di un indirizzo IP</h3>
-      <p>Per rinunciare ad un indirizzo IP è necessario l'invio di una email da parte del responsabile a <i>ipsapienza@uniroma1.it</i> e in copia a <i>paola.deangelis@uniroma1.it</i></p>
-      <i>N.B.: si ricorda che da regolamento si è responsabili di un indirizzo IP fino alla formale rinuncia o allo scadere di 90 giorni di inattività di tale indirizzo. Infosapienza non è responsabile di furti di IP o azioni illegali effettuate sulla rete.</i>
+      <p>Per rinunciare ad un indirizzo IP è necessario utilizzare il pulsante <i>Rinuncia</i> presente sulla destra nella pagina di visualizzazione della richiesta di indirizzo IP.
+        <ol>
+          <li>Dalla propria pagina utente selezionare la scheda "Le mie richieste IP";</li>
+          <li>Selezionare la riga corrispondente alla richiesta dell'indirizzo IP al quale si vuole rinunciare;</li>
+          <li>Utilizzare il pulsante <i>Rinuncia</i> e dare successiva conferma.</li>
+        </ol>
+        <i>N.B.: l'operazione non è reversibile! Si ricorda che da regolamento si è responsabili di un indirizzo IP fino alla formale rinuncia o allo scadere di 90 giorni di inattività di tale indirizzo. Infosapienza non è responsabile di furti di IP o azioni illegali effettuate sulla rete.</i>
+      </p>
+      <br>
+
   	<h3>Nuova richiesta di Alias per indirizzo IP già registrato</h3>
       <p>E' possibile richiedere un nome a dominio di 3° livello (o superiore) su "uniroma1.it" per un indirizzo IP già registrato.</p>
         <i>N.B.: solo il responsabile dell'indirizzo IP può effettuare la richiesta di Alias. </i>
+      <br><br>
+
     <h3>Rinuncia di un Alias</h3>
       <p>Per rinunciare ad un Alias è necessario selezionare il tasto a forma di "x", a destra della relativa richiesta, nella scheda "I miei Alias" nella propria pagina Utente.</p>
 
@@ -64,27 +80,87 @@
     [% IF visible == 1 -%]
   <div id="tabs-2">
   	<h3>Il ruolo del referente di rete</h3>
-      - <ol>
+        <ul>
           <li>E' l'unico interlocutore verso il Settore Reti per le Strutture Periferiche per la notifica di problemi relativi alla rete telematica.</li>
           <li>Autorizza, all'interno della propria struttura, le richieste di indirizzo IP per la connessione alla rete.</li>
           <li>Trasmette agli utenti della rete locale le informazioni e le notizie per il corretto uso della rete.</li>
           <li>Conserva la documentazione tecnica relativa alla rete locale e le chiavi di eventuali locali per l’accesso agli apparati di rete.</li>
           <li>Interviene, se possibile, sugli apparati della rete locale per assicurare il corretto funzionamento dei collegamenti con il supporto del Settore Reti per le Strutture Periferiche.</li>
           <li>Per esigenze di servizio, la nomina di Referente di Rete è riservata esclusivamente al personale strutturato.</li>
-        </ol>
+        </ul>
   	<h3>Come convalidare una richiesta IP</h3>
       <ol>
         <li>Selezionare la scheda <i>Area Referente di Rete</i> nella propria pagina Utente</li>
         <li>Fare click sulla riga relativa alla richiesta IP da convalidare per visualizzarne i dettagli</li>
         <li>Selezionare <i>Convalida</i> dal menu di destra.</li>
-        <li>Selezionare un indirizzo IP tra quelli elencati dal sistema e confermare utilizzando il pulsante <i>Submit</i>.</li>
+        <li>Selezionare un indirizzo IP tra quelli elencati dal sistema e confermare utilizzando il pulsante <i>Invia</i>.</li>
         <li>Il sistema invierà una email all'utente che dovrà stampare, firmare ed inviare via fax il modulo e attendere l'attivazione dal personale tecnico del Settore Reti per le Strutture Periferiche.</li>
       </ol>
 
   </div>
-[%END -%]
+  [%END -%]
+  [% IF visible == 1 and c.session.user_id == "admin" %]
   <div id="tabs-3">
-  	* FAQ generiche
+    <h3>Struttura del Menu</h3>
+    <ul>
+      <li><b><u>Richieste</u></b></li>
+        <ul>
+          <li><b>Referenti di Rete:</b> tutte le richieste di nomina a referente di rete</li>
+          <li><b><u>Indirizzo IP:</b></u> tutte le richieste di indirizzo IP</li>
+          <li><b>Alias:</b> tutte le richieste Alias</li>
+        </ul>
+      <li><b><u>Configurazione</u></b></li>
+        <ul>
+          <li><b>Dipartimenti:</b> gestione dei dipartimenti</li>
+          <li><b>Edifici:</b> gestione degli edifici</li>
+          <li><b><u>Area:</u></b> gestione delle Aree (per tutti i dipartimenti e gli edifici esistenti)</li>
+          <li><b>Subnet:</b> gestione delle subnet</li>
+          <li><b>Vlan:</b> gestione delle vlan</li>
+          <li><b>Tipi di richieste IP:</b> gestione dei tipi di richiesta IP e referenti di servizio</li>
+        </ul>
+      <li><b><u>Utenti</u></b></li>
+        <ul>
+          <li><b><u>Utenti Strutturati:</u></b> elenco di tutti gli utenti che hanno effettuato almeno una volta il login sulla nuova piattaforma</li>
+          <li><b>Referenti:</b> elenco dei referenti di rete</li>
+          <li><b>Admin:</b> gestione degli account da amministratore di sistema</li>
+        </ul>
+      <li><b><u>Istruzioni</u></b></li>
+        <ul>
+          <li><b><u>Guida:</u></b> istruzioni per l'utilizzo di IPAdmin separate per tipo di utente</li>
+          <li><b>Configurazione IP:</b> istruzioni per la configurazione dell'indirizzo IP sui vari sistemi operativi</li>
+          <li><b>Mac Address:</b> istruzioni per ricavare il mac address da inserire durante la richiesta di indirizzo IP</li>
+          <li><b>Norme SapienzaNET:</b> il regolamento da leggere ed accettare per poter procedere con la richiesta di indirizzo IP</li>
+          <li><b>VPN:</b> (Spostare qui la sezione VPN?)</li>
+        </ul>
+      <li><b><u>About</u></b></li>
+      <li><b><u>Logout</u></b></li>
+    </ul>
+    <p>L'Amministratore ha il menu completo di tutte le voci, mentre l'utente ed il referente di rete possono navigare, oltre alla propria pagina personale, nella sezione Istruzioni, About e Logout.
+    </p>
+    <h3>Utilizzare le scorciatoie per la ricerca nelle Richieste IP</h3>
+    <p>La ricerca è istantanea, quindi i risultati cambiano ad ogni carattere digitato, e viene effettuata in tutti i campi indistintamente. Inoltre sono state implementate alcune espressioni regolari per facilitare la ricerca di:<br>
+     <ul>
+      <li><b>Indirizzo IP esatto:</b> digitare il terzo e il quarto byte dell'indirizzo IP separati da un "punto". (es: <i>14.200</i> per cercare 151.100.14.200).</li>
+      <li><b>Tutti gli indirizzi di una subnet:</b> digitare il terzo byte dell'indirizzo IP seguito da un "punto". (es: <i>14.</i> per cercare tutti gli indirizzi della subnet 151.100.14.0/24).</li>
+     </ul>
+    </p>
+    <h3>Aggiornare le istruzioni</h3>
+    <p>E' possibile aggiornare le istruzioni riportate nelle varie schede modificando i file relativi ad ogni sotto-sezione del menu Istruzioni (contenuti nella cartella <i>root/src/help/</i>) come segue:
+      <ul>
+        <li>Guida: <i>howto.tt</i></li>
+        <li>Configurazione IP: <i>ipconf.tt</i></li>
+        <li>Mac Address: <i>macfind.tt</i></li>
+        <li>Norme SapienzaNET: <i>norme.tt</i></li>
+        <li>VPN: <i>vpn.tt</i></li>
+      </ul>
+      <i>N.B.: Tutte le modifiche avranno effetto immediato, senza necessità del riavvio del servizio.</i>
+    </p>
+
+  </div>
+  [% END -%]
+
+  <div id="tabs-4">
+    * FAQ generiche
 
   </div>
 

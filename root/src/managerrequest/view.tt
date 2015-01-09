@@ -1,5 +1,5 @@
 [% META 
-   title='Richiesta Referente di rete'
+   title='Referente di rete'
    use_table=1
    section='Richieste'
 -%]
@@ -14,9 +14,9 @@
       <div class="rightbox">
          [% IF object.state == 0 -%] 
           <a href=[%c.uri_for_action('managerrequest/activate', [object.id]) %]> [%ui_icon('check')%] Attiva</a><br>
+          <a href=[%c.uri_for_action('managerrequest/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica Dati</a><br>
          [% END -%]
          [% IF object.state != 4 -%] 
-          <a href=[%c.uri_for_action('managerrequest/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica Dati</a><br>
           <a href=[% c.uri_for_action('managerrequest/delete', [object.id]) %]> [% ui_icon('closethick') %]  Rinuncia</a><br>
          [% END -%]
          

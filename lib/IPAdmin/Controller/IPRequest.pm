@@ -980,7 +980,7 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
          $c->detach('/follow_backref');
    }
    else {
-       $c->stash( template => 'generic_delete.tt' );
+       $c->stash( template => 'iprequest/delete.tt' );
    }
 }
 

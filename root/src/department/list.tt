@@ -4,9 +4,9 @@
    section='Configurazione'
 -%]
 
-<div class="buttons create_btn">
+<div class="buttons create_btn big-button">
 <a href="[% c.uri_for_action('/department/create') %]" >
-   [% ui_icon('circle-plus') %] Crea Dipartimento</a>
+   [% ui_icon('circle-plus') %] Nuovo Dipartimento</a>
  [% add_css_create_btn %]
 </div>
 

@@ -4,15 +4,15 @@
    section='Configurazione'
 -%]
 
-<div class="buttons create_btn">
+<div class="buttons create_btn big-button">
 <a href="[% c.uri_for_action('/subnet/create') %]" >
-   [% ui_icon('circle-plus') %] Crea Subnet</a>
+   [% ui_icon('circle-plus') %] Nuova Subnet</a>
  [% add_css_create_btn %]
 </div>
 
 [% FOREACH v IN subnet_list %]
  [% IF loop.first %]
-  [% init_table('subnet_list') %]
+  [% init_table('subnet_list', [3,62,15,10,10]) %]
   <table class="display" id="subnet_list">
   <thead>  
 	<tr>
@@ -20,6 +20,7 @@
  	  <th>Nome</th>
  	  <th>Subnet</th>
     <th>Vlan</th>
+    <th>Archiviabile</th>
   </tr>
   </thead>  
   <tbody>
@@ -29,6 +30,7 @@
     <td>[% v.name %]</td>
     <td>151.100.[%v.id%].0/24</td>
     <td><a href="[%c.uri_for_action('vlan/view', [v.vlan.id])%]">[% v.vlan.id %]</a></td>
+    <td>[% IF v.archivable == 0 %] No [% ELSE %] Si [% END %]</td>
    </tr>
   [% IF loop.last %]
         </tbody>

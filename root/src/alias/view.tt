@@ -9,10 +9,11 @@
   </ul>
   		
 
+
   <div id="tabs-1">
     <div class="right">
       <div class="rightbox">
-         [% IF object.state == 1 -%] 
+         [% IF object.state == 0 and c.session.user_id == "admin" -%] 
           <a href=[%c.uri_for_action('alias/activate', [object.id]) %]> [%ui_icon('check')%] Attiva</a><br>
          [% END -%]
          [% IF object.state != 4 -%] 
@@ -41,21 +42,21 @@
     </table>
     [% add_css_tableinfo -%]
     <p>
-      <div class="buttons">	
+      <!--<div class="buttons">	
   [% IF object.state != 4 -%]
-    [% IF object.state == 0 -%]
+    [% IF object.state == 0 and c.session.user_id == "admin" -%]
 	   <a href=[%c.uri_for_action('alias/activate', [object.id]) %]> [% ui_icon('check') %] Attiva</a>
     [% END -%]
     &nbsp;<a href=[%c.uri_for_action('alias/edit', [object.id]) %]> [% ui_icon('pencil') %] Modifica</a>
 	  &nbsp;<a href=[% c.uri_for_action('alias/delete', [object.id]) %]>
 	  [% ui_icon('closethick') %]  Elimina</a>
 	  &nbsp;
-  [% END -%] 
+  [% END -%] -->
 <!--
 	<a href="[% c.uri_for('/alias/create', object.id,{backref=>c.req.uri}) %]">
 		[% ui_icon('plusthick') %] Aggiungi Alias</a> 
+      </div> 
 -->
-      </div>
     </p>
   [% add_css_tableinfo %]
   </div>

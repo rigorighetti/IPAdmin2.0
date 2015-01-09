@@ -226,7 +226,7 @@ sub process_edit : Private {
     #     $c->model('IPAdminDB::FilterSubnet')->update_or_create({area_id => $item->id, subnet_id => $subnet->id});        
     # }
 
-    $c->flash( message => 'Success! Area created.' );
+    $c->flash( message => 'Area creata con successo.' );
     $def_br = $c->uri_for_action( 'area/view', [ $item->id ] );
     $c->stash( default_backref => $def_br );
     $c->detach('/follow_backref');
@@ -263,7 +263,7 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
 
         $area->delete;
 
-        $c->flash( message => 'Success!!  ' . $id . ' successful deleted.' );
+        $c->flash( message => 'Area  id: ' . $id . ' eliminata con successo.' );
         $c->detach('/follow_backref');
     }
     else {

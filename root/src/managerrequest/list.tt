@@ -14,11 +14,11 @@
           <circle cx="270" cy="50" r="[%raggio_attivi%]" stroke="#68B831" stroke-width="2" fill="#7FCD31" />
             <text x="[%posx_attivi%]" y="55" fill="white">[% attivi %]</text><text x="300" y="55" fill="#68B831">Attive</text>
           <circle cx="370" cy="50" r="[%raggio_archiviati%]" stroke="#925ADA" stroke-width="2" fill="#A96FDA" />
-            <text x="[%posx_archiviati%]" y="55" fill="white">[% archiviati %]</text><text x="400" y="55" fill="#925ADA">Archiviate</text>
+            <text x="[%posx_archiviati%]" y="55" fill="white">[% archiviati %]</text><text x="395" y="55" fill="#925ADA">Archiviate</text>
       </svg>
 </div>
 
-<div class="buttons create_btn right">
+<div class="buttons create_btn big-button right">
 <a href="[% c.uri_for_action('/managerrequest/create') %]" >
    [% ui_icon('circle-plus') %] Nuova Richiesta per Referente</a>
 [% add_css_create_btn %]
@@ -56,14 +56,19 @@
  	    <td><a href=[% c.uri_for_action('/userldap/view', [i.user.username]) %]>[% i.user.fullname %]</a></td>
       <td>[%i.n_ip%]</td>
 	    <td class="white">
-       [% IF !i.state%] 
+       [%IF i.state == 0 -%]
+        <a href="[% c.uri_for_action('managerrequest/activate',[i.id])%]" title="Convalida e attiva">[% ui_icon('check') %]</a> 
         <a href="[% c.uri_for_action('managerrequest/edit',[i.id])%]" style="position:absolute;right:40px" title="Modifica">
         [% ui_icon('pencil') %] </a>
-        <a href="[% c.uri_for_action('managerrequest/activate',[i.id])%]" title="Convalida e attiva">[% ui_icon('check') %]</a> 
+       [%ELSIF i.state == 2 -%]
+        <span title="Validata">[% ui_icon('circle-check') %]</span>
        [% END -%]
        [% IF i.state != 4 %] 
-        <a href="[% c.uri_for_action('managerrequest/delete',[i.id])%]" style="position:absolute;right:10px" title="Rinuncia">[% ui_icon('closethick') %]</a> 
+          <a href="[% c.uri_for_action('managerrequest/delete',[i.id])%]" style="position:absolute;right:10px" title="Rinuncia">[% ui_icon('closethick') %]</a> 
+       [% ELSE -%]
+          <span title="Archiviata">[% ui_icon('circle-close') %]</span>
        [% END -%]
+
 	    </td>
      </tr>
   [% IF loop.last %]

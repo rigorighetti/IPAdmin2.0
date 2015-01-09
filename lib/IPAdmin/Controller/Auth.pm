@@ -55,7 +55,7 @@ sub login : Local : CaptureArgs(0) {
                     password => $c->req->params->{'password'},
                 }, 'ldap'
             )){
-         	$c->flash( message => 'Logged In!' );
+         	$c->flash( message => 'Login avvenuto con successo.' );
           $c->session(user_id => $username);
           $c->detach('/follow_backref');
 	 # 	if($c->user_in_realm('normal')){	
@@ -83,7 +83,7 @@ sub logout : Local : CaptureArgs(0) {
     $c->stash( template => 'auth/logout.tt' );
 
     $c->logout();
-    $c->stash( message => 'You have been logged out.' );
+    $c->stash( message => 'Logout avvenuto con successo.' );
     $c->session(user_id => undef);
 }
 
@@ -95,7 +95,7 @@ sub access_denied : Local {
     my ( $self, $c ) = @_;
     $c->flash( backref => $c->req->uri );
     $c->stash( template  => 'auth/access_denied.tt' );
-    $c->stash( error_msg => "Sorry, you are not allowed to see this page!" );
+    $c->stash( error_msg => "Attenzione: non hai i permessi per visualizzare questa pagina!" );
 }
 
 

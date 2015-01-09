@@ -403,3 +403,10 @@ img.frame {
     border: solid 3px white;
     border-radius: 10px;
 }
+
+.ui-icon-circle-plus { background-position: -2px -192px !important; }
+
+.big-button {
+    font-family: palatino;
+    font-size: 1.1em !important;
+}
