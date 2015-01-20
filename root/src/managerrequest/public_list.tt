@@ -1,7 +1,6 @@
 [% META 
    title='Lista Referenti di Rete'
    use_table=1
-   section='Richieste'
 -%]
 
 

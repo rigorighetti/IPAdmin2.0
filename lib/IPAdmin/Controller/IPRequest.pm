@@ -973,14 +973,20 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
                         date_out => time,
                         state    => $IPAdmin::ARCHIVED,
                      });
-       
+        #archive all associated aliases
+        my @aliases = $c->model('IPAdminDB::Alias')->search({-and =>
+            [ ip_request => $iprequest->id, state=>$IPAdmin::ACTIVE ]});
+        foreach my $alias (@aliases){
+          $alias->update({state => $IPAdmin::ARCHIVED});
+        }
+
          $c->forward('process_notify');
          $c->flash( message => 'Richiesta IP archiviata. '. $c->stash->{mail_message} );
 
          $c->detach('/follow_backref');
    }
    else {
-       $c->stash( template => 'iprequest/delete.tt' );
+       $c->stash( template => 'generic_delete.tt' );
    }
 }
 
@@ -1078,7 +1084,7 @@ EOF
 
     my $email = {
             from    => 'ipsapienza@uniroma1.it',
-            to      => 'e.liguori@cineca.it',
+            to      => $to,
             cc      => $cc,
             subject => $subject,
             body    => $body,
@@ -1087,7 +1093,7 @@ EOF
     $c->stash(email => $email);
 
     #$c->log->debug(Dumper($email));
-    #$c->forward( $c->view('Email') );
+    $c->forward( $c->view('Email') );
 
     if ( scalar( @{ $c->error } ) ) {
         $c->flash(error_msg => "Errore nell'invio dell'Email. ".Dumper($c->error));
@@ -1125,7 +1131,7 @@ sub dnsupdate : Chained('object') : PathPart('dnsupdate') : Args(0) {
         }
  
        
-         #$c->forward('process_notify');
+         $c->forward('process_notify');
          $c->flash( message => 'Update inviato correttamente.');
 
          $c->detach('/follow_backref');

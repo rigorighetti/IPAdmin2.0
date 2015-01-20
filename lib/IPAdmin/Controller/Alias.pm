@@ -1,3 +1,4 @@
+
 # Copyright 2011 by the IPAdmin Team
 #
 # This library is free software. You can redistribute it and/or modify
@@ -501,7 +502,7 @@ EOF
 
     $c->stash(email => $email);
 
-    #$c->forward( $c->view('Email') );
+    $c->forward( $c->view('Email') );
 
     if ( scalar( @{ $c->error } ) ) {
         $c->flash(error_msg => "Errore nell'invio dell'Email. ".Dumper($c->error));
