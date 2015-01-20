@@ -42,13 +42,16 @@ sub instruction : Path('view') Args(0) {
     $c->stash(template => "help/$page.tt") if(defined $page);
     my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->session->{user_id}); 
     !defined($user) and $c->detach('/access_denied');
+
     if($realm eq "normal"){
         $c->stash(visible => 1);
 	return;
+    } else {
+    my @managed_area = $user->managed_area;
+    scalar(@managed_area) and $c->stash(ref_visible => 1);
+    my @managed_services = $user->managed_services;
+    scalar(@managed_services) and $c->stash(ref_visible => 1);
     }
-    my @aree = $user->managed_area;
-    scalar(@aree) and $c->stash(visible => 1);
-	
 }
 
 =head1 AUTHOR

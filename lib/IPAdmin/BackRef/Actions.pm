@@ -22,7 +22,7 @@ sub follow_backref : Private {
     $backref ||= $c->stash->{default_backref};
 
     $c->log->debug("backref = $backref");
-
+  	$backref ||= '/userldap';
     $c->response->redirect($backref);
 }
 

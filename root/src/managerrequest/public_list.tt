@@ -12,6 +12,7 @@
         <tr>
          <th>Nome e Cognome</th>
          <th>Email</th>
+         <th>Telefono</th>
          <th>Area</th>
          <th>Subnet</th>
         </tr>
@@ -22,6 +23,7 @@
      <tr>
      <td>[% i.manager.fullname %]</td>
      <td>[% i.manager.email %]</td>
+     <td>[% i.manager.telephone %]</td>
      <td>[%i.department.name%] presso [% i.building.name %] in [% i.building.address %] </td>
      <td>[% FOREACH i IN filtered.$area_id  -%] 
           [% i.id %]
