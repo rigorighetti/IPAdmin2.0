@@ -118,7 +118,7 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
 
 
     my @subnets    = $c->stash->{'object'}->building->vlan->map_subnet;        
-    my @building   = $c->model('IPAdminDB::Building')->search({}) ;
+    my @building   = $c->model('IPAdminDB::Building')->search({},{order_by => 'name'}) ;
     my @department = $c->model('IPAdminDB::Department')->search({}) ;
 
     $c->stash( subnets    => \@subnets );
