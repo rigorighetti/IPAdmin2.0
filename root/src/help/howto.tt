@@ -7,7 +7,7 @@
 <div id="tabs">	 
   <ul>
     <li><a href="#tabs-1">Guida alla Richiesta di un Indirizzo IP</a></li>   
-    [% IF ref_visible == 1 -%]
+    [% IF ref_visible == 1 OR visible == 1 -%]
     <li><a href="#tabs-2">Guida di IPAdmin per il Referente di Rete</a></li>
     [%  END -%]
     [% IF visible == 1  %]

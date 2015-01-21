@@ -165,6 +165,13 @@ sub process_edit : Private {
         }
     }       
 
+    if( my @results= $c->stash->{resultset}->search({building    => $id_build,
+                                                     department  => $id_dep,}) ){
+        $c->stash->{error_msg} = "Operazione annullata. Esiste già un\'area con questo edifico e struttura.";
+        return 0;
+    }
+
+
     my $ret = $area->update(
         {
             building    => $id_build,
@@ -255,11 +262,11 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
     $c->stash( default_backref => $c->uri_for_action('area/list') );
 
     if ( lc $c->req->method eq 'post' ) {
-#        if ( $c->model('IPAdminDB::Rack')->search( { building => $id } )->count ) {
-#            $c->flash( error_msg => 'Building is not empty. Cannot be deleted.' );
-#            $c->stash( default_backref => $c->uri_for_action( 'building/view', [$id] ) );
-#            $c->detach('/follow_backref');
-#        }
+       if ( my @reqs = $area->list_iprequest ) {
+           $c->flash( error_msg => 'Operazione annullata. Esistono delle richieste IP in quest\'area.' );
+           $c->stash( default_backref => $c->uri_for_action( 'area/list' ) );
+           $c->detach('/follow_backref');
+       }
 
         $area->delete;
 

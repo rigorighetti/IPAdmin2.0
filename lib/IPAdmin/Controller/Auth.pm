@@ -68,7 +68,7 @@ sub login : Local : CaptureArgs(0) {
 		# }
           }
          #not authenticated
-	 $c->flash( error_msg => 'Invalid Login' );
+	 $c->flash( error_msg => 'Login non riuscito.' );
          $c->response->redirect( $c->uri_for('/auth/login') );
          $c->detach();
 	}

@@ -145,11 +145,11 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
     $c->stash( default_backref => $c->uri_for_action('building/list') );
 
     if ( lc $c->req->method eq 'post' ) {
-#        if ( $c->model('IPAdminDB::Rack')->search( { building => $id } )->count ) {
-#            $c->flash( error_msg => 'Building is not empty. Cannot be deleted.' );
-#            $c->stash( default_backref => $c->uri_for_action( 'building/view', [$id] ) );
-#            $c->detach('/follow_backref');
-#        }
+        if ( my @aree = $building->map_area_dep    ) {
+            $c->flash( error_msg => 'Operazione annullata. Esistono delle aree che comprendono questo edificio.' );
+            $c->stash( default_backref => $c->uri_for_action( 'building/list') );
+            $c->detach('/follow_backref');
+        }
 
         $building->delete;
 

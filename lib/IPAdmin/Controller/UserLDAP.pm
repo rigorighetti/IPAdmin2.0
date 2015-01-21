@@ -34,7 +34,7 @@ Catalyst Controller.
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
     my ($realm, $user) = IPAdmin::Utils::find_user($self,$c,$c->session->{user_id});
-    defined($user) and $c->stash( default_backref => $c->uri_for_action( 'userldap/view', [$c->session->{user_id}] ) );
+    $c->stash( default_backref => $c->uri_for_action( 'userldap/view', [$c->session->{user_id}] ) );
     $realm eq "normal" and $c->stash( default_backref => $c->uri_for_action('iprequest/list'));
     $c->detach('/follow_backref');
     #$c->detach();

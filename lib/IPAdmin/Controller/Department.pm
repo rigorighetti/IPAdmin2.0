@@ -153,11 +153,11 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
     $c->stash( default_backref => $c->uri_for_action('department/list') );
 
     if ( lc $c->req->method eq 'post' ) {
-#    	if ( $c->model('IPAdmin::Rack')->search( { department => $id } )->count ) {
-#            $c->flash( error_msg => 'Department is not empty. Cannot be deleted.' );
-#            $c->stash( default_backref => $c->uri_for_action( 'department/view', [$id] ) );
-#            $c->detach('/follow_backref');
-#        }
+       if ( my @reqs = $department->map_area_build ) {
+           $c->flash( error_msg => 'Operazione annullata. Esistono delle aree che comprendono questa struttura.' );
+           $c->stash( default_backref => $c->uri_for_action( 'department/list' ) );
+           $c->detach('/follow_backref');
+       }
 
         $department->delete;
 

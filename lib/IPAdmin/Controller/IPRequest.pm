@@ -309,8 +309,8 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
         $tmpl_param{guest_mail}     = $req->guest->email;
     }
     $tmpl_param{type_def}       = $c->req->param('type') || $req->type->id;
-    $tmpl_param{area_def}       = $req->area->id;
-    $tmpl_param{dom_def}        = $req->area->department->domain;
+    defined($req->area) and $tmpl_param{area_def}       = $req->area->id;
+    (defined($req->area) and defined($req->area->department)) and $tmpl_param{dom_def}    = $req->area->department->domain;
 
     $c->stash(user_def => $c->stash->{object}->user->id);
 
@@ -376,7 +376,8 @@ sub process_edit : Private {
 
     #sanitize input 
     $hostname =~ s/\s+//mxgo;
-    $subnet ||= $c->stash->{'object'}->subnet->id;
+    $subnet ||= $c->stash->{'object'}->subnet;
+    defined($subnet) and $subnet = $subnet->id;
     $host   ||= $c->stash->{'object'}->host;
 
 
@@ -986,7 +987,7 @@ sub delete : Chained('object') : PathPart('delete') : Args(0) {
          $c->detach('/follow_backref');
    }
    else {
-       $c->stash( template => 'generic_delete.tt' );
+       $c->stash( template => '/iprequest/generic_delete.tt' );
    }
 }
 

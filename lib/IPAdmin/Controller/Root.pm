@@ -54,7 +54,7 @@ sub auto : Private {
   if (!$c->user_exists) {
       $c->flash( backref => $c->request->uri );
       $c->request->path !~ m|^$|o
-        and $c->flash( error_msg => 'You must login to view this page!');
+        and $c->flash( error_msg => 'Effettua il login per visualizzare questa pagina');
         $c->response->redirect($c->uri_for_action('/auth/login'));
        return 0;
    }

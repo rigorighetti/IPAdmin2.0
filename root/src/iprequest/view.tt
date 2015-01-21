@@ -31,7 +31,9 @@
          [% IF object.state == 2 -%] 
           <a href=[% c.uri_for_action('alias/create', {def_ipreq=>object.id }) %]> Aggiungi Alias[% ui_icon('circle-plus')%]</a><br>
          [% END -%]
+         [%IF realm == 'normal'-%]
          <a href=[%c.uri_for_action('iprequest/notify', [object.id]) %]> [%ui_icon('mail-closed')%]Invia notifica</a><br>
+         [%END -%]
          <a href=[%c.uri_for_action('iprequest/print', [object.id]) %]> [%ui_icon('print')%]Stampa</a><br>
       </div>
     </div>
@@ -67,7 +69,7 @@
         <span class="left">Ubicazione:</span> <span class="right">[% object.location %]</span><br>
         <span class="left">Mac Address:</span> <span class="right">
           [%IF realm == "normal" %]
-          <a href="[% manoc_link %]/mac/[% object.macaddress%]"> 
+          <a href="[% manoc_link %]/mac/[% object.macaddress%]" target="_blank"> 
            [% object.macaddress%]
           </a> 
           [%ELSE%]

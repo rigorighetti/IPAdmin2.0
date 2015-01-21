@@ -1,6 +1,9 @@
 [%
   menu_sections = [
-		{	
+    { name ='Home',
+      path = c.uri_for('/userldap'),
+    },
+  	{	
 		     name = 'Istruzioni',
      		 path = c.uri_for('/help/view',{page => 'howto'}),
  		 },		 
