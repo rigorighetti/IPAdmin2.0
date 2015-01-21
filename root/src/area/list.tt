@@ -10,13 +10,14 @@
  [% add_css_create_btn %]
 </div>
 
-[% init_table('area_list',[5,25,35,10,20,5],{sortby => 2, order => 'desc'}) %]
+[% init_table('area_list',[5,25,25,10,10,20,5],{sortby => 2, order => 'desc'}) %]
  <table class="display" id="area_list">
    <thead>  
      <tr>
 	<th>Id</th>
         <th>Edificio </th>
         <th>Struttura</th>
+        <th>Dominio</th>
         <th>Referente</th>
 	<th>Subnet</th>
 	<th>Comandi</th>
@@ -29,6 +30,7 @@
 	 <td><a id="click_ref" href=[% c.uri_for_action('/area/view', [a.id]) %]>[% a.id %]</a></td>
  	 <td><a href=[% c.uri_for_action('/building/view', [a.building.id]) %]>[% a.building.name %]</a> in [% a.building.address %]</td>
  	 <td><a href=[% c.uri_for_action('/department/view', [a.department.id]) %]>[% a.department.name %]</a></td>
+   <td>[% a.department.domain %]</td>
  	 <td><a href=[% c.uri_for_action('/userldap/view', [a.manager.username]) %]>[% a.manager.fullname %]</a></td>
 	 <td>[% FOREACH i IN filtered.$area_id  -%] 
           <a href=[% c.uri_for_action('/subnet/view', [i.id]) %]>[% i.id %]</a> 

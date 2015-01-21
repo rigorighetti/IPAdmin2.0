@@ -387,6 +387,7 @@ sub process_edit : Private {
                                 user        => $user,
                                 location    => $location,
                                 subnet      => $subnet,
+                                area        => $area,
                                 host        => $host,
                                 macaddress  => $mac,
                                 hostname    => $hostname,
