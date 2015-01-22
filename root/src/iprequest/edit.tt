@@ -161,7 +161,9 @@ var hash_dom = {
  $(function() {    
   [%IF area_def %]$("#referente").html(hash_man[[%area_def%]]);[%END -%]
   [%IF area_def %]$("#address").html(hash_addr[[%area_def%]]);[%END -%]
- 
+   [%IF area_def %]$("#build").html(hash_build[[%area_def%]]);[%END -%]
+  [%IF area_def %]$("#domain").html(hash_dom[[%area_def%]]);[%END -%]
+
   $("#datepicker").datepicker("setDate", "[% guest_date_out %]" );
 
    $("#area").bind("change",
