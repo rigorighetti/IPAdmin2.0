@@ -54,6 +54,7 @@ td.data {padding-left:20px;}
            [% IF error.type %]
              <span class="right error" id="error">[% error.type %] </span><br>
            [%END%]
+         <span class="left">Edificio:</span> <span class="right" id="build"></span><br>
          <span class="left">Indirizzo dell'edificio:</span> <span class="right" id="address"></span><br>
          <span class="left">Referente di Rete:</span> <span class="right" id="referente"></span><br>
          <span class="left data">Dominio:</span><span class="right" id="domain"></span><br>
@@ -141,12 +142,21 @@ var hash_addr = {
   [% END -%]
 };
 
+var hash_build = {
+  [% FOREACH a IN aree -%]
+   [%IF a.building -%] "[%a.id %]" : '[%a.building.description %]' [% ',' UNLESS loop.last -%] [%END-%]
+  [% END -%]
+};
+
 var hash_dom = {
   [% FOREACH a IN aree -%]
    [%IF a.department.id -%] 
    "[%a.id -%]" : "[%IF a.department.domain -%][%a.department.domain -%].[%END -%]uniroma1.it" [% ',' UNLESS loop.last -%] [%END-%]
   [% END -%]
 };
+
+
+
 
  $(function() {    
   [%IF area_def %]$("#referente").html(hash_man[[%area_def%]]);[%END -%]
@@ -162,9 +172,10 @@ var hash_dom = {
       $("#address").html("");
       $("#domain").html("");
       } else {
-      var text = hash_man[i];
-      var addr = hash_addr[i];
-      var dom  = hash_dom[i];
+      var text  = hash_man[i];
+      var addr  = hash_addr[i];
+      var dom   = hash_dom[i];
+      var build = hash_build[i];
       if(text == null ) {
        text = "Non ancora assegnato!";
       }
@@ -174,7 +185,11 @@ var hash_dom = {
       if(dom == null ) {
        dom = "-";
       }
+      if(build == null ) {
+       build = "-";
+      }
       $("#domain").html(dom) ;
+      $("#build").html(build) ;
       $("#referente").html(text) ;
       $("#address").html(addr) ; 
     }

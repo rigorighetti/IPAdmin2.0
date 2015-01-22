@@ -165,13 +165,14 @@ sub process_edit : Private {
         }
     }       
 
-    if( my @results= $c->stash->{resultset}->search({building    => $id_build,
-                                                     department  => $id_dep,}) ){
-        $c->stash->{error_msg} = "Operazione annullata. Esiste già un\'area con questo edifico e struttura.";
-        return 0;
+    foreach my $result  ($c->stash->{resultset}->search({building    => $id_build,
+                                                         department  => $id_dep,})->all ){
+        if($area->id ne $result->id){
+          $c->stash->{error_msg} = "Operazione annullata. Esiste già un\'area con questo edifico e struttura.";
+          return 0;
+        }
     }
-
-
+    
     my $ret = $area->update(
         {
             building    => $id_build,

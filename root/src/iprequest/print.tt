@@ -20,7 +20,8 @@
       </div>
       <div class="title">Dati della Struttura</div>
       <div class="section">
-        <span class="left">Nome:</span> <span class="right">[% object.area.department.name %] <i>presso</i> [% object.area.building.name %]</span><br>
+        <span class="left">Nome:</span> <span class="right">[% object.area.department.name %] <i>presso</i> [% object.area.building.name %]</span><br>  
+        <span class="left">Edificio:</span> <span class="right">[% object.area.building.description %]</span><br>
         <span class="left">Indirizzo:</span> <span class="right">[% object.area.building.address %]</span><br>
         <span class="left">Referente di Rete:</span> <span class="right">[% object.area.manager.fullname %]</span><br>
       </div>

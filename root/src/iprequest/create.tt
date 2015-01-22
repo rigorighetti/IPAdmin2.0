@@ -53,6 +53,7 @@ td.data {padding-left:20px;}
            [% IF error.type %]
              <span class="right error" id="error">[% error.type %] </span><br>
            [%END%]
+         <span class="left">Edificio:</span> <span class="right" id="build"></span><br>   
          <span class="left">Indirizzo dell'edificio:</span> <span class="right" id="address"></span><br>
          <span class="left">Referente di Rete:</span> <span class="right" id="referente"></span><br>
          <span class="left data">Dominio:</span><span class="right" id="domain"></span><br>
@@ -134,6 +135,12 @@ var hash_addr = {
   [% END -%]
 };
 
+var hash_build = {
+  [% FOREACH a IN aree -%]
+   [%IF a.building -%] "[%a.id %]" : '[%a.building.description %]' [% ',' UNLESS loop.last -%] [%END-%]
+  [% END -%]
+};
+
 var hash_dom = {
   [% FOREACH a IN aree -%]
    [%IF a.department.id -%] 
@@ -142,8 +149,9 @@ var hash_dom = {
 };
 
  $(function() {    
+  [%IF area_def %]$("#build").html(hash_man[[%area_build%]]);[%END -%]
   [%IF area_def %]$("#referente").html(hash_man[[%area_def%]]);[%END -%]
-    [%IF area_def %]$("#domain").html(hash_dom[[%area_def%]]);[%END -%]
+  [%IF area_def %]$("#domain").html(hash_dom[[%area_def%]]);[%END -%]
   [%IF area_def %]$("#address").html(hash_addr[[%area_def%]]);[%END -%]
  
   $("#datepicker").datepicker("setDate", "[% guest_date_out %]" );
@@ -152,13 +160,15 @@ var hash_dom = {
    function() {
     var i = this.value; 
     if(i==0){
+      $("#build").html("");
       $("#referente").html("");
       $("#address").html("");
       $("#domain").html("");
       } else {
-      var text = hash_man[i];
-      var addr = hash_addr[i];
-      var dom  = hash_dom[i];
+      var build = hash_build[i];
+      var text  = hash_man[i];
+      var addr  = hash_addr[i];
+      var dom   = hash_dom[i];
       if(text == null ) {
        text = "Non ancora assegnato!";
       }
@@ -168,6 +178,10 @@ var hash_dom = {
       if(dom == null ) {
        dom = "-";
       }
+      if(build == null ) {
+       build = "-";
+      }
+      $("#build").html(build) ;
       $("#domain").html(dom) ;
       $("#referente").html(text) ;
       $("#address").html(addr) ; 
