@@ -656,11 +656,13 @@ sub check_ipreq_form : Private {
         if(defined $c->stash->{object} and $c->stash->{object}->subnet->id ne $subnet
                                        and $c->stash->{object}->host ne $host ){ 
           #edit action
-          if($schema->search({subnet=> $subnet, host => $host, state => {-not => $IPAdmin::ARCHIVED}})->count > 0){
+          foreach my $res ($schema->search({subnet=> $subnet, host => $host})->all) {
+            if($res->state != $IPAdmin::ARCHIVED){
             #l'indirizzo editato a mano è già in uso
             $c->stash->{error_msg} = "Indirizzo IP già assegnato";
             return 0;
-        }
+          }
+          }
       }
     }
     if($host eq '' or $subnet eq ''){
