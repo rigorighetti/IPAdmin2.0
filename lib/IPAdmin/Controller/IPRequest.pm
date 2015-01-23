@@ -306,7 +306,6 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
         $tmpl_param{guest_phone}    = $c->req->param('guest_phone') || $req->guest->telephone;
         #only root
         $tmpl_param{guest_date_out} = IPAdmin::Utils::print_short_timestamp($req->guest->date_out);
-        #$tmpl_param{guste_type_def} =  ;
         $tmpl_param{guest_def} = $req->guest->type;
 
         $tmpl_param{guest_name}     = $req->guest->fullname;
@@ -657,10 +656,13 @@ sub check_ipreq_form : Private {
           $c->stash->{error_msg} = "La subnet scelta non è tra quelle disponibili in questo dipartimento";
           return 0;     
         }
-        if(defined $c->stash->{object} and $c->stash->{object}->subnet->id ne $subnet
-                                       and $c->stash->{object}->host ne $host ){ 
+    if(defined $c->stash->{object} and ($c->stash->{object}->subnet->id ne $subnet
+                                         or $c->stash->{object}->host ne $host )){ 
           #edit action
-          foreach my $res ($schema->search({subnet=> $subnet, host => $host})->all) {
+          foreach my $res ($schema->search({ -and => [subnet=> $subnet, 
+                                                      host => $host
+                                                     ]})
+                                          ) {
             if($res->state != $IPAdmin::ARCHIVED){
             #l'indirizzo editato a mano è già in uso
             $c->stash->{error_msg} = "Indirizzo IP già assegnato";
