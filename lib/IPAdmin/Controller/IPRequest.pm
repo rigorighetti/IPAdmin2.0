@@ -198,8 +198,12 @@ sub view : Chained('object') : PathPart('view') : Args(0) {
 
     my @aliases = $req->map_alias;
 
+
+
     $c->stash( manoc_link  => $c->config->{'Link'}->{'manoc'} );
     $c->stash( data        => IPAdmin::Utils::print_short_timestamp($req->date));
+    defined($req->guest)
+       and $c->stash( guest_data  => IPAdmin::Utils::print_short_timestamp($req->guest->date_out));
     $c->stash( assignement => \@assignement );
     $c->stash( aliases     => \@aliases );
     $c->stash( template    => 'iprequest/view.tt' );
@@ -286,7 +290,7 @@ sub edit : Chained('object') : PathPart('edit') : Args(0) {
     $tmpl_param{fullname}       = $req->user->fullname;
     $tmpl_param{aree}           = \@aree;
     $tmpl_param{types}          = \@types;
-    $tmpl_param{data}           = IPAdmin::Utils::print_short_timestamp(time);
+    $tmpl_param{data}           = IPAdmin::Utils::print_short_timestamp($req->date);
     $tmpl_param{template}       = 'iprequest/edit.tt';
     $tmpl_param{subnets}        = $req->area->building->vlan->map_subnet;
     $tmpl_param{subnet_def}     = $req->subnet;
@@ -362,6 +366,7 @@ sub process_edit : Private {
     }
     my $error;
 
+    $guest_date_out and $guest_date_out = str_to_time($guest_date_out);
 
 
     # check form
@@ -391,7 +396,6 @@ sub process_edit : Private {
                                 host        => $host,
                                 macaddress  => $mac,
                                 hostname    => $hostname,
-                                date        => time,
                                 #state       => $IPAdmin::NEW,
                                 type        => $type,
                                 notes       => $notes,
@@ -1212,10 +1216,12 @@ sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
         manager => sub {
             my ($c, $rs)= @_;
             defined $rs->area->manager and return $rs->area->manager->fullname;
+            return '';
         },
         macaddress => sub {
             my ($c, $rs)= @_;
-            return $rs->macaddress;
+            defined($rs->macaddress) and return $rs->macaddress;
+            return '';
         },
         subnet => sub {
             my ($c, $rs)= @_;
@@ -1243,6 +1249,13 @@ sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
 
     });
     
+    if($c->request->param('sSearch') =~ m/=/g){
+     $c->stash(search_type => $IPAdmin::NEW)       if($c->request->param('sSearch') =~ m/=[N|n]uov[a|e]/g);
+     $c->stash(search_type => $IPAdmin::PREACTIVE) if($c->request->param('sSearch') =~ m/=[C|c]onvalidat[a|e]/g);
+     $c->stash(search_type => $IPAdmin::ACTIVE)    if($c->request->param('sSearch') =~ m/=[A|a]ttiv[a|e]/g);
+     $c->stash(search_type => $IPAdmin::ARCHIVED)  if($c->request->param('sSearch') =~ m/=[A|a]rchiviat[a|e]/g);
+    }
+
     $c->stash(ip_search => 1) if($c->request->param('sSearch') =~ m/(\d+)\.(\d*)/g);
     $c->detach("datatable_response");
 }

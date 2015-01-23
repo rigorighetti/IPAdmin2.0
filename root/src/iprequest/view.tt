@@ -54,6 +54,7 @@
           <span class="left">Telefono:</span> <span class="right">[% object.guest.telephone %]</span><br>
           <span class="left">Fax:</span> <span class="right">[% object.guest.fax %]</span><br>
           <span class="left">Email:</span> <span class="right">[% object.guest.email %]</span><br>
+          <span class="left">Scadenza richiesta:</span> <span class="right">[% guest_data %]</span><br>
          </div>
         [% END -%]
       </div>
