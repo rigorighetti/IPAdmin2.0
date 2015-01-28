@@ -142,6 +142,7 @@
      <ul>
       <li><b>Indirizzo IP esatto:</b> digitare il terzo e il quarto byte dell'indirizzo IP separati da un "punto". (es: <i>14.200</i> per cercare 151.100.14.200).</li>
       <li><b>Tutti gli indirizzi di una subnet:</b> digitare il terzo byte dell'indirizzo IP seguito da un "punto". (es: <i>14.</i> per cercare tutti gli indirizzi della subnet 151.100.14.0/24).</li>
+           <li><b>Stato della richiesta:</b> digitare il carattere "uguale" seguito dallo stato della richiesta. (es: <i>=nuova</i> per cercare tutte le richieste nuove).</li>
      </ul>
     </p>
     <h3>Aggiornare le istruzioni</h3>
