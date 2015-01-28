@@ -425,8 +425,8 @@ sub process_edit : Private {
     #se l'area non ha assegnato un referente allora abortisci tutto
     my $check_area = $c->stash->{object}->area->manager;
     if(!defined $check_area){
-    $c->stash->{error_msg} = "Impossibile modificare la richiesta. In questo momento non esiste un referente per il dipartimento di ".$check_area->department->name.
-            " presso ".$check_area->building->name.". Contattare l'amministratore di rete.";
+    $c->stash->{error_msg} = "Impossibile modificare la richiesta. In questo momento non esiste un referente per il dipartimento di ".$c->stash->{object}->department->name.
+            " presso ".$c->stash->{object}->building->name.". Contattare l'amministratore di rete.";
     return 0;
     }
 
