@@ -11,10 +11,9 @@
       </div>
       <div class="title">Dati della Struttura</div>
       <div class="section">
-        <span class="left">Nome:</span> <span class="right">[% object.area.department.name %] <i>presso</i> [% object.area.building.name %]</span><br>
-        <span class="left">Indirizzo:</span> <span class="right">[% object.area.building.address %]</span><br>
+        <span class="left">Nome:</span> <span class="right">[% object.department.name %]</span><br>
         <span class="left">Direttore:</span> <span class="right">[% object.dir_fullname %]</span><br>
-        <span class="left">Telefono:</span> <span class="right">[% object.user.dir_phone %]</span><br>
+        <span class="left">Telefono:</span> <span class="right">[% object.dir_phone %]</span><br>
         <span class="left">Email:</span> <span class="right">[% object.dir_email %]</span><br>      
       </div>
       <div class="title">Stato della Richiesta</div>
@@ -39,7 +38,7 @@
          <br>
 
           [% IF object.state == 0 -%]
-            <span class="right"><b>Firma del Responsabile</b></span><br><br><br>
+            <span class="right"><b>Firma del Direttore</b></span><br><br><br>
             <span class="right">_____________________________</span><br><br>
           [% END -%]
 

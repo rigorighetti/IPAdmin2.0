@@ -1,4 +1,5 @@
 [% META
+	title='VPN'
 	use_table=1
 	section='Istruzioni'
 %]
@@ -42,9 +43,9 @@
 <h3>Installazione</h3>
 Scaricare il vpnclient compatibile con il proprio sistema operativo (32bit o 64bit), il file di configurazione e posizionarli sul Desktop:
 <ul>
-<li><a href="../AccessoRemoto/doc/vpnclient-win-msi-5.0.00.0340-k9.exe">vpnclient-win-msi-5.0.00.0340-k9.exe</a> (versioni di windows a 32 bit) </li>
-<li><a href="../AccessoRemoto/doc/vpnclient-winx64-msi-5.0.07.0440-k9.exe">vpnclient-winx64-msi-5.0.07.0440-k9.exe</a>  (versioni di windows a 64 bit)</li>
-<li><a href="../AccessoRemoto/doc/VPN-Sapienza.pcf">VPN-Sapienza.pcf</a> ( File di configurazione vpn )<br><span class="mini">Per sapere quale versione di Windows è in uso fare clic su Start >> Esegui >> scrivere “winver” e premere invio.</span>
+<li><a href="[% ipadmin_link %]/static/images/help/vpnclient-win-msi-5.0.00.0340-k9.exe">vpnclient-win-msi-5.0.00.0340-k9.exe</a> (versioni di windows a 32 bit) </li>
+<li><a href="[% ipadmin_link %]/static/images/help/vpnclient-winx64-msi-5.0.07.0440-k9.exe">vpnclient-winx64-msi-5.0.07.0440-k9.exe</a>  (versioni di windows a 64 bit)</li>
+<li><a href="[% ipadmin_link %]/static/images/help/VPN-Sapienza.pcf">VPN-Sapienza.pcf</a> ( File di configurazione vpn )<br><span class="mini">Per sapere quale versione di Windows è in uso fare clic su Start >> Esegui >> scrivere “winver” e premere invio.</span>
 </li>
 </ul>
 
@@ -97,15 +98,170 @@ Cliccare con il tasto destro sull’icona del lucchetto e scegliere disconnect.
 </div>
 
 	<div id="tabs-3">
-		Mac OSX
+	<h1>Sistemi Mac OS X</h1>
+
+<i>Per sapere quale versione di Mac OS X si sta usando fare clic sull'icona della mela, in alto a sinistra, "Informazioni su questo Mac".</i>
+
+
+<h2>Istruzioni per la configurazione del client vpn Cisco per sistemi 10.4 e 10.5</h2>
+
+Scaricare i seguenti file e posizionarli sulla Scrivania:<br>
+<ul> 
+<li><a href="[% ipadmin_link %]/static/images/help/vpnclient-mac-4.9.dmg" >vpnclient-mac-4.9.dmg </a></li> 
+<li><a href="[% ipadmin_link %]/static/images/help/VPN-Sapienza.pcf" > VPN-Sapienza.pcf</a> <span class="mini">(File di configurazione)</span></li>
+</ul>
+
+<h3>Installare il Cisco VPN Client</h3>
+
+<p>Fare un doppio clic sul file .dmg scaricato in precedenza. 
+Comparirà l’icona di un volume CiscoVPNClient sulla Scrivania e sul Finder. Fare clic questa icona. Si aprirà una nuova finestra </p>
+<em>Run the above installation package to install the VPN client</em> 
+<p>Cliccare quindi sul file Cisco VPN Client.mpkg. </p>
+
+<p>Il sistema potrebbe a questo punto richiedere la password 
+dello user account utilizzato sul mac. Il possesso di questa password è fondamentale 
+per l’installazione del software. Una volta inserita la password, viene visualizzata 
+la licenza d’uso. 
+Dopo aver letto la licenza d’uso premere Continua e  Accetta.
+ Il  processo di installazione richiede la scelta della destinazione: si consiglia di lasciare 
+selezionato l’hard disk di default. In caso di esito positvo del processo comparirà
+la finestra: </p>
+<em>Il software è stato installato correttamente.</em>
+<h3>Configurazione della connessione </h3>
+<p>Per la configurazione si utilizzerà il file VPN-Sapienza.pcf, precedentemente scaricato sulla Scrivania. 
+Lanciare l’applicazione Cisco VPN Client dal menu del Finder</p> 
+<em>Vai – Applicazioni – VPN Client.</em>
+<p>Cliccare sull’icona Import,
+selezionare il file VPN-Sapienza.pcf e premere Open. 
+Se il processo è avvenuto correttamente, comparirà questa finestra: </p>
+<em>The VPN Connection entry VPN-Sapienza was successfully imported.</em>
+
+<h3>Uso del Cisco VPN Client </h3>
+
+<h4>Connettersi </h4>
+Selezionare la connessione VPN-Sapienza e premere Connect. A questo punto occorre inserire username e password, usando le stesse credenziali utilizzate per la posta elettronica (<i>Nome spazio Cognome</i>). 
+
+<strong>
+<p>Attenzione: la connessione in VPN rende impossibie l'utilizzo delle risorse della propria LAN (ad es: stampanti di rete, file server, etc.). &Egrave; quindi necessario disconnettersi dalla VPN per usare le risorse della propria rete. Rimane possibile l’uso di risorse locali, ad esempio una stampante direttamente connessa al pc, 
+tramite porta usb o parallela (LPT). </p></strong>
+
+<h4>Disconnettersi </h4>
+
+Fare clic sull'icona disconnect.
+<br>
+<hr>
+<h2>Istruzioni per la configurazione del client vpn Cisco per sistemi 10.6 e superiori</h2>
+
+<p>Aprire “preferenze di sistema” e scegliere “network”.<br>
+Aggiungere una connessione con un click su l segno “+” in basso a sinistra</p>
+<img class="frame" src="[% c.uri_for('/static/images/help/mac_img1.png') %]" />
+<p>Selezionare l'interfaccia e inserire un nome per il nuovo servizio</p>
+<ul>
+<li>Interfaccia: VPN</li>
+<li>Tipo di VPN: Cisco IPSec</li>
+<li>Nome servizio: Sapienza VPN</li>
+</ul>
+<img class="frame" src="[% c.uri_for('/static/images/help/mac-img2.png') %]" />
+<p>Fare click sul pulsante “Crea”.</p>
+<p>Inserire le seguenti configurazioni:</p>
+<ul>
+<li>Indirizzo del server: vpn.citicord.uniroma1.it</li>
+<li>Nome Account: nome spazio cognome, ad esempio “mario rossi”</li>
+<li>Password: lasciare il campo vuoto, verrà chiesta successivamente</li>
+</ul>
+<p>Fare clic su “impostazioni autenticazione”</p>
+<ul>
+<li>segreto condiviso: tiberis</li>
+<li>nome gruppo: sapienza</li>
+</ul>
+<p>Premere "OK".</p>
+<img class="frame" src="[% c.uri_for('/static/images/help/mac-img3.png') %]" />
+<p>Spuntare la casella "Mostra stato VPN nella barra dei menu" per poter attivare la VPN dall'icona in alto a destra sulla Scrivania.
+Fare clic sul tasto "Applica" e testare la VPN con un clic su "Collega" e "Scollega" per terminare la sessione.</p>
+
  	</div>
 
 	<div id="tabs-4">
-		Linux
+		<h1>Sistemi Linux</h1>
+
+<p>Nelle seguenti righe viene illustrata la configurazione tramite l'utility testuale <em>vpnc</em> disponibile per distribuzioni più diffuse.</p>
+
+<h2>Istruzioni di configurazione</h2>
+Le seguenti istruzioni, pur essendo scritte per Ubuntu 8.04, valgono per ogni distribuzione, opportunamente adattate. 
+Si tenga conto che esistono diversi pacchetti equivalenti a <em>vpnc</em> e diverse interfacce grafiche, non inserite nel presente documento per ragioni di spazio e semplicità.<br>
+Per installare il software sono necessari i privilegi di root ed una connessione ad internet.<br>
+Aprire una shell (xterm, gnome-terminal, o una equivalente) e diventare root con:<br><br>
+<b><i>sudo su - </i></b><i>(poi inserire la propria password di utente)</i><br>
+<i>(In distribuzioni diverse  che prevedono l'esistenza dell'utente root fin dall'installazione  è sufficiente  il comando “su -” e l'inserimento della password di root)</i><br><br>
+Verificare l'acquisizione dei privilegi di root<br><br>
+<b><i>whoami</i></b><br>
+<i>Il comando deve restitutire l'output “root”.</i><br><br>
+Installare il software <em>vpnc</em> con il comando: <br><br>
+<b><i>apt-get install vpnc</i></b><br>
+<i>(Per le distribuzioni RPM based utilizzare yum install vpnc)</i><br><br>
+Scaricare il file <a href="[% ipadmin_link %]/static/images/help/sapienza.conf">sapienza.conf</a> e copiarlo in /etc/vpnc con il seguente comando<br><br>
+<b><i>cp /home/nomeutente/Desktop/sapienza.conf /etc/vpnc</i></b><br>
+(sostituire nomeutente con il proprio nome utente!) <br><br>
+L'installazione e la configurazione è completa.<br>
+
+
+<h3>Connettersi</h3>
+Aprire un shell e avendo privilegi di root, lanciare la sessione VPN dalla shell con:<br><br>
+<b><i>vpnc-connect sapienza</i></b><br>
+Il client VPN chiederà il proprio username (nella forma <i>Nome spazio Cognome</i>) e la propria password; inserire le stesse credenziali usate per la posta elettronica.
+Utilizzare il comando per verificare la creazione dell'interfaccia virtuale per la VPN.<br><br>
+<b><i>ip addr show tun0</i></b><br>
+
+
+<h3>Disconnettersi</h3>
+Aprire un shell e avendo privilegi di root, chiudere la sessione VPN dalla shell con:<br><br>
+<b><i>vpnc-disconnect</i></b><br>
 	</div>
 
 	<div id="tabs-5">
-		Smartphone e Tablet
+<h1>Sistemi iOS (Iphone/Ipad)</h1>
+
+Impostazioni >> Generali >> Rete >> VPN <br>
+
+scegliere IPSEC e quando si visualizza la schermata in allegato inserire le seguenti informazioni: 
+
+<ul>
+<li>Description: VPN Sapienza </li>
+<li>Server: vpn.citicord.uniroma1.it </li>
+<li>Account: (username della posta elettronica: <i>Nome spazio Cognome</i>)</li>
+<li>Password: (password della posta elettronica) </li>
+<li>Use Certificate: OFF </li>
+<li>Group Name: sapienza </li>
+<li>Secret: tiberis </li>
+</ul>
+
+<img class="frame" src="[% ipadmin_link %]/static/images/help/ipad_img1.jpg" alt="">
+
+<hr>
+
+<h1>Sistemi Android 4.0</h1>
+
+Le versioni precedenti di Android sono incompatibili con la tecnologia usata per la VPN Sapienza.
+
+<h2>Configurazione</h2>
+
+Impostazioni >> Altro >> VPN <br>
+
+(il sistema potrebbe chiedere di impostare uno sblocco con segno|pin|password nel caso esso sia assente.)
+
+"Aggiungi Rete VPN"
+ compilare i campi con le seguenti informazioni:
+<ul>
+<li>Nome: VPN Sapienza </li>
+<li>Tipo: IPSEC Xauth PSK </li>
+<li>Indirizzo Server: vpn.citicord.uniroma1.it</li>
+<li>Identificatore IPSEC: sapienza</li>
+<li>Chiave precondivisa IPSEC: tiberis.</li>
+</ul>
+
+
+<img class="frame" src="[% ipadmin_link %]/static/images/help/android_img1.png" alt="" />
+
 	</div>
 
 </div>
