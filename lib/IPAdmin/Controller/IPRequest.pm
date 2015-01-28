@@ -409,8 +409,10 @@ sub process_edit : Private {
                 date_out => $guest_date_out,
                 });
             $ret = $c->stash->{'object'}->update({
+                            user        => $user,
                             location    => $location,
                             subnet      => $subnet,
+                            area        => $area,
                             host        => $host,
                             macaddress  => $mac,
                             hostname    => $hostname,
@@ -438,7 +440,7 @@ sub process_edit : Private {
                                 });
         $c->stash->{'object'}->guest and 
                             $c->stash->{'object'}->guest->update({
-                                              fax   => $guest_fax,
+                                              fax       => $guest_fax,
                                               telephone => $guest_phone,
                                               });            
 
@@ -1217,7 +1219,9 @@ sub list_js :Chained('base') :PathPart('list/js') :Args(0) {
         },        
         manager => sub {
             my ($c, $rs)= @_;
-            defined $rs->area->manager and return $rs->area->manager->fullname;
+            defined $rs->area->manager and return '<a href="' .
+              $c->uri_for_action('/userldap/view',  [ $rs->area->manager->username ]) .
+                '">' . $rs->area->manager->fullname . '</a>';
             return '';
         },
         macaddress => sub {

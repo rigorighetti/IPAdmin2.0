@@ -104,7 +104,7 @@
 	      <td>[% i.macaddress %]</td>
 	      <td>[% i.hostname %][%IF 
         i.area.department.domain%].[%i.area.department.domain%][%END -%].uniroma1.it</td>
-        <td>[% IF i.state != 0 -%] [% i.subnet.id %].[% i.host %] [% ELSE -%]---[% END -%]</td> 
+        <td>[% IF i.state != 0 -%] 151.100.[% i.subnet.id %].[% i.host %] [% ELSE -%]---[% END -%]</td> 
         <td class="white">
          [% IF i.state != 4 -%]
           <a href="[% c.uri_for_action('iprequest/delete',[i.id])%]" title="Rinuncia" style="position:absolute;right:10px;">[% ui_icon('closethick') %]</a> 
@@ -251,7 +251,7 @@
         <td>[% i.macaddress %]</td>
         <td>[% i.hostname %][%IF 
         i.area.department.domain%].[%i.area.department.domain%][%END -%].uniroma1.it</td>
-        <td>[% IF i.state != 0 -%][% i.subnet.id %].[% i.host %][% ELSE -%]---[% END -%]</td> 
+        <td>[% IF i.state != 0 -%]151.100.[% i.subnet.id %].[% i.host %][% ELSE -%]---[% END -%]</td> 
 	      <td class="white">
             [%IF i.state == 0 -%]
              <a href="[% c.uri_for_action('iprequest/validate',[i.id])%]" title="Convalida" >[% ui_icon('check') %]</a>
@@ -308,7 +308,7 @@
         <td>[% i.macaddress %]</td>
         <td>[% i.hostname %][%IF 
         i.area.department.domain%].[%i.area.department.domain%][%END -%].uniroma1.it</td>
-        <td>[% IF i.state != 0 -%][% i.subnet.id %].[% i.host %][% ELSE -%]---[% END -%]</td> 
+        <td>[% IF i.state != 0 -%]151.100.[% i.subnet.id %].[% i.host %][% ELSE -%]---[% END -%]</td> 
         <td class="white">
             [%IF i.state == 0 -%]
              <a href="[% c.uri_for_action('iprequest/validate',[i.id])%]" title="Convalida" >[% ui_icon('check') %]</a>
@@ -365,7 +365,7 @@
         <td>[% i.macaddress %]</td>
         <td>[% i.hostname %][%IF 
         i.area.department.domain%].[%i.area.department.domain%][%END -%].uniroma1.it</td>
-        <td>[% IF i.state != 0 -%][% i.subnet.id %].[% i.host %][% ELSE -%]---[% END -%]</td> 
+        <td>[% IF i.state != 0 -%]151.100.[% i.subnet.id %].[% i.host %][% ELSE -%]---[% END -%]</td> 
         <td class="white">
             [%IF i.state == 0 -%]
              <a href="[% c.uri_for_action('iprequest/validate',[i.id])%]" title="Convalida" >[% ui_icon('check') %]</a>
