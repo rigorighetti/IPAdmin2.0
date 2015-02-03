@@ -67,8 +67,8 @@ sub _build_transport {
         ssl      => 1, 
         port     => 465,
         timeout => 10,
-        sasl_username => 'ipsapienza@uniroma1.it',
-        sasl_password => 'grecia69',
+        sasl_username => 'w3.staff@uniroma1.it', #'ipsapienza@uniroma1.it',
+        sasl_password => 'C1t1c0rd',             #'grecia69',
     });
 }
 
@@ -164,7 +164,7 @@ sub process_archive {
           $subject = "Archiviazione Richiesta IP con Id ".$iprequest->id;
           $body = <<EOF;
 Gentile Utente,
-la sua richiesta IP è stata archiviata in quanto non è stata validata dal referente.
+la sua richiesta IP è stata archiviata in quanto non è stata validata dal referente di rete.
 EOF
           send_email($iprequest->mail, undef,$subject,$body);
         }
@@ -173,7 +173,7 @@ EOF
         $subject = "Archiviazione Richiesta IP con Id ".$iprequest->id;
         $body = <<EOF;
 Gentile Utente,
-la sua richiesta IP è stata archiviata in quanto non validata dall'amministratore di rete.
+la sua richiesta IP è stata archiviata in quanto non è pervenuto il fax con la richiesta firmata.
 EOF
         send_email($iprequest->mail, undef,$subject,$body);
        }
@@ -235,9 +235,10 @@ sub archive_pre {
             'map_assignement.date_in' => { '<', $archive_date },
             'map_assignement.state'   => $ACTIVE,
             'subnet.archivable'       => 1,
+            'type.archivable'         => 1,
         },
         {
-            join => ['map_assignement', 'subnet'],
+            join => ['map_assignement', 'subnet', 'type'],
         });
 
     my @archived;
@@ -266,7 +267,7 @@ sub archive_active_manager {
   my ($self, $time) = @_;
   my $schema         = $self->schema;
   my @archived;
-  my $warn_date    = $time + $A_WEEK;
+  my $warn_date    = $time + $A_WEEK; # una settimana nel futuro?
 
   $self->log->info("Archiviazione richieste referenti scadute oggi" );
 
@@ -283,7 +284,7 @@ sub archive_active_manager {
         my $fullname = $i->user->fullname;
         my $body = <<EOF;
 Gentile referente di rete $fullname,
-la inforiamo che la sua richiesta di referente è scaduta in data odierna. Contattare gli amministratori di rete.
+la inforiamo che la sua nomina a Referente di Rete è scaduta in data odierna. Contattare gli amministratori di rete.
 EOF
         send_email($i->user->email, undef,$subject,$body);
 
@@ -302,7 +303,7 @@ EOF
 
 =head2 archive_active
 
-Cancella le richieste di:
+Cancella le richieste attive mai viste da MaNOC o non connesse da 90 giorni:
 
 =cut
 
@@ -321,7 +322,7 @@ sub archive_active {
     return;
     }
     my $archive_date = $time - $archive_active;
-    my $warn_date    = $time - $A_WEEK;
+    my $warn_date    = $time - $A_WEEK; # se $time è oggi, non dovrebbe essere $archive_date - $A_WEEK ???
     
     $self->log->info("Blocco IP scaduti inattivi dal " .
           IPAdmin::Utils::print_short_timestamp($archive_date));
@@ -349,11 +350,11 @@ sub archive_active {
         next if(!defined($i->subnet) or !defined($i->host));
         my $check_ip = "151.100.".$i->subnet->id.".".$i->host;
         my $check_mac= $i->macaddress;
-        my $result = $self->manoc_schema->resultset('Arp')->search({
+        my @result = $self->manoc_schema->resultset('Arp')->search({
                        ipaddr   => $check_ip, 
                        macaddr  => $check_mac,
-                       lastseen => {">", $archive_date} })->single;
-        if(!defined ($result)){     
+                       lastseen => {">", $archive_date} })->all;
+        if(!scalar(@result)){     
             push @archived, { 
                          id     => $i->id,
                          fqdn   => $i->hostname.".".$i->area->department->domain,
@@ -373,8 +374,9 @@ sub archive_active {
             'me.state' => $ACTIVE,
             'map_assignement.date_out' => { '>=', $time }, 
             'map_assignement.state'   => $ACTIVE,
-            'subnet.archivable'     => 1,
-            'type.archivable'       => 1,
+            'subnet.archivable'     => 1, # li togliamo i controlli visto che sono,
+            'type.archivable'       => 1, # per definizione, a tempo determinato?
+            # guest is not null ?
             },
             {
             join => ['map_assignement','subnet', 'type']
@@ -423,10 +425,10 @@ sub send_email {
  
     my $email = Email::Simple->create(
     header =>  [ 
-      To      => $to,
-      From    => 'ipsapienza@uniroma1.it',
+      To      => 'e.liguori@cineca.it',
+      From    => 'w3.staff@uniroma1.it',
       Subject => $subject,
-      Cc      => $cc,
+      Cc      => 's.italiano@cineca.it',
     ],
     body   =>  $body,
   );
