@@ -27,7 +27,7 @@ our $PREACTIVE = 1;
 our $ACTIVE    = 2;
 our $INACTIVE  = 3;
 our $ARCHIVED  = 4;
-our $A_WEEK    = 3600 * 7;
+our $A_WEEK    = 86400 * 7;
 
 has 'manoc_schema' => (
     traits  => ['NoGetopt'],
@@ -130,6 +130,38 @@ sub archive_new {
     return \@archived;
 
 }
+
+sub process_prearchive {
+    my ($self,$iprequest) = @_;
+        my $subject;
+        my $body; 
+        my $cc;
+       
+        #mail
+     if($iprequest->state eq $ACTIVE){
+          my $ip = "151.100.".$iprequest->subnet->id.".".$iprequest->host;
+          $subject = "Archiviazione Indirizzo IP: $ip";
+ 
+          if(defined $iprequest->guest){
+            #richiesta a tempo det che sta per scadere
+            $body = <<EOF;
+Gentile Utente,
+La avvertiamo che tra una settimana la Sua richiesta di indirizzo IP $ip a tempo determinato scadrà.
+EOF
+            send_email($iprequest->guest->email, $iprequest->user->email,$subject,$body);
+          }
+          else{
+            $body = <<EOF;
+Gentile Utente,
+il suo indirizzo IP $ip tra una settimana sarà bloccato in seguito ad una inattività di oltre 90 giorni
+EOF
+             send_email($iprequest->mail, undef,$subject,$body);
+          }
+      }
+          
+}
+
+
 
 sub process_archive {
     my ($self,$iprequest) = @_;
@@ -322,13 +354,10 @@ sub archive_active {
     return;
     }
     my $archive_date = $time - $archive_active;
-    my $warn_date    = $time - $A_WEEK; # se $time è oggi, non dovrebbe essere $archive_date - $A_WEEK ???
     
     $self->log->info("Blocco IP scaduti inattivi dal " .
           IPAdmin::Utils::print_short_timestamp($archive_date));
     #$self->report->archive_date(IPAdmin::Utils::print_timestamp($archive_date));
-
-    #TODO AVVISA CHI TRA 7 GIORNI SCADE IP
 
     my $it = $schema->resultset('IPRequest')->search({
             'me.state' => $ACTIVE,
@@ -344,18 +373,39 @@ sub archive_active {
     #TODO CONNESSIONE MANOC
     #ARCHIVIA l'indirizzo IP se
     #1)non trova niente dentro manoc
-    #2)o il lastseen di quell'IP e quel mac è > di 90 giorni
+    #2)o il lastseen di quell'IP e quel mac è > di $archive_active giorni
     my @archived;
+    my @prearchived;
+    my $result;
+    #my $int = 0;
     while(my $i = $it->next){
         next if(!defined($i->subnet) or !defined($i->host));
         my $check_ip = "151.100.".$i->subnet->id.".".$i->host;
         my $check_mac= $i->macaddress;
-        my @result = $self->manoc_schema->resultset('Arp')->search({
+        $result = $self->manoc_schema->resultset('Arp')->search({
                        ipaddr   => $check_ip, 
                        macaddr  => $check_mac,
-                       lastseen => {">", $archive_date} })->all;
-        if(!scalar(@result)){     
+                       lastseen => {">=", $archive_date} });
+        
+        if(!defined($result->first)){     
+            my $domain = $i->area->department->domain || '';
             push @archived, { 
+                         id     => $i->id,
+                         fqdn   => $i->hostname.".".$domain,
+                         name   => $i->user->fullname,
+                         mail   => $i->user->email, 
+                         subnet => $i->subnet->id, 
+                         host   => $i->host
+                       };
+            $self->dryrun or $self->process_archive($i);
+        }else{
+          my $max_lastseen = $result->get_column('lastseen')->max;
+          my $warn_date    = $archive_date + $A_WEEK; 
+          if($max_lastseen > $archive_date and $max_lastseen <= $warn_date){
+            #se l'ultima volta che si è visto l'ip in rete è nella settimana successiva alla data di scadenza archive_date
+            #significa che tra sette giorni la richiesta scade 
+            
+            push @prearchived, { 
                          id     => $i->id,
                          fqdn   => $i->hostname.".".$i->area->department->domain,
                          name   => $i->user->fullname,
@@ -363,7 +413,8 @@ sub archive_active {
                          subnet => $i->subnet->id, 
                          host   => $i->host
                        };
-            $self->dryrun or $self->process_archive($i);
+            $self->dryrun or $self->process_prearchive($i);
+          }
         }
     }
 
@@ -391,7 +442,32 @@ sub archive_active {
                          host   => $i->host
                        };
     }
-    return \@archived;
+
+    $it = $schema->resultset('IPRequest')->search({
+            'me.state' => $ACTIVE,
+            'map_assignement.date_out' => { -and => {'>=' => $time - $A_WEEK,
+                                                      '<' => $time   }}, 
+            'map_assignement.state'   => $ACTIVE,
+            'subnet.archivable'     => 1, # li togliamo i controlli visto che sono,
+            'type.archivable'       => 1, # per definizione, a tempo determinato?
+            # guest is not null ?
+            },
+            {
+            join => ['map_assignement','subnet', 'type']
+            });
+    while(my $i = $it->next){
+    $self->dryrun or $self->process_prearchive($i);
+    push @prearchived, { 
+                         id     => $i->id,
+                         name   => $i->user->fullname,
+                         mail   => $i->user->email, 
+                         subnet => $i->subnet->id, 
+                         host   => $i->host
+                       };
+    }
+
+
+    return (\@archived,\@prearchived);
 }
 
 
@@ -442,19 +518,20 @@ sub run {
 
     my $archived_new       = $self->archive_new($time);
     my $archived_preactive = $self->archive_pre($time);
-    my $archived_active    = $self->archive_active($time);
+    my ($archived_active,$prearchived) = $self->archive_active($time);
 
     my $archived_active_man = $self->archive_active_manager($time);
 
 
-   print Dumper($archived_new);
-   print Dumper($archived_preactive);
-   print Dumper($archived_active);
-   print Dumper($archived_active_man);
+   print "Nuove Scadute: ".Dumper($archived_new);
+   print "Convalid. Scadute ".Dumper($archived_preactive);
+   print "Attive Scadute: ". Dumper($archived_active);
+   print "Scadute tra sette giorni: ".Dumper($prearchived);
+   print "Richieste Ref Scadute: ".Dumper($archived_active_man);
 
-    my $body = $self->prepare_blocked_mail($archived_new, $archived_preactive, $archived_active);
-    $self->send_email('e.liguori@cineca.it',undef,
-               'Elenco IP Scaduti '.IPAdmin::Utils::print_short_timestamp(time),$body);
+   my $body = $self->prepare_blocked_mail($archived_new, $archived_preactive, $archived_active);
+   $self->send_email('e.liguori@cineca.it',undef,
+              'Elenco IP Scaduti '.IPAdmin::Utils::print_short_timestamp(time),$body);
   
     # TODO prepara ACL partendo da $self->blocked_ip
 }
