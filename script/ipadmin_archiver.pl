@@ -106,7 +106,7 @@ sub archive_new {
     }
     my $archive_date = $time - $archive_new;
     
-    $self->log->info("Archiviazione nuove richieste non validate dal giorno" .
+    $self->log->info("Archiviazione nuove richieste non validate dal giorno " .
 		  IPAdmin::Utils::print_short_timestamp($archive_date));
     #$self->report->archive_date(IPAdmin::Utils::print_timestamp($archive_date));
        
@@ -384,7 +384,7 @@ sub archive_active {
         my $check_mac= $i->macaddress;
         $result = $self->manoc_schema->resultset('Arp')->search({
                        ipaddr   => $check_ip, 
-                       macaddr  => $check_mac,
+                       #macaddr  => $check_mac,
                        lastseen => {">=", $archive_date} });
         
         if(!defined($result->first)){     
@@ -472,27 +472,33 @@ sub archive_active {
 
 
 sub prepare_blocked_mail {
-    my ( $self, $archived_new, $archived_preactive, $archived_active) = @_;
+    my ( $self, $archived_new, $archived_preactive, $archived_active, $prearchived) = @_;
     my $link = $self->config->{'Link'}->{'ipadmin'};
-
-    my $body = "RICHIESTE NON VALIDATE SCADUTE:\n";
+    my $body = "<html>\n";
+    $body .= "RICHIESTE NON VALIDATE SCADUTE: ".scalar(@{$archived_new})."\n";
     foreach my $i (@{$archived_new}){
-        $body .= sprintf("http://%s/iprequest/id/%s/view \t%20s\t%20s\n", $link, $i->{id},$i->{name},$i->{mail});
+        $body .= sprintf("<a href=\"http://%s/iprequest/id/%s/view\">Id: %s</a> \t%20s\t%20s\n", $link, $i->{id},$i->{id},$i->{name},$i->{mail});
     };
 
-    $body .= "\nRICHIESTE VALIDATE MA NON ATTIVATE:\n";
+    $body .= "\nRICHIESTE VALIDATE MA NON ATTIVATE: ".scalar(@{$archived_preactive})."\n";
     foreach my $i (@{$archived_preactive}){
-        $body .= sprintf("Id:%3s\t151.100.%s.%s\t%25s\t%20s\t%20s\n", $i->{id},$i->{subnet},
-                                                    $i->{host},$i->{fqdn},$i->{name},$i->{mail});
+        $body .= sprintf("<a href=\"http://%s/iprequest/id/%s/view\">Id: %s</a>\t151.100.%s.%s\t%25s\t%20s\t%20s\n", $link, $i->{id},$i->{id},$i->{subnet},
+                                                 $i->{host},$i->{fqdn},$i->{name},$i->{mail});
     };
 
-    $body .= "\nRICHIESTE ATTIVE SCADUTE:\n";
+    $body .= "\nRICHIESTE CHE SCADONO TRA UNA SETTIMANA: ".scalar(@{$prearchived})."\n";                                                            
+    foreach my $i (@{$prearchived}){                                                                        
+        $body .= sprintf("<a href=\"http://%s/iprequest/id/%s/view\">Id: %s</a>\t151.100.%s.%s\t%25s\t%20s\t%20s\n", $link, $i->{id},$i->{id},$i->{subnet},
+                                                 $i->{host},$i->{fqdn},$i->{name},$i->{mail});
+    }; 
+
+    $body .= "\nRICHIESTE ATTIVE SCADUTE: ".scalar(@{$archived_active})."\n";
     foreach my $i (@{$archived_active}){
-        $body .= sprintf("Id:%3s\t151.100.%s.%s\t%25s\t%20s\t%20s\n", $i->{id},$i->{subnet},
-                                        $i->{host},$i->{fqdn},$i->{name},$i->{mail});
-    };
-
-    return $body; 
+        $body .= sprintf("<a href=\"http://%s/iprequest/id/%s/view\">Id: %s</a>\t151.100.%s.%s\t%25s\t%20s\t%20s\n", $link, $i->{id},$i->{id},$i->{subnet},
+                                                 $i->{host},$i->{fqdn},$i->{name},$i->{mail});
+    }; 
+    $body .= "</html>";
+    return $body;
 }
 
 
@@ -529,7 +535,7 @@ sub run {
    print "Scadute tra sette giorni: ".Dumper($prearchived);
    print "Richieste Ref Scadute: ".Dumper($archived_active_man);
 
-   my $body = $self->prepare_blocked_mail($archived_new, $archived_preactive, $archived_active);
+   my $body = $self->prepare_blocked_mail($archived_new, $archived_preactive, $archived_active, $prearchived);
    $self->send_email('e.liguori@cineca.it',undef,
               'Elenco IP Scaduti '.IPAdmin::Utils::print_short_timestamp(time),$body);
   
